@@ -365,92 +365,117 @@ print(f"List Comprehension: {ergebnis}")
 
 ---
 
-### Aufgabe P4: CAD-Dokumentations-Generator mit LLM-API (Mittel-Schwer)
+### Aufgabe P4: CAD-Dokumentations-Generator mit Template-System (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 35-40 Minuten  
-**Vorkenntnisse**: Alle Funktionskonzepte (V10-V11), Docstrings, Type Hints, Fehlerbehandlung (V09)  
-**Maschinenbau-Kontext**: Automatische Generierung von CAD-Bauteil-Dokumentationen mit LLM
+**Vorkenntnisse**: Alle Funktionskonzepte (V10-V11), Docstrings, Type Hints, Fehlerbehandlung (V09), File I/O  
+**Maschinenbau-Kontext**: Automatische Generierung von CAD-Bauteil-Dokumentationen mit Template-Dateien
 
-Implementiere einen erweiterten API-Wrapper für LLM-gestützte CAD-Dokumentation mit umfassender Validierung.
+Implementiere einen Template-basierten Dokumentations-Generator für CAD-Bauteile mit Validierung und Datei-Verarbeitung.
 
 > [!NOTE]
-> **LLM für CAD/CAM**: Large Language Models werden in der Konstruktion eingesetzt für:
-> - **Technische Dokumentation**: Automatische Beschreibung von CAD-Bauteilen
-> - **Fertigungsanweisungen**: Generierung von NC-Programm-Kommentaren
-> - **Spezifikationen**: Ableitung von Anforderungen aus Skizzen/Zeichnungen
-> - **Wartungsanleitungen**: Erstellen von Service-Dokumenten
+> **Template-basierte Dokumentation**: In der Konstruktion werden standardisierte Dokumente mit Platzhaltern verwendet:
+> - **Technische Zeichnungen**: Titel-Block mit Platzhaltern für Bauteil-Daten
+> - **Fertigungsanweisungen**: Template für NC-Programm-Header
+> - **Prüfprotokolle**: Standardisierte Formulare mit variablen Messwerten
+> - **Wartungsanleitungen**: Wiederverwendbare Service-Dokumente
 > 
-> API-Wrapper vereinfachen LLM-Integration und gewährleisten Datenvalidierung.
+> Template-Systeme gewährleisten Konsistenz und reduzieren Fehler bei der Dokumentation.
 
 **Aufgabenstellung**:
 
 Erstelle ein Modul mit folgenden Funktionen:
 
-**Teil 1**: Funktion `validiere_bauteil_beschreibung(beschreibung, *, min_laenge=20, max_laenge=2000)`
+**Teil 1**: Funktion `validiere_bauteil_daten(bauteil_daten, pflichtfelder)`
 
-Diese Funktion soll CAD-Bauteil-Beschreibungen validieren:
-- Beschreibung ist nicht leer nach `strip()`
-- Länge liegt zwischen `min_laenge` und `max_laenge`
+Diese Funktion soll Bauteil-Daten validieren:
+- `bauteil_daten`: Dictionary mit Bauteil-Informationen
+- `pflichtfelder`: Liste von erforderlichen Dictionary-Keys
+- Prüft, ob alle Pflichtfelder vorhanden sind
+- Prüft, ob Werte nicht leer sind (nach `strip()`)
 - Wirft `ValueError` mit aussagekräftiger Fehlermeldung bei Verletzung
 
-**Teil 2**: Funktion `llm_cad_dokumentation(bauteil_beschreibung, **einstellungen)`
+**Teil 2**: Funktion `lade_template(template_datei)`
 
 Diese Funktion soll:
-- `bauteil_beschreibung` validieren (nutze `validiere_bauteil_beschreibung`)
-- Standard-Einstellungen definieren für:
-  - `modell`: `"gpt-4-turbo"`
-  - `temperatur`: `0.3` (niedrig für technische Präzision)
-  - `max_tokens`: `800`
-  - `dokumentations_typ`: `"technisch"` (Optionen: "technisch", "wartung", "fertigung")
-- Einstellungen mit `**einstellungen` überschreibbar machen
-- Temperatur validieren (muss zwischen 0.0 und 1.0 liegen für technische Texte)
-- `max_tokens` validieren (muss positiv sein, max. 2000)
-- `dokumentations_typ` validieren (nur erlaubte Werte)
-- Ein Dictionary mit Request-Details und simulierter Dokumentation zurückgeben
+- Template-Datei aus dem Dateisystem laden
+- Template als String zurückgeben
+- Bei Fehler (Datei nicht gefunden) aussagekräftige Fehlermeldung
 
-**Teil 3**: Funktion `llm_batch_bauteile(bauteil_beschreibungen, **gemeinsame_einstellungen)`
+**Teil 3**: Funktion `generiere_dokumentation(template_datei, bauteil_daten, dokumentations_typ="technisch")`
 
 Diese Funktion soll:
-- Eine Liste von Bauteil-Beschreibungen verarbeiten
-- Für jede Beschreibung `llm_cad_dokumentation` aufrufen
-- Fehlerhafte Eingaben überspringen (mit Warnung), statt gesamte Batch abzubrechen
-- Liste von Ergebnissen zurückgeben
+- Template aus Datei laden
+- Bauteil-Daten validieren (Pflichtfelder abhängig von `dokumentations_typ`)
+- Platzhalter im Template ersetzen (Format: `{PLATZHALTER}`)
+- Dokumentations-Typ validieren (nur "technisch", "wartung", "fertigung" erlaubt)
+- Ausgefüllte Dokumentation als String zurückgeben
+
+**Teil 4**: Funktion `batch_dokumentation(template_datei, bauteile_liste, dokumentations_typ="technisch")`
+
+Diese Funktion soll:
+- Liste von Bauteil-Daten verarbeiten
+- Für jedes Bauteil `generiere_dokumentation` aufrufen
+- Fehlerhafte Eingaben überspringen (mit Fehler-Dictionary), statt Batch abzubrechen
+- Liste von Ergebnis-Dictionaries zurückgeben
 
 **Anforderungen**:
 - Vollständige Docstrings (Google Style) für alle Funktionen
 - Type Hints für alle Parameter und Rückgabewerte
-- `try-except`-Fehlerbehandlung in Batch-Funktion
+- `try-except`-Fehlerbehandlung
 - Validierung mit aussagekräftigen Fehlermeldungen
+
+**Beispiel Template-Datei** (`cad_template_technisch.txt`):
+```
+=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+
+Bezeichnung: {BEZEICHNUNG}
+Bauteil-Nummer: {NUMMER}
+Material: {MATERIAL}
+Abmessungen: {ABMESSUNGEN}
+
+Beschreibung:
+{BESCHREIBUNG}
+
+Bearbeiter: {BEARBEITER}
+Datum: {DATUM}
+Status: {STATUS}
+
+======================================
+```
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-# Einzelne Anfrage
-ergebnis = llm_cad_dokumentation(
-    "Welle Ø50mm, Länge 200mm, Material C45E, mit Passfedernut DIN 6885",
-    temperatur=0.2,
-    max_tokens=500,
-    dokumentations_typ="technisch"
-)
-print(ergebnis)
-# {
-#   "bauteil_beschreibung": "Welle Ø50mm...",
-#   "einstellungen": {"modell": "gpt-4-turbo", "temperatur": 0.2, ...},
-#   "dokumentation": "[Simulierte technische Dokumentation...]",
-#   "status": "success"
-# }
+# Einzelne Dokumentation
+bauteil = {
+    "BEZEICHNUNG": "Welle",
+    "NUMMER": "WE-001",
+    "MATERIAL": "C45E",
+    "ABMESSUNGEN": "Ø50mm x 200mm",
+    "BESCHREIBUNG": "Antriebswelle mit Passfedernut DIN 6885",
+    "BEARBEITER": "Max Mustermann",
+    "DATUM": "04.01.2026",
+    "STATUS": "Freigegeben"
+}
 
-# Batch-Anfragen
+doku = generiere_dokumentation("cad_template_technisch.txt", bauteil)
+print(doku)
+# === TECHNISCHE BAUTEIL-DOKUMENTATION ===
+# Bezeichnung: Welle
+# ...
+
+# Batch-Dokumentation
 bauteile = [
-    "Gehäuse aus AlMgSi1, Wandstärke 3mm",
-    "",  # Ungültig
-    "Zahnrad Modul 2, z=30, Material 16MnCr5"
+    {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", ...},
+    {"BEZEICHNUNG": "Gehäuse"},  # Unvollständig
+    {"BEZEICHNUNG": "Zahnrad", "NUMMER": "ZR-015", ...}
 ]
-ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.25, dokumentations_typ="fertigung")
+ergebnisse = batch_dokumentation("cad_template_technisch.txt", bauteile)
 # [
-#   {"bauteil_beschreibung": "Gehäuse...", "status": "success", ...},
-#   {"bauteil_beschreibung": "", "status": "error", "fehler": "Beschreibung ist leer"},
-#   {"bauteil_beschreibung": "Zahnrad...", "status": "success", ...}
+#   {"status": "success", "dokumentation": "..."},
+#   {"status": "error", "fehler": "Pflichtfeld NUMMER fehlt"},
+#   {"status": "success", "dokumentation": "..."}
 # ]
 ```
 
@@ -458,66 +483,91 @@ ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.25, dokumentations_typ="f
 ```python
 from typing import Optional
 
-def validiere_bauteil_beschreibung(beschreibung: str, *, min_laenge: int = 20, max_laenge: int = 2000) -> None:
+def validiere_bauteil_daten(bauteil_daten: dict, pflichtfelder: list[str]) -> None:
     """
-    Validiert eine CAD-Bauteil-Beschreibung auf Länge und Inhalt.
+    Validiert Bauteil-Daten auf Vollständigkeit.
     
     Args:
-        beschreibung: Zu validierende Bauteil-Beschreibung
-        min_laenge: Minimale Beschreibungs-Länge
-        max_laenge: Maximale Beschreibungs-Länge
+        bauteil_daten: Dictionary mit Bauteil-Informationen
+        pflichtfelder: Liste erforderlicher Dictionary-Keys
     
     Raises:
-        ValueError: Bei ungültiger Beschreibung
+        ValueError: Bei fehlenden oder leeren Pflichtfeldern
     
     Examples:
-        >>> validiere_bauteil_beschreibung("Welle Ø50mm Material C45E")  # OK
-        >>> validiere_bauteil_beschreibung("")  # ValueError
-        >>> validiere_bauteil_beschreibung("Kurz")  # ValueError
+        >>> daten = {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001"}
+        >>> validiere_bauteil_daten(daten, ["BEZEICHNUNG", "NUMMER"])  # OK
+        >>> validiere_bauteil_daten(daten, ["BEZEICHNUNG", "MATERIAL"])  # ValueError
     """
     # Dein Code hier
     pass
 
 
-def llm_cad_dokumentation(bauteil_beschreibung: str, **einstellungen) -> dict:
+def lade_template(template_datei: str) -> str:
     """
-    Generiert CAD-Dokumentation mit LLM (simuliert).
+    Lädt Template-Datei aus dem Dateisystem.
     
     Args:
-        bauteil_beschreibung: Technische Beschreibung des Bauteils
-        **einstellungen: Optionale Einstellungen (modell, temperatur, max_tokens, dokumentations_typ)
+        template_datei: Pfad zur Template-Datei
     
     Returns:
-        Dictionary mit Request-Details und simulierter Dokumentation
+        Template-Inhalt als String
     
     Raises:
-        ValueError: Bei ungültigen Parametern
+        FileNotFoundError: Wenn Datei nicht existiert
     
     Examples:
-        >>> ergebnis = llm_cad_dokumentation("Welle Ø50mm C45E", temperatur=0.2)
-        >>> print(ergebnis["status"])
-        success
+        >>> template = lade_template("cad_template_technisch.txt")
+        >>> "BEZEICHNUNG" in template
+        True
     """
     # Dein Code hier
     pass
 
 
-def llm_batch_bauteile(bauteil_beschreibungen: list[str], **gemeinsame_einstellungen) -> list[dict]:
+def generiere_dokumentation(template_datei: str, bauteil_daten: dict, dokumentations_typ: str = "technisch") -> str:
     """
-    Verarbeitet mehrere Bauteil-Beschreibungen als Batch.
+    Generiert CAD-Dokumentation aus Template und Bauteil-Daten.
     
     Args:
-        bauteil_beschreibungen: Liste von Bauteil-Beschreibungen
-        **gemeinsame_einstellungen: Einstellungen für alle Anfragen
+        template_datei: Pfad zur Template-Datei
+        bauteil_daten: Dictionary mit Bauteil-Informationen
+        dokumentations_typ: Typ der Dokumentation ("technisch", "wartung", "fertigung")
     
     Returns:
-        Liste von Ergebnis-Dictionaries
+        Ausgefüllte Dokumentation als String
+    
+    Raises:
+        ValueError: Bei ungültigen Daten oder Typ
+        FileNotFoundError: Bei fehlender Template-Datei
     
     Examples:
-        >>> bauteile = ["Welle Ø50mm", "Gehäuse AlMgSi1"]
-        >>> ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.2)
-        >>> len(ergebnisse)
-        2
+        >>> daten = {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", ...}
+        >>> doku = generiere_dokumentation("template.txt", daten)
+        >>> "Welle" in doku
+        True
+    """
+    # Dein Code hier
+    pass
+
+
+def batch_dokumentation(template_datei: str, bauteile_liste: list[dict], dokumentations_typ: str = "technisch") -> list[dict]:
+    """
+    Verarbeitet mehrere Bauteile als Batch.
+    
+    Args:
+        template_datei: Pfad zur Template-Datei
+        bauteile_liste: Liste von Bauteil-Daten-Dictionaries
+        dokumentations_typ: Typ der Dokumentation
+    
+    Returns:
+        Liste von Ergebnis-Dictionaries mit status und dokumentation/fehler
+    
+    Examples:
+        >>> bauteile = [{"BEZEICHNUNG": "Welle", ...}, {"BEZEICHNUNG": "Gehäuse", ...}]
+        >>> ergebnisse = batch_dokumentation("template.txt", bauteile)
+        >>> len(ergebnisse) == 2
+        True
     """
     # Dein Code hier
     pass
@@ -525,40 +575,45 @@ def llm_batch_bauteile(bauteil_beschreibungen: list[str], **gemeinsame_einstellu
 
 # Tests
 if __name__ == "__main__":
-    # Test 1: Einzelne Anfrage
-    print("Test 1: Einzelne CAD-Dokumentation")
-    ergebnis = llm_cad_dokumentation(
-        "Welle Ø50mm, Länge 200mm, Material C45E, mit Passfedernut DIN 6885",
-        temperatur=0.2,
-        max_tokens=500
-    )
-    print(ergebnis)
+    # Test 1: Template erstellen (für Demo)
+    template_inhalt = """=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+Bezeichnung: {BEZEICHNUNG}
+Nummer: {NUMMER}
+Material: {MATERIAL}
+Bearbeiter: {BEARBEITER}
+==================================="""
     
-    # Test 2: Ungültige Parameter
-    print("\nTest 2: Ungültige Parameter")
-    try:
-        llm_cad_dokumentation("Welle Ø50mm", temperatur=1.5)  # Sollte Fehler werfen
-    except ValueError as e:
-        print(f"Erwarteter Fehler: {e}")
+    with open("cad_template_technisch.txt", "w", encoding="utf-8") as f:
+        f.write(template_inhalt)
     
-    # Test 3: Batch-Anfragen
-    print("\nTest 3: Batch-Verarbeitung")
+    # Test 2: Einzelne Dokumentation
+    print("Test 1: Einzelne Dokumentation")
+    bauteil = {
+        "BEZEICHNUNG": "Welle",
+        "NUMMER": "WE-001",
+        "MATERIAL": "C45E",
+        "BEARBEITER": "Max Mustermann"
+    }
+    doku = generiere_dokumentation("cad_template_technisch.txt", bauteil)
+    print(doku)
+    
+    # Test 3: Batch-Dokumentation
+    print("\nTest 2: Batch-Dokumentation")
     bauteile = [
-        "Gehäuse aus AlMgSi1, Wandstärke 3mm, Oberflächenschutz eloxiert",
-        "",  # Ungültig
-        "Zahnrad Modul 2, z=30, Material 16MnCr5, Härte 58-62 HRC",
-        "X" * 2500  # Zu lang
+        {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", "MATERIAL": "C45E", "BEARBEITER": "MM"},
+        {"BEZEICHNUNG": "Gehäuse"},  # Unvollständig
+        {"BEZEICHNUNG": "Zahnrad", "NUMMER": "ZR-015", "MATERIAL": "16MnCr5", "BEARBEITER": "JS"}
     ]
-    ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.25, dokumentations_typ="fertigung")
+    ergebnisse = batch_dokumentation("cad_template_technisch.txt", bauteile)
     for idx, erg in enumerate(ergebnisse):
-        print(f"Ergebnis {idx + 1}: {erg.get('status', 'unknown')}")
+        print(f"Ergebnis {idx + 1}: {erg.get('status')}")
 ```
 
 **Hinweise**:
-- Technische Dokumentation erfordert niedrige Temperatur (0.2-0.4) für Präzision
-- Validierung verhindert ungültige API-Aufrufe und Kosten
-- `try-except` in Batch-Funktion: Fange `ValueError` ab und erzeuge Fehler-Dictionary
-- Simulierte Antwort: Generiere Platzhalter-Text für Dokumentation
+- Nutze `str.format(**bauteil_daten)` oder `str.replace()` für Platzhalter-Ersetzung
+- Pflichtfelder für "technisch": BEZEICHNUNG, NUMMER, MATERIAL, BEARBEITER
+- `try-except` in Batch-Funktion: Fange `ValueError` und `FileNotFoundError` ab
+- Template-Format mit geschweiften Klammern: `{PLATZHALTER}`
   - `modell`: `"gpt-3.5-turbo"`
   - `temperatur`: `0.7`
   - `max_tokens`: `500`
@@ -706,19 +761,19 @@ if __name__ == "__main__":
 
 ---
 
-### Aufgabe P5: Wartungsprotokoll-Manager mit LLM-Unterstützung (Schwer/Komplex)
+### Aufgabe P5: Wartungsprotokoll-Manager für Maschinenwartung (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
 **Vorkenntnisse**: Alle Konzepte aus V01-V11, insbesondere Funktionen, Fehlerbehandlung, Datenstrukturen  
-**Maschinenbau-Kontext**: Digitales Wartungsprotokoll-System mit LLM-gestützter Fehleranalyse
+**Maschinenbau-Kontext**: Digitales Wartungsprotokoll-System für systematische Instandhaltung
 
-Implementiere einen vollständigen Manager für Maschinenwartungs-Protokolle mit LLM-Integration und Persistenz.
+Implementiere einen vollständigen Manager für Maschinenwartungs-Protokolle mit Persistenz und Statistiken.
 
 > [!NOTE]
 > **Digitale Wartungsprotokolle**: Moderne Instandhaltung nutzt digitale Systeme für:
 > - **Protokollierung**: Erfassung aller Wartungsmaßnahmen mit Zeitstempel
-> - **Fehleranalyse**: LLM-gestützte Diagnose basierend auf Symptombeschreibungen
+> - **Fehleranalyse**: Systematische Diagnose basierend auf Symptombeschreibungen
 > - **Wissensmanagement**: Historische Daten für Predictive Maintenance
 > - **Dokumentation**: Nachweisführung für ISO 9001, Maschinensicherheit
 > 
@@ -729,51 +784,67 @@ Implementiere einen vollständigen Manager für Maschinenwartungs-Protokolle mit
 Erstelle ein System zur Verwaltung von Wartungsprotokollen mit folgenden Komponenten:
 
 **Protokoll-Eintrag** (nutze Dictionary):
-- Attribute: `typ` (str: "inspektion", "reparatur", "diagnose"), `beschreibung` (str), `maschine_id` (str), `zeitstempel` (datetime)
+- Attribute: `typ` (str: "inspektion", "reparatur", "diagnose"), `beschreibung` (str), `zeitstempel` (datetime), `techniker` (str)
 
-**Funktion `erstelle_wartungsprotokoll(maschine_id, system_prompt, **optionen)`**:
+**Funktion `erstelle_wartungsprotokoll(maschine_id, standort, **optionen)`**:
 - Initialisiert neues Wartungsprotokoll für Maschine
 - `maschine_id`: Eindeutige Maschinen-Identifikation
-- `system_prompt`: LLM-Kontext für Fehleranalyse
-- Gibt Protokoll-Dictionary zurück
+- `standort`: Standort der Maschine (z.B. "Halle A, Station 3")
+- `**optionen`: Zusätzliche Informationen (z.B. hersteller, modell, baujahr)
+- Gibt Protokoll-Dictionary zurück mit Statistik-Tracking
 
-**Funktion `fuege_eintrag_hinzu(protokoll, typ, beschreibung)`**:
+**Funktion `fuege_eintrag_hinzu(protokoll, typ, beschreibung, techniker)`**:
 - Fügt Wartungseintrag zum Protokoll hinzu
 - Validiert `typ` (nur "inspektion", "reparatur", "diagnose" erlaubt)
-- Aktualisiert Statistiken
+- Aktualisiert Statistiken automatisch
+- Fügt aktuellen Zeitstempel hinzu
 
-**Funktion `llm_fehleranalyse(protokoll, symptombeschreibung, **llm_einstellungen)`**:
-- Fügt Diagnose-Eintrag hinzu
-- Simuliert LLM-Fehleranalyse basierend auf Symptomen
-- Gibt Diagnose-Empfehlung zurück
+**Funktion `erstelle_diagnose(protokoll, symptombeschreibung, techniker, massnahmen)`**:
+- Fügt Diagnose-Eintrag mit strukturierten Daten hinzu
+- `symptombeschreibung`: Beschreibung des Problems
+- `massnahmen`: Liste von durchgeführten/empfohlenen Maßnahmen
+- Generiert automatisch Diagnose-Text aus Symptomen und Maßnahmen
 
 **Funktion `speichere_protokoll(protokoll, dateiname)`**:
 - Speichert Wartungsprotokoll als JSON-Datei
+- Nutzt pretty-printing (indent=4) für Lesbarkeit
 
 **Funktion `lade_protokoll(dateiname)`**:
 - Lädt Wartungsprotokoll aus JSON-Datei
+- Behandelt FileNotFoundError mit aussagekräftiger Meldung
 
 **Funktion `protokoll_statistik(protokoll)`**:
-- Berechnet Statistiken: Anzahl Einträge pro Typ, durchschnittliche Beschreibungslänge
+- Berechnet erweiterte Statistiken:
+  - Anzahl Einträge pro Typ
+  - Durchschnittliche Beschreibungslänge
+  - Zeitspanne zwischen erstem und letztem Eintrag
+  - Liste der beteiligten Techniker
 
 **Beispiel Ein-/Ausgabe**:
 ```python
 # Neues Wartungsprotokoll
 protokoll = erstelle_wartungsprotokoll(
     maschine_id="CNC-DMU-85",
-    system_prompt="Experte für CNC-Maschinen-Diagnose und Wartung",
-    modell="gpt-4"
+    standort="Halle A, Station 3",
+    hersteller="DMG Mori",
+    modell="DMU 85 monoBLOCK",
+    baujahr=2020
 )
 
 # Einträge hinzufügen
-fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager geprüft, kein Verschleiß erkennbar")
-fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ausgetauscht, Leckage behoben")
+fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager geprüft, kein Verschleiß erkennbar", "Max Mustermann")
+fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ausgetauscht, Leckage behoben", "Anna Schmidt")
 
-# LLM-Fehleranalyse
-diagnose = llm_fehleranalyse(
+# Diagnose erstellen
+diagnose = erstelle_diagnose(
     protokoll,
-    "Erhöhte Vibration bei 3000 U/min in Z-Achse, sporadische Positionsfehler",
-    temperatur=0.2
+    symptombeschreibung="Erhöhte Vibration bei 3000 U/min in Z-Achse, sporadische Positionsfehler",
+    techniker="Max Mustermann",
+    massnahmen=[
+        "Spindellager auf Verschleiß geprüft",
+        "Führungen auf Spiel geprüft",
+        "Empfehlung: Spindel-Überholung innerhalb 3 Monate"
+    ]
 )
 print(f"Diagnose: {diagnose}")
 
@@ -781,9 +852,13 @@ print(f"Diagnose: {diagnose}")
 stats = protokoll_statistik(protokoll)
 print(f"Einträge gesamt: {stats['anzahl_eintraege']}")
 print(f"Inspektionen: {stats['anzahl_inspektion']}, Reparaturen: {stats['anzahl_reparatur']}")
+print(f"Techniker: {stats['techniker']}")
 
 # Persistenz
 speichere_protokoll(protokoll, "wartung_CNC-DMU-85_2026-01.json")
+
+# Später laden
+geladenes_protokoll = lade_protokoll("wartung_CNC-DMU-85_2026-01.json")
 ```
 
 **Starter-Code**:
@@ -792,45 +867,114 @@ from datetime import datetime
 from typing import Optional
 import json
 
-def erstelle_wartungsprotokoll(maschine_id: str, system_prompt: Optional[str] = None, **optionen) -> dict:
-    """Initialisiert ein neues Wartungsprotokoll."""
-    protokoll = {
-        "maschine_id": maschine_id,
-        "erstellt_am": datetime.now().isoformat(),
-        "system_prompt": system_prompt,
-        "optionen": optionen,
-        "eintraege": [],
-        "statistiken": {
-            "anzahl_eintraege": 0,
-            "anzahl_inspektion": 0,
-            "anzahl_reparatur": 0,
-            "anzahl_diagnose": 0
-        }
-    }
-    return protokoll
-
-def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str) -> None:
-    """Fügt Wartungseintrag hinzu."""
+def erstelle_wartungsprotokoll(maschine_id: str, standort: str, **optionen) -> dict:
+    """
+    Initialisiert ein neues Wartungsprotokoll.
+    
+    Args:
+        maschine_id: Eindeutige Maschinen-ID
+        standort: Standort der Maschine
+        **optionen: Zusätzliche Maschinen-Informationen
+    
+    Returns:
+        Protokoll-Dictionary mit Struktur für Einträge und Statistiken
+    
+    Examples:
+        >>> protokoll = erstelle_wartungsprotokoll("CNC-001", "Halle A", hersteller="DMG")
+        >>> protokoll["maschine_id"]
+        'CNC-001'
+    """
     # Dein Code hier
     pass
 
-def llm_fehleranalyse(protokoll: dict, symptombeschreibung: str, **llm_einstellungen) -> str:
-    """Generiert LLM-gestützte Fehleranalyse."""
+def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str, techniker: str) -> None:
+    """
+    Fügt Wartungseintrag hinzu und aktualisiert Statistiken.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        typ: Typ des Eintrags ("inspektion", "reparatur", "diagnose")
+        beschreibung: Beschreibung der Wartungsmaßnahme
+        techniker: Name des Technikers
+    
+    Raises:
+        ValueError: Bei ungültigem Typ
+    
+    Examples:
+        >>> fuege_eintrag_hinzu(protokoll, "inspektion", "Lager geprüft", "M. Mustermann")
+    """
+    # Dein Code hier
+    pass
+
+def erstelle_diagnose(protokoll: dict, symptombeschreibung: str, techniker: str, massnahmen: list[str]) -> str:
+    """
+    Erstellt strukturierten Diagnose-Eintrag.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        symptombeschreibung: Beschreibung des Problems
+        techniker: Name des Technikers
+        massnahmen: Liste durchgeführter/empfohlener Maßnahmen
+    
+    Returns:
+        Formatierte Diagnose-Zusammenfassung
+    
+    Examples:
+        >>> diagnose = erstelle_diagnose(protokoll, "Vibration", "MM", ["Lager prüfen"])
+        >>> "Vibration" in diagnose
+        True
+    """
     # Dein Code hier
     pass
 
 def speichere_protokoll(protokoll: dict, dateiname: str) -> None:
-    """Speichert Protokoll als JSON."""
+    """
+    Speichert Protokoll als JSON-Datei.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        dateiname: Ziel-Dateiname
+    
+    Examples:
+        >>> speichere_protokoll(protokoll, "wartung_001.json")
+    """
     # Dein Code hier
     pass
 
 def lade_protokoll(dateiname: str) -> dict:
-    """Lädt Protokoll aus JSON."""
+    """
+    Lädt Protokoll aus JSON-Datei.
+    
+    Args:
+        dateiname: Quell-Dateiname
+    
+    Returns:
+        Wartungsprotokoll-Dictionary
+    
+    Raises:
+        FileNotFoundError: Wenn Datei nicht existiert
+    
+    Examples:
+        >>> protokoll = lade_protokoll("wartung_001.json")
+    """
     # Dein Code hier
     pass
 
 def protokoll_statistik(protokoll: dict) -> dict:
-    """Berechnet Protokoll-Statistiken."""
+    """
+    Berechnet erweiterte Protokoll-Statistiken.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+    
+    Returns:
+        Dictionary mit Statistiken (Anzahlen, durchschn. Länge, Techniker-Liste, etc.)
+    
+    Examples:
+        >>> stats = protokoll_statistik(protokoll)
+        >>> stats["anzahl_eintraege"]
+        5
+    """
     # Dein Code hier
     pass
 
@@ -838,27 +982,35 @@ def protokoll_statistik(protokoll: dict) -> dict:
 if __name__ == "__main__":
     protokoll = erstelle_wartungsprotokoll(
         maschine_id="CNC-DMU-85",
-        system_prompt="Experte für CNC-Diagnose",
-        modell="gpt-4"
+        standort="Halle A, Station 3",
+        hersteller="DMG Mori",
+        baujahr=2020
     )
     
-    fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK")
-    fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt")
+    fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK", "Max Mustermann")
+    fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt", "Anna Schmidt")
     
-    diagnose = llm_fehleranalyse(protokoll, "Erhöhte Vibration bei 3000 U/min", temperatur=0.2)
-    print(f"Diagnose: {diagnose[:100]}...")
+    diagnose = erstelle_diagnose(
+        protokoll,
+        "Erhöhte Vibration bei 3000 U/min in Z-Achse",
+        "Max Mustermann",
+        ["Spindellager geprüft", "Führungen geprüft", "Empfehlung: Spindel-Überholung"]
+    )
+    print(f"Diagnose:\n{diagnose}\n")
     
     stats = protokoll_statistik(protokoll)
     print(f"Statistiken: {stats}")
     
     speichere_protokoll(protokoll, "test_wartung.json")
+    print("\nProtokoll gespeichert als test_wartung.json")
 ```
 
 **Hinweise**:
 - Zeitstempel mit `datetime.now().isoformat()`
-- Simulierte Diagnose: Template basierend auf Symptomen
+- Diagnose-Format: "SYMPTOM: [text] | MASSNAHMEN: 1. ... 2. ... 3. ..."
 - Validierung: `ValueError` bei ungültigem Typ
-- JSON-Kompatibilität beachten
+- Statistik: Nutze `set()` für einzigartige Techniker-Liste
+- JSON mit `indent=4` für Lesbarkeit
 
 ---
 

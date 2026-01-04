@@ -979,78 +979,80 @@ print(f"List Comprehension: {ergebnis}")
 
 ---
 
-### Lösung P4: CAD-Dokumentations-Generator mit LLM-API
+### Lösung P4: CAD-Dokumentations-Generator mit Template-System
 
 **Vollständige Lösung**:
 ```python
 from typing import Optional
 
-def validiere_bauteil_beschreibung(beschreibung: str, *, min_laenge: int = 20, max_laenge: int = 2000) -> None:
-    """Validiert CAD-Bauteil-Beschreibung."""
-    beschreibung = beschreibung.strip()
-    if not beschreibung:
-        raise ValueError("Beschreibung ist leer")
-    if len(beschreibung) < min_laenge:
-        raise ValueError(f"Beschreibung zu kurz (min. {min_laenge} Zeichen)")
-    if len(beschreibung) > max_laenge:
-        raise ValueError(f"Beschreibung zu lang (max. {max_laenge} Zeichen)")
+def validiere_bauteil_daten(bauteil_daten: dict, pflichtfelder: list[str]) -> None:
+    """Validiert Bauteil-Daten auf Vollständigkeit."""
+    for feld in pflichtfelder:
+        if feld not in bauteil_daten:
+            raise ValueError(f"Pflichtfeld fehlt: {feld}")
+        if not str(bauteil_daten[feld]).strip():
+            raise ValueError(f"Pflichtfeld ist leer: {feld}")
 
-def llm_cad_dokumentation(bauteil_beschreibung: str, **einstellungen) -> dict:
-    """Generiert CAD-Dokumentation mit LLM."""
-    validiere_bauteil_beschreibung(bauteil_beschreibung)
-    
-    defaults = {
-        "modell": "gpt-4-turbo",
-        "temperatur": 0.3,
-        "max_tokens": 800,
-        "dokumentations_typ": "technisch"
-    }
-    defaults.update(einstellungen)
-    
-    if not (0.0 <= defaults["temperatur"] <= 1.0):
-        raise ValueError("Temperatur muss zwischen 0.0 und 1.0 liegen")
-    if defaults["max_tokens"] <= 0 or defaults["max_tokens"] > 2000:
-        raise ValueError("max_tokens muss zwischen 1 und 2000 liegen")
-    if defaults["dokumentations_typ"] not in ["technisch", "wartung", "fertigung"]:
-        raise ValueError("Ungültiger dokumentations_typ")
-    
-    return {
-        "bauteil_beschreibung": bauteil_beschreibung,
-        "einstellungen": defaults,
-        "dokumentation": f"[Simulierte {defaults['dokumentations_typ']} Dokumentation für: {bauteil_beschreibung[:50]}...]",
-        "status": "success"
-    }
+def lade_template(template_datei: str) -> str:
+    """Lädt Template-Datei."""
+    try:
+        with open(template_datei, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Template-Datei nicht gefunden: {template_datei}")
 
-def llm_batch_bauteile(bauteil_beschreibungen: list[str], **gemeinsame_einstellungen) -> list[dict]:
-    """Verarbeitet mehrere Bauteil-Beschreibungen als Batch."""
+def generiere_dokumentation(template_datei: str, bauteil_daten: dict, dokumentations_typ: str = "technisch") -> str:
+    """Generiert CAD-Dokumentation aus Template."""
+    if dokumentations_typ not in ["technisch", "wartung", "fertigung"]:
+        raise ValueError(f"Ungültiger dokumentations_typ: {dokumentations_typ}")
+    
+    pflichtfelder = ["BEZEICHNUNG", "NUMMER", "MATERIAL", "BEARBEITER"]
+    validiere_bauteil_daten(bauteil_daten, pflichtfelder)
+    
+    template = lade_template(template_datei)
+    return template.format(**bauteil_daten)
+
+def batch_dokumentation(template_datei: str, bauteile_liste: list[dict], dokumentations_typ: str = "technisch") -> list[dict]:
+    """Verarbeitet mehrere Bauteile als Batch."""
     ergebnisse = []
-    for beschreibung in bauteil_beschreibungen:
+    for bauteil in bauteile_liste:
         try:
-            ergebnis = llm_cad_dokumentation(beschreibung, **gemeinsame_einstellungen)
-            ergebnisse.append(ergebnis)
-        except ValueError as e:
-            ergebnisse.append({
-                "bauteil_beschreibung": beschreibung,
-                "status": "error",
-                "fehler": str(e)
-            })
+            doku = generiere_dokumentation(template_datei, bauteil, dokumentations_typ)
+            ergebnisse.append({"status": "success", "dokumentation": doku})
+        except (ValueError, FileNotFoundError, KeyError) as e:
+            ergebnisse.append({"status": "error", "fehler": str(e)})
     return ergebnisse
 
 # Tests
-ergebnis = llm_cad_dokumentation("Welle Ø50mm, Länge 200mm, Material C45E, mit Passfedernut DIN 6885", temperatur=0.2)
-print(ergebnis)
+template_inhalt = """=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+Bezeichnung: {BEZEICHNUNG}
+Nummer: {NUMMER}
+Material: {MATERIAL}
+Bearbeiter: {BEARBEITER}
+==================================="""
 
-bauteile = ["Gehäuse aus AlMgSi1, Wandstärke 3mm", "", "Zahnrad Modul 2, z=30"]
-ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.25, dokumentations_typ="fertigung")
+with open("cad_template_technisch.txt", "w", encoding="utf-8") as f:
+    f.write(template_inhalt)
+
+bauteil = {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", "MATERIAL": "C45E", "BEARBEITER": "MM"}
+doku = generiere_dokumentation("cad_template_technisch.txt", bauteil)
+print(doku)
+
+bauteile = [
+    {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", "MATERIAL": "C45E", "BEARBEITER": "MM"},
+    {"BEZEICHNUNG": "Gehäuse"},
+    {"BEZEICHNUNG": "Zahnrad", "NUMMER": "ZR-015", "MATERIAL": "16MnCr5", "BEARBEITER": "JS"}
+]
+ergebnisse = batch_dokumentation("cad_template_technisch.txt", bauteile)
 for idx, erg in enumerate(ergebnisse):
     print(f"Ergebnis {idx + 1}: {erg.get('status')}")
 ```
 
-**Erklärung**: Type Hints erhöhen Lesbarkeit. `**kwargs` mit `update()` für flexible Parameter-Überschreibung. Try-except in Batch für Robustheit.
+**Erklärung**: Template-System nutzt `str.format()` für Platzhalter-Ersetzung. File I/O mit `open()` und encoding. Validierung prüft Pflichtfelder, Batch-Funktion nutzt try-except für Robustheit.
 
 ---
 
-### Lösung P5: Wartungsprotokoll-Manager mit LLM-Unterstützung
+### Lösung P5: Wartungsprotokoll-Manager für Maschinenwartung
 
 **Vollständige Lösung**:
 ```python
@@ -1058,18 +1060,18 @@ from datetime import datetime
 from typing import Optional
 import json
 
-def erstelle_wartungsprotokoll(maschine_id: str, system_prompt: Optional[str] = None, **optionen) -> dict:
+def erstelle_wartungsprotokoll(maschine_id: str, standort: str, **optionen) -> dict:
     """Initialisiert neues Wartungsprotokoll."""
     return {
         "maschine_id": maschine_id,
+        "standort": standort,
         "erstellt_am": datetime.now().isoformat(),
-        "system_prompt": system_prompt,
         "optionen": optionen,
         "eintraege": [],
         "statistiken": {"anzahl_eintraege": 0, "anzahl_inspektion": 0, "anzahl_reparatur": 0, "anzahl_diagnose": 0}
     }
 
-def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str) -> None:
+def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str, techniker: str) -> None:
     """Fügt Wartungseintrag hinzu."""
     if typ not in ["inspektion", "reparatur", "diagnose"]:
         raise ValueError(f"Ungültiger Typ: {typ}")
@@ -1077,15 +1079,17 @@ def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str) -> None:
     protokoll["eintraege"].append({
         "typ": typ,
         "beschreibung": beschreibung,
+        "techniker": techniker,
         "zeitstempel": datetime.now().isoformat()
     })
     protokoll["statistiken"]["anzahl_eintraege"] += 1
     protokoll["statistiken"][f"anzahl_{typ}"] += 1
 
-def llm_fehleranalyse(protokoll: dict, symptombeschreibung: str, **llm_einstellungen) -> str:
-    """Generiert LLM-gestützte Fehleranalyse."""
-    diagnose = f"Diagnose für {protokoll['maschine_id']}: {symptombeschreibung} - Empfehlung: Prüfen Sie Lager und Führungen"
-    fuege_eintrag_hinzu(protokoll, "diagnose", diagnose)
+def erstelle_diagnose(protokoll: dict, symptombeschreibung: str, techniker: str, massnahmen: list[str]) -> str:
+    """Erstellt strukturierten Diagnose-Eintrag."""
+    massnahmen_text = " | ".join([f"{i+1}. {m}" for i, m in enumerate(massnahmen)])
+    diagnose = f"SYMPTOM: {symptombeschreibung} | MASSNAHMEN: {massnahmen_text}"
+    fuege_eintrag_hinzu(protokoll, "diagnose", diagnose, techniker)
     return diagnose
 
 def speichere_protokoll(protokoll: dict, dateiname: str) -> None:
@@ -1102,21 +1106,35 @@ def lade_protokoll(dateiname: str) -> dict:
         raise FileNotFoundError(f"Datei nicht gefunden: {dateiname}")
 
 def protokoll_statistik(protokoll: dict) -> dict:
-    """Berechnet Protokoll-Statistiken."""
-    return protokoll["statistiken"]
+    """Berechnet erweiterte Protokoll-Statistiken."""
+    stats = protokoll["statistiken"].copy()
+    if protokoll["eintraege"]:
+        avg_length = sum(len(e["beschreibung"]) for e in protokoll["eintraege"]) / len(protokoll["eintraege"])
+        stats["durchschn_beschreibung_laenge"] = round(avg_length, 1)
+        stats["techniker"] = list(set(e["techniker"] for e in protokoll["eintraege"]))
+    return stats
 
 # Tests
-protokoll = erstelle_wartungsprotokoll("CNC-DMU-85", "Experte für CNC-Diagnose", modell="gpt-4")
-fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK")
-fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt")
-diagnose = llm_fehleranalyse(protokoll, "Erhöhte Vibration bei 3000 U/min", temperatur=0.2)
-print(f"Diagnose: {diagnose}")
+protokoll = erstelle_wartungsprotokoll("CNC-DMU-85", "Halle A, Station 3", hersteller="DMG Mori", baujahr=2020)
+fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK", "Max Mustermann")
+fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt", "Anna Schmidt")
+
+diagnose = erstelle_diagnose(
+    protokoll,
+    "Erhöhte Vibration bei 3000 U/min",
+    "Max Mustermann",
+    ["Spindellager geprüft", "Führungen geprüft", "Empfehlung: Spindel-Überholung"]
+)
+print(f"Diagnose:\n{diagnose}\n")
+
 stats = protokoll_statistik(protokoll)
 print(f"Statistiken: {stats}")
+
 speichere_protokoll(protokoll, "test_wartung.json")
+print("\nProtokoll gespeichert")
 ```
 
-**Erklärung**: JSON-Persistenz mit `json.dump/load`. Dictionary-Struktur für flexible Datenhaltung. Statistik-Tracking bei jedem Eintrag.
+**Erklärung**: Dictionary-Struktur für flexible Datenhaltung. `set()` für einzigartige Techniker-Liste. JSON-Persistenz mit `indent=4` für Lesbarkeit. Diagnose als strukturierter Text mit Symptom und nummerierten Maßnahmen.
 
 ---
     if not werte:

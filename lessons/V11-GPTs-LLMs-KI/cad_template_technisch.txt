@@ -1,0 +1,16 @@
+=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+
+Bezeichnung: {BEZEICHNUNG}
+Bauteil-Nummer: {NUMMER}
+Material: {MATERIAL}
+Abmessungen: {ABMESSUNGEN}
+
+Technische Beschreibung:
+{BESCHREIBUNG}
+
+Dokumentations-Details:
+- Bearbeiter: {BEARBEITER}
+- Datum: {DATUM}
+- Status: {STATUS}
+
+==========================================
