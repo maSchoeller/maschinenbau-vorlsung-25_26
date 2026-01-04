@@ -81,32 +81,32 @@ c) Nennen Sie **zwei moderne Dateisysteme** (außer ext4) und jeweils **eine Bes
 
 ## Teil 2: Python-Aufgaben
 
-### P1: Bar Chart - CPU-Auslastung visualisieren (⭐)
+### P1: Bar Chart - CNC-Maschinenpräzision visualisieren (⭐)
 
-Ein Monitoring-System hat die durchschnittliche **CPU-Auslastung** verschiedener Prozesse über eine Stunde aufgezeichnet:
+Eine Qualitätskontrolle hat die **Positioniergenauigkeit** (Abweichung in μm) verschiedener CNC-Maschinen über einen Produktionstag gemessen:
 
 ```python
-prozesse = ['Python', 'Chrome', 'VS Code', 'Spotify', 'System']
-cpu_prozent = [12.5, 28.3, 15.7, 8.2, 5.1]
+maschinen = ['CNC-01', 'CNC-02', 'CNC-03', 'CNC-04', 'CNC-05']
+abweichung_um = [2.3, 8.7, 4.2, 1.8, 3.5]  # Mikrometer
 ```
 
 **Aufgabe:**
 
 Erstellen Sie einen **Bar Chart**, der:
-- Die Prozesse auf der X-Achse zeigt
-- Die CPU-Auslastung (%) auf der Y-Achse zeigt
+- Die Maschinen auf der X-Achse zeigt
+- Die Abweichung (μm) auf der Y-Achse zeigt
 - Balken in unterschiedlichen Farben darstellt (verwenden Sie eine Liste von Farben)
 - Einen passenden **Titel** und **Achsenbeschriftungen** hat
 - Ein **Gitter** auf der Y-Achse zeigt (`alpha=0.3`)
-- Die Y-Achse von 0 bis 35 begrenzt
+- Die Y-Achse von 0 bis 12 begrenzt
 
-**Zusatz**: Markieren Sie Balken mit Auslastung > 20% in Rot, alle anderen in Blau.
+**Zusatz**: Markieren Sie Balken mit Abweichung > 5 μm in Rot (außerhalb Toleranz), alle anderen in Grün (innerhalb Toleranz).
 
 ---
 
-### P2: Histogramm - Speicherzugriff-Latenz analysieren (⭐⭐)
+### P2: Histogramm - Hydraulikdruck-Schwankungen analysieren (⭐⭐)
 
-Ein Benchmark hat **1000 Speicherzugriffe** gemessen. Die Latenzen (in Nanosekunden) sind normalverteilt mit Mittelwert 100 ns und Standardabweichung 15 ns.
+Eine Hydraulikanlage hat **1000 Druckmessungen** während eines Produktionszyklus aufgezeichnet. Die Drücke (in bar) sind normalverteilt mit Mittelwert 180 bar und Standardabweichung 12 bar.
 
 **Aufgabe:**
 
@@ -114,29 +114,29 @@ a) Generieren Sie die Daten mit NumPy:
 ```python
 import numpy as np
 np.random.seed(42)
-latenzen = np.random.normal(100, 15, 1000)
+druecke_bar = np.random.normal(180, 12, 1000)
 ```
 
 b) Erstellen Sie ein **Histogramm** mit:
 - 30 Bins
 - Hellblauer Füllfarbe (`'lightblue'`)
 - Schwarzen Rändern (`edgecolor='black'`)
-- Titel: "Verteilung der Speicherzugriff-Latenzen"
-- X-Achse: "Latenz (ns)"
+- Titel: "Verteilung der Hydraulikdruck-Schwankungen"
+- X-Achse: "Druck (bar)"
 - Y-Achse: "Häufigkeit"
 - Gitter auf der Y-Achse
 
 c) Fügen Sie zwei **vertikale Linien** hinzu:
-- Eine grüne gestrichelte Linie bei **Mittelwert** (100 ns) mit Label "Mittelwert"
-- Eine rote gestrichelte Linie bei **Mittelwert + 2×Standardabweichung** (130 ns) mit Label "Ausreißer-Schwelle"
+- Eine grüne gestrichelte Linie bei **Solldruck** (180 bar) mit Label "Solldruck"
+- Eine rote gestrichelte Linie bei **Maximal zulässiger Druck** (204 bar = Mittelwert + 2×Standardabweichung) mit Label "Kritische Grenze"
 
 d) Zeigen Sie eine **Legende** an.
 
 ---
 
-### P3: Subplots - Prozess-Monitor Dashboard (⭐⭐⭐)
+### P3: Subplots - Materialprüfungs-Dashboard (⭐⭐⭐)
 
-Erstellen Sie ein **Dashboard mit 4 Subplots** (2×2 Grid), das verschiedene Systemmetriken visualisiert.
+Erstellen Sie ein **Dashboard mit 4 Subplots** (2×2 Grid), das verschiedene Materialprüfungs-Metriken visualisiert.
 
 **Daten generieren:**
 ```python
@@ -144,59 +144,59 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 np.random.seed(42)
-zeit = np.arange(0, 60, 1)  # 60 Sekunden
-cpu = 30 + 20 * np.sin(zeit / 10) + np.random.normal(0, 5, 60)
-ram = 50 + 10 * np.sin(zeit / 15 + 1) + np.random.normal(0, 3, 60)
-disk_read = np.random.exponential(10, 60)
-disk_write = np.random.exponential(8, 60)
+zeit_min = np.arange(0, 60, 1)  # 60 Minuten Zugversuch
+zugspannung_mpa = 150 + 80 * np.sin(zeit_min / 10) + np.random.normal(0, 10, 60)
+dehnung_prozent = 2.0 + 1.5 * np.sin(zeit_min / 15 + 1) + np.random.normal(0, 0.3, 60)
+temperatur_c = np.random.exponential(25, 60) + 20  # Probentemperatur
+kraftaufnahme_kn = np.random.exponential(15, 60) + 10
 ```
 
 **Subplots:**
 
-1. **Oben links**: CPU-Auslastung über Zeit
+1. **Oben links**: Zugspannung über Zeit
    - Linienplot mit blauer Linie
    - Fülle Bereich unter der Linie (blau, `alpha=0.3`)
-   - Titel: "CPU-Auslastung (%)"
+   - Titel: "Zugspannung (MPa)"
 
-2. **Oben rechts**: RAM-Auslastung über Zeit
+2. **Oben rechts**: Dehnung über Zeit
    - Linienplot mit grüner Linie
-   - Horizontale rote Linie bei 70% (Warn-Schwelle)
-   - Titel: "RAM-Auslastung (%)"
+   - Horizontale rote Linie bei 5% (Bruchgrenze)
+   - Titel: "Dehnung (%)"
 
-3. **Unten links**: Disk-Read vs. Disk-Write (Scatter)
-   - X-Achse: `disk_read`, Y-Achse: `disk_write`
+3. **Unten links**: Temperatur vs. Kraftaufnahme (Scatter)
+   - X-Achse: `temperatur_c`, Y-Achse: `kraftaufnahme_kn`
    - Rote Punkte, `alpha=0.5`
-   - Titel: "Disk I/O Korrelation"
+   - Titel: "Temperatur vs. Kraft Korrelation"
 
-4. **Unten rechts**: Histogramm der CPU-Werte
+4. **Unten rechts**: Histogramm der Zugspannungswerte
    - 15 Bins, orange Farbe
-   - Titel: "CPU-Verteilung"
+   - Titel: "Zugspannungs-Verteilung"
 
 **Anforderungen:**
 - Verwenden Sie `plt.subplots(2, 2, figsize=(14, 10))`
 - Nutzen Sie `tight_layout()`
-- Haupttitel über allen Plots: "System-Monitor Dashboard"
+- Haupttitel über allen Plots: "Materialprüfungs-Dashboard"
 
 ---
 
-### P4: Logarithmische Achsen - Speicher-Benchmark (⭐⭐⭐)
+### P4: Logarithmische Achsen - Werkzeugstandzeit-Analyse (⭐⭐⭐)
 
-Ein Benchmark misst die **Speicherzugriffszeit** für verschiedene **Cache-Größen** (L1, L2, L3, RAM, SSD):
+Eine Verschleißanalyse misst die **Werkzeugstandzeit** für verschiedene **Schnittgeschwindigkeiten** bei unterschiedlichen Werkzeugen:
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-groessen_kb = np.array([32, 256, 8192, 16384, 524288])  # KB
-zugriffszeit_ns = np.array([0.5, 3, 15, 80, 100000])  # Nanosekunden
-labels = ['L1 (32KB)', 'L2 (256KB)', 'L3 (8MB)', 'RAM (16MB)', 'SSD (512MB)']
+schnittgeschw_m_min = np.array([50, 100, 200, 400, 800])  # m/min
+standzeit_min = np.array([720, 180, 45, 11, 3])  # Minuten (Taylor-Gleichung)
+labels = ['HSS niedrig', 'HSS hoch', 'HM niedrig', 'HM hoch', 'Keramik']
 ```
 
 **Aufgabe:**
 
 a) Erstellen Sie einen **Plot mit logarithmischen Achsen** (log-log):
-   - X-Achse: Speichergröße (KB) – logarithmisch
-   - Y-Achse: Zugriffszeit (ns) – logarithmisch
+   - X-Achse: Schnittgeschwindigkeit (m/min) – logarithmisch
+   - Y-Achse: Werkzeugstandzeit (min) – logarithmisch
    - Verwenden Sie rote Kreise als Marker (`'ro'`) mit `markersize=10`
    - Verbinden Sie Punkte mit gestrichelter Linie (`linestyle='--'`)
 
@@ -206,28 +206,28 @@ b) Beschriften Sie jeden Punkt mit dem entsprechenden Label aus der `labels`-Lis
    - Schriftgröße: 10
 
 c) Fügen Sie hinzu:
-   - Titel: "Speicher-Hierarchie: Größe vs. Zugriffszeit"
-   - X-Achse: "Speichergröße (KB, log)"
-   - Y-Achse: "Zugriffszeit (ns, log)"
+   - Titel: "Werkzeugverschleiß: Schnittgeschwindigkeit vs. Standzeit (Taylor-Gleichung)"
+   - X-Achse: "Schnittgeschwindigkeit (m/min, log)"
+   - Y-Achse: "Werkzeugstandzeit (min, log)"
    - Gitter mit `alpha=0.3`
 
-d) Erklären Sie in einem **Kommentar**, warum logarithmische Achsen hier sinnvoll sind.
+d) Erklären Sie in einem **Kommentar**, warum logarithmische Achsen hier sinnvoll sind (Hinweis: Taylor-Gleichung vc × T^n = konstant).
 
 ---
 
 ### P5: Komplettes Dashboard mit Annotationen (⭐⭐⭐⭐⭐)
 
-Erstellen Sie eine **umfassende Visualisierung** eines Scheduling-Algorithmus-Vergleichs.
+Erstellen Sie eine **umfassende Visualisierung** eines Fertigungsverfahrens-Vergleichs.
 
 **Daten:**
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-algorithmen = ['FCFS', 'SJF', 'Round Robin', 'Priority']
-avg_wartezeit = [28.5, 15.2, 18.7, 20.1]  # Millisekunden
-avg_turnaround = [45.3, 32.6, 36.4, 38.2]  # Millisekunden
-context_switches = [0, 0, 24, 12]  # Anzahl
+verfahren = ['Drehen', 'Fräsen', 'Bohren', 'Schleifen']
+durchlaufzeit_min = [12.5, 18.3, 8.7, 22.1]  # Minuten pro Werkstück
+ruestzeit_min = [25.3, 35.6, 15.4, 45.2]  # Rüstzeit in Minuten
+werkzeugwechsel = [0, 3, 1, 5]  # Anzahl Werkzeugwechsel pro Werkstück
 ```
 
 **Aufgabe:**
@@ -235,34 +235,34 @@ context_switches = [0, 0, 24, 12]  # Anzahl
 Erstellen Sie eine Figure mit **3 Subplots** (vertikal angeordnet):
 
 **Subplot 1: Gruppiertes Bar Chart**
-- X-Achse: Algorithmen
-- Y-Achse: Zeit (ms)
-- Zwei Balken pro Algorithmus: Wartezeit (blau) und Turnaround-Zeit (orange)
-- Legende mit Label "Wartezeit" und "Turnaround"
-- Titel: "Performance-Vergleich: Wartezeit vs. Turnaround"
+- X-Achse: Verfahren
+- Y-Achse: Zeit (min)
+- Zwei Balken pro Verfahren: Durchlaufzeit (blau) und Rüstzeit (orange)
+- Legende mit Label "Durchlaufzeit" und "Rüstzeit"
+- Titel: "Fertigungsverfahren: Durchlauf- vs. Rüstzeit"
 
 **Subplot 2: Horizontales Bar Chart**
-- Y-Achse: Algorithmen
-- X-Achse: Anzahl Context Switches
+- Y-Achse: Verfahren
+- X-Achse: Anzahl Werkzeugwechsel
 - Balkenfarbe: Grün
 - Fügen Sie **Text-Labels** am Ende jeder Leiste hinzu (Wert)
-- Titel: "Context Switches pro Algorithmus"
+- Titel: "Werkzeugwechsel pro Verfahren"
 
 **Subplot 3: Scatter Plot mit Annotationen**
-- X-Achse: Wartezeit
-- Y-Achse: Turnaround-Zeit
-- Jeder Algorithmus als Punkt
-- **Annotieren** Sie jeden Punkt mit dem Algorithmus-Namen
+- X-Achse: Durchlaufzeit
+- Y-Achse: Rüstzeit
+- Jedes Verfahren als Punkt
+- **Annotieren** Sie jeden Punkt mit dem Verfahrensnamen
 - Verwenden Sie `arrowprops` für Pfeile von Annotationen zu Punkten
-- Titel: "Wartezeit vs. Turnaround-Zeit Korrelation"
+- Titel: "Durchlaufzeit vs. Rüstzeit Korrelation"
 
 **Zusätzliche Anforderungen:**
 - Gesamtgröße: `figsize=(12, 14)`
 - Verwenden Sie `tight_layout()`
-- Haupt-Titel über allen Plots: "Scheduling-Algorithmen: Detaillierter Vergleich"
-- Speichern Sie das Ergebnis als `scheduling_vergleich.png` mit **300 DPI**
+- Haupt-Titel über allen Plots: "Fertigungsverfahren: Detaillierter Vergleich"
+- Speichern Sie das Ergebnis als `fertigungsverfahren_vergleich.png` mit **300 DPI**
 
-**Bonus (+)**: Heben Sie in Subplot 1 den besten Algorithmus (kürzeste Wartezeit) farblich hervor.
+**Bonus (+)**: Heben Sie in Subplot 1 das Verfahren mit der kürzesten Durchlaufzeit farblich hervor.
 
 ---
 
