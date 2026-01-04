@@ -17,7 +17,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V08 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V09 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V10 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
-| V11 | ❌ | ❌ | ❌ | Ausstehend |
+| V11 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V12 | ❌ | ❌ | ❌ | Ausstehend |
 | V13 | ❌ | ❌ | ❌ | Ausstehend |
 | V14 | ❌ | ❌ | ❌ | Ausstehend |
@@ -51,6 +51,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V08: Sensor-Messwerte, Vibrationsdaten-Analyse, NC-Programm-Validator, Materialprüfungs-Datenbank, CNC-Editor mit Undo/Redo – ✅ Abgeschlossen (keine Testdaten nötig)
 - V09: Messwert-Eingabe (Kalibrierung), Maschinen-Logfile-Analyse, CNC-Konfiguration, Material-Validator, Fertigungszellen-Konfigurations-System – ✅ Abgeschlossen (Testdaten: maschine_01.log, fertigungszelle_01.json)
 - V10: Maschinenbau-Berechnungen, Werkzeugstandzeit, Werkzeugsuche-Performance, Fibonacci-Drehzahl, Produktionsreihenfolge-Optimierer – ✅ Abgeschlossen (keine Testdaten nötig)
+- V11: CNC-Maschinen-Log, Sensor-Statistik, Werkstoff-Datenbankfilterung, CAD-Dokumentations-Generator, Wartungsprotokoll-Manager – ✅ Abgeschlossen (keine Testdaten nötig)
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)

@@ -867,37 +867,258 @@ def log_nachricht_extended(nachricht, *, level="INFO", timestamp=True, prefix=""
 
 ---
 
-### Lösung P2: `*args` und `**kwargs` kombinieren
+## Teil B: Python-Lösungen
+
+### Lösung P1: CNC-Maschinen-Log-Formatter mit Keyword-Only Arguments
 
 **Vollständige Lösung**:
-
 ```python
-def statistik(*werte, mittelwert=True, median=False, minimum=False, maximum=False, runden=2):
-    """
-    Berechnet statistische Kennzahlen für eine Menge von Werten.
+from datetime import datetime
+
+def cnc_log_eintrag(ereignis, *, prioritaet="OPERATING", zeitstempel=True, maschine_id="", achse=""):
+    """Formatiert einen CNC-Maschinen-Log-Eintrag."""
+    parts = [f"[{prioritaet}]"]
     
-    Args:
-        *werte: Variable Anzahl numerischer Werte
-        mittelwert (bool): Berechne Mittelwert
-        median (bool): Berechne Median
-        minimum (bool): Finde Minimum
-        maximum (bool): Finde Maximum
-        runden (int): Anzahl Dezimalstellen
+    if zeitstempel:
+        parts.append(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]")
     
-    Returns:
-        dict: Dictionary mit berechneten Kennzahlen
+    if maschine_id:
+        parts.append(f"[{maschine_id}]")
     
-    Raises:
-        ValueError: Wenn keine Werte übergeben wurden
+    if achse:
+        parts.append(f"[{achse}-Achse]")
     
-    Examples:
-        >>> statistik(10, 20, 30, 40, 50)
-        {'mittelwert': 30.0}
-        
-        >>> statistik(10, 20, 30, median=True, maximum=True)
-        {'mittelwert': 20.0, 'median': 20.0, 'maximum': 30.0}
-    """
-    # Validierung
+    parts.append(ereignis if not (maschine_id or achse) else f": {ereignis}")
+    
+    return " ".join(parts)
+
+# Tests
+print(cnc_log_eintrag("Spindeldrehzahl 3000 U/min erreicht"))
+print(cnc_log_eintrag("Vibration erhöht", prioritaet="WARNING", zeitstempel=False, maschine_id="CNC-01", achse="Z"))
+print(cnc_log_eintrag("Werkzeugbruch erkannt", prioritaet="ALARM", maschine_id="CNC-03"))
+```
+
+**Erklärung**: Keyword-Only Arguments nach `*` erzwingen explizite Parameternamen. String-Liste mit `join()` für effiziente Konkatenation.
+
+---
+
+### Lösung P2: Messwert-Statistik für Sensor-Arrays mit `*args` und `**kwargs`
+
+**Vollständige Lösung**:
+```python
+def sensor_statistik(*messwerte, mittelwert=True, median=False, minimum=False, maximum=False, runden=2, einheit=""):
+    """Berechnet statistische Kennzahlen für Sensor-Messwerte."""
+    if not messwerte:
+        raise ValueError("Mindestens ein Messwert erforderlich")
+    
+    ergebnis = {}
+    
+    if mittelwert:
+        ergebnis['mittelwert'] = f"{round(sum(messwerte) / len(messwerte), runden)}{einheit}"
+    
+    if median:
+        sortiert = sorted(messwerte)
+        n = len(sortiert)
+        med = sortiert[n // 2] if n % 2 == 1 else (sortiert[n // 2 - 1] + sortiert[n // 2]) / 2
+        ergebnis['median'] = f"{round(med, runden)}{einheit}"
+    
+    if minimum:
+        ergebnis['minimum'] = f"{round(min(messwerte), runden)}{einheit}"
+    
+    if maximum:
+        ergebnis['maximum'] = f"{round(max(messwerte), runden)}{einheit}"
+    
+    return ergebnis
+
+# Tests
+print(sensor_statistik(45.2, 46.8, 44.9, 47.1, 45.5, einheit="°C"))
+print(sensor_statistik(2.1, 3.5, 2.8, 4.2, 3.1, median=True, maximum=True, runden=1, einheit="mm/s"))
+print(sensor_statistik(12.5, 15.3, 11.8, 14.9, 13.2, mittelwert=False, minimum=True, maximum=True, runden=0, einheit="kN"))
+```
+
+**Erklärung**: `*messwerte` sammelt variable Argumente. Median-Berechnung: sortieren, mittleres Element (ungerade) oder Durchschnitt zweier mittlerer (gerade).
+
+---
+
+### Lösung P3: Lambda-Funktionen für Werkstoff-Datenbankfilterung
+
+**Vollständige Lösung**:
+```python
+werkstoffe = ["S235JR", "c45e", "AlMgSi1_T6", "X5CRNI18-10", "AlCu4Mg1", "s355j2", "CuZn37_2.0321"]
+
+# a) Normalisierung
+normalisiert = list(map(lambda x: x.upper(), werkstoffe))
+print(f"Normalisiert: {normalisiert}")
+
+# b) Filtern nach Stahl
+stahl = list(filter(lambda x: x[0] in ['S', 'C', 'X'], normalisiert))
+print(f"Nur Stahl: {stahl}")
+
+# c) Bereinigung
+def bereinige(bezeichnung):
+    return bezeichnung.replace('-', '').replace('_', ' ')
+
+bereinigt = list(map(bereinige, stahl))
+print(f"Bereinigt: {bereinigt}")
+
+# d) Validierung
+validiert = list(filter(lambda x: len(x) >= 4, bereinigt))
+print(f"Validiert: {validiert}")
+
+# e) Sortierung
+sortiert = sorted(validiert, key=lambda x: x)
+print(f"Sortiert: {sortiert}")
+
+# f) Bonus: List Comprehension
+ergebnis = sorted([w.replace('-', '').replace('_', ' ') for w in [x.upper() for x in werkstoffe] 
+                   if x.upper()[0] in ['S', 'C', 'X'] and len(x.replace('-', '').replace('_', ' ')) >= 4])
+print(f"List Comprehension: {ergebnis}")
+```
+
+**Erklärung**: Lambda-Funktionen sind anonyme Einzeiler. `map()` wendet Funktion auf alle Elemente an, `filter()` selektiert nach Bedingung.
+
+---
+
+### Lösung P4: CAD-Dokumentations-Generator mit LLM-API
+
+**Vollständige Lösung**:
+```python
+from typing import Optional
+
+def validiere_bauteil_beschreibung(beschreibung: str, *, min_laenge: int = 20, max_laenge: int = 2000) -> None:
+    """Validiert CAD-Bauteil-Beschreibung."""
+    beschreibung = beschreibung.strip()
+    if not beschreibung:
+        raise ValueError("Beschreibung ist leer")
+    if len(beschreibung) < min_laenge:
+        raise ValueError(f"Beschreibung zu kurz (min. {min_laenge} Zeichen)")
+    if len(beschreibung) > max_laenge:
+        raise ValueError(f"Beschreibung zu lang (max. {max_laenge} Zeichen)")
+
+def llm_cad_dokumentation(bauteil_beschreibung: str, **einstellungen) -> dict:
+    """Generiert CAD-Dokumentation mit LLM."""
+    validiere_bauteil_beschreibung(bauteil_beschreibung)
+    
+    defaults = {
+        "modell": "gpt-4-turbo",
+        "temperatur": 0.3,
+        "max_tokens": 800,
+        "dokumentations_typ": "technisch"
+    }
+    defaults.update(einstellungen)
+    
+    if not (0.0 <= defaults["temperatur"] <= 1.0):
+        raise ValueError("Temperatur muss zwischen 0.0 und 1.0 liegen")
+    if defaults["max_tokens"] <= 0 or defaults["max_tokens"] > 2000:
+        raise ValueError("max_tokens muss zwischen 1 und 2000 liegen")
+    if defaults["dokumentations_typ"] not in ["technisch", "wartung", "fertigung"]:
+        raise ValueError("Ungültiger dokumentations_typ")
+    
+    return {
+        "bauteil_beschreibung": bauteil_beschreibung,
+        "einstellungen": defaults,
+        "dokumentation": f"[Simulierte {defaults['dokumentations_typ']} Dokumentation für: {bauteil_beschreibung[:50]}...]",
+        "status": "success"
+    }
+
+def llm_batch_bauteile(bauteil_beschreibungen: list[str], **gemeinsame_einstellungen) -> list[dict]:
+    """Verarbeitet mehrere Bauteil-Beschreibungen als Batch."""
+    ergebnisse = []
+    for beschreibung in bauteil_beschreibungen:
+        try:
+            ergebnis = llm_cad_dokumentation(beschreibung, **gemeinsame_einstellungen)
+            ergebnisse.append(ergebnis)
+        except ValueError as e:
+            ergebnisse.append({
+                "bauteil_beschreibung": beschreibung,
+                "status": "error",
+                "fehler": str(e)
+            })
+    return ergebnisse
+
+# Tests
+ergebnis = llm_cad_dokumentation("Welle Ø50mm, Länge 200mm, Material C45E, mit Passfedernut DIN 6885", temperatur=0.2)
+print(ergebnis)
+
+bauteile = ["Gehäuse aus AlMgSi1, Wandstärke 3mm", "", "Zahnrad Modul 2, z=30"]
+ergebnisse = llm_batch_bauteile(bauteile, temperatur=0.25, dokumentations_typ="fertigung")
+for idx, erg in enumerate(ergebnisse):
+    print(f"Ergebnis {idx + 1}: {erg.get('status')}")
+```
+
+**Erklärung**: Type Hints erhöhen Lesbarkeit. `**kwargs` mit `update()` für flexible Parameter-Überschreibung. Try-except in Batch für Robustheit.
+
+---
+
+### Lösung P5: Wartungsprotokoll-Manager mit LLM-Unterstützung
+
+**Vollständige Lösung**:
+```python
+from datetime import datetime
+from typing import Optional
+import json
+
+def erstelle_wartungsprotokoll(maschine_id: str, system_prompt: Optional[str] = None, **optionen) -> dict:
+    """Initialisiert neues Wartungsprotokoll."""
+    return {
+        "maschine_id": maschine_id,
+        "erstellt_am": datetime.now().isoformat(),
+        "system_prompt": system_prompt,
+        "optionen": optionen,
+        "eintraege": [],
+        "statistiken": {"anzahl_eintraege": 0, "anzahl_inspektion": 0, "anzahl_reparatur": 0, "anzahl_diagnose": 0}
+    }
+
+def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str) -> None:
+    """Fügt Wartungseintrag hinzu."""
+    if typ not in ["inspektion", "reparatur", "diagnose"]:
+        raise ValueError(f"Ungültiger Typ: {typ}")
+    
+    protokoll["eintraege"].append({
+        "typ": typ,
+        "beschreibung": beschreibung,
+        "zeitstempel": datetime.now().isoformat()
+    })
+    protokoll["statistiken"]["anzahl_eintraege"] += 1
+    protokoll["statistiken"][f"anzahl_{typ}"] += 1
+
+def llm_fehleranalyse(protokoll: dict, symptombeschreibung: str, **llm_einstellungen) -> str:
+    """Generiert LLM-gestützte Fehleranalyse."""
+    diagnose = f"Diagnose für {protokoll['maschine_id']}: {symptombeschreibung} - Empfehlung: Prüfen Sie Lager und Führungen"
+    fuege_eintrag_hinzu(protokoll, "diagnose", diagnose)
+    return diagnose
+
+def speichere_protokoll(protokoll: dict, dateiname: str) -> None:
+    """Speichert Protokoll als JSON."""
+    with open(dateiname, 'w', encoding='utf-8') as f:
+        json.dump(protokoll, f, indent=4, ensure_ascii=False)
+
+def lade_protokoll(dateiname: str) -> dict:
+    """Lädt Protokoll aus JSON."""
+    try:
+        with open(dateiname, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Datei nicht gefunden: {dateiname}")
+
+def protokoll_statistik(protokoll: dict) -> dict:
+    """Berechnet Protokoll-Statistiken."""
+    return protokoll["statistiken"]
+
+# Tests
+protokoll = erstelle_wartungsprotokoll("CNC-DMU-85", "Experte für CNC-Diagnose", modell="gpt-4")
+fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK")
+fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt")
+diagnose = llm_fehleranalyse(protokoll, "Erhöhte Vibration bei 3000 U/min", temperatur=0.2)
+print(f"Diagnose: {diagnose}")
+stats = protokoll_statistik(protokoll)
+print(f"Statistiken: {stats}")
+speichere_protokoll(protokoll, "test_wartung.json")
+```
+
+**Erklärung**: JSON-Persistenz mit `json.dump/load`. Dictionary-Struktur für flexible Datenhaltung. Statistik-Tracking bei jedem Eintrag.
+
+---
     if not werte:
         raise ValueError("Mindestens ein Wert muss übergeben werden")
     
