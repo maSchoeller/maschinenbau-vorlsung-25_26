@@ -12,7 +12,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V03 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V04 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V05 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
-| V06 | ❌ | ❌ | ❌ | Ausstehend |
+| V06 | ✅ | 🔄 | ➖ | In Arbeit |
 | V07 | ❌ | ❌ | ❌ | Ausstehend |
 | V08 | ❌ | ❌ | ❌ | Ausstehend |
 | V09 | ❌ | ❌ | ❌ | Ausstehend |

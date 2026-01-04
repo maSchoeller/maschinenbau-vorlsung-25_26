@@ -317,188 +317,342 @@ AUSGABE(a)  # oder b, beide sind gleich
 
 ## Teil B: Python-Aufgaben - Lösungen
 
-### Lösung P1: Zahlenreihen mit `for`
+### Lösung P1: CNC-Drehzahl-Sequenz ausgeben
 
 **Vollständiger Code**:
 
 ```python
-# Teilaufgabe 1: Alle Zahlen von 1 bis 20
-print("Teilaufgabe 1: Zahlen von 1 bis 20")
-for i in range(1, 21):
-    print(i, end=' ')
-print()  # Zeilenumbruch am Ende
-
-# Teilaufgabe 2: Alle geraden Zahlen von 0 bis 30
-print("\nTeilaufgabe 2: Gerade Zahlen von 0 bis 30")
-for i in range(0, 31, 2):
-    print(i, end=' ')
+# Teilaufgabe 1: Drehen-Sequenz (200 bis 2000 U/min, Schritte 200)
+print("Drehen-Sequenz (U/min):", end=" ")
+for drehzahl in range(200, 2001, 200):
+    print(drehzahl, end=' ')
 print()
 
-# Teilaufgabe 3: Alle ungeraden Zahlen von 1 bis 25
-print("\nTeilaufgabe 3: Ungerade Zahlen von 1 bis 25")
-for i in range(1, 26, 2):
-    print(i, end=' ')
+# Teilaufgabe 2: Fräsen-Sequenz (3000 bis 10000 U/min, Schritte 1000)
+print("Fräsen-Sequenz (U/min):", end=" ")
+for drehzahl in range(3000, 10001, 1000):
+    print(drehzahl, end=' ')
 print()
 
-# Teilaufgabe 4: Countdown von 10 bis 0
-print("\nTeilaufgabe 4: Countdown von 10 bis 0")
-for i in range(10, -1, -1):
-    print(i, end=' ')
+# Teilaufgabe 3: Bohren-Sequenz (1000 bis 5000 U/min, Schritte 500)
+print("Bohren-Sequenz (U/min):", end=" ")
+for drehzahl in range(1000, 5001, 500):
+    print(drehzahl, end=' ')
 print()
 
-# Teilaufgabe 5: Alle durch 5 teilbaren Zahlen von 5 bis 50
-print("\nTeilaufgabe 5: Durch 5 teilbare Zahlen von 5 bis 50")
-for i in range(5, 51, 5):
-    print(i, end=' ')
+# Teilaufgabe 4: Hochlauf-Test (0 bis 1000 U/min, Schritte 100)
+print("Hochlauf-Test (U/min):", end=" ")
+for drehzahl in range(0, 1001, 100):
+    print(drehzahl, end=' ')
+print()
+
+# Teilaufgabe 5: Notfall-Abbremsen (3000 bis 0 U/min, Schritte -500)
+print("Notfall-Abbremsen (U/min):", end=" ")
+for drehzahl in range(3000, -1, -500):
+    print(drehzahl, end=' ')
 print()
 ```
 
 **Erklärung**:
 
-Die Lösung nutzt konsequent die drei-Parameter-Form von `range(start, stop, step)`. Für gerade Zahlen verwenden wir `step=2` beginnend bei 0, für ungerade Zahlen `step=2` beginnend bei 1. Der Countdown verwendet einen negativen Step (`-1`), wobei Start größer als Stop sein muss. Für Vielfache von 5 setzen wir `step=5`.
-
-Der Parameter `end=' '` in `print()` sorgt dafür, dass die Zahlen in einer Zeile mit Leerzeichen getrennt ausgegeben werden, statt jeweils auf einer neuen Zeile. Das abschließende `print()` ohne Argumente erzeugt einen Zeilenumbruch.
-
-**Warum diese Lösung?**
-
-Die Verwendung von `range()` mit passenden Parametern ist die eleganteste und effizienteste Lösung. Alternativ könnte man auch `if i % 2 == 0` für gerade Zahlen verwenden, aber das ist umständlicher:
-
-```python
-# Alternative (weniger elegant):
-for i in range(0, 31):
-    if i % 2 == 0:
-        print(i, end=' ')
-```
-
-Die direkte Verwendung des `step`-Parameters ist pythonischer und läuft schneller, da weniger Iterationen durchgeführt werden.
+Die Lösung nutzt `range(start, stop, step)` mit verschiedenen Schrittweiten für CNC-Bearbeitungsszenarien. Die Endwerte müssen um 1 erhöht werden, da `stop` exklusiv ist. Für den Countdown wird eine negative Schrittweite verwendet.
 
 **Häufige Fehler**:
-- **Fehler**: `range(1, 20)` statt `range(1, 21)` für "1 bis 20"
-  - **Warum falsch**: `stop` ist exklusive, daher erzeugt `range(1, 20)` nur 1 bis 19
-  - **Richtig**: `range(1, 21)` für 1 bis 20 inklusive
-
-- **Fehler**: `range(10, 0)` für Countdown (ohne negativen Step)
-  - **Warum falsch**: Ohne negativen Step ist Start < Stop nötig, sonst leere Sequenz
-  - **Richtig**: `range(10, -1, -1)` mit explizitem `step=-1`
-
-- **Fehler**: `print()` nach jedem `print(i, end=' ')` vergessen
-  - **Warum problematisch**: Ohne finales `print()` fehlt der Zeilenumbruch, nächste Ausgabe landet auf derselben Zeile
-  - **Richtig**: Abschließendes `print()` für Zeilenumbruch
+- **Fehler**: `range(200, 2000, 200)` statt `range(200, 2001, 200)`
+  - **Warum falsch**: `stop` ist exklusiv, 2000 fehlt in der Ausgabe
+  - **Richtig**: `range(200, 2001, 200)` für 200 bis 2000 inklusive
 
 ---
 
-### Lösung P2: Fakultät berechnen
+### Lösung P2: Zahnrad-Übersetzung berechnen
 
 **Vollständiger Code**:
 
 ```python
-# Hauptprogramm: Fakultät einer Zahl berechnen
-zahl = int(input("Bitte eine Zahl eingeben: "))
+# Getriebe-Übersetzung Rechner
+n_stufen = int(input("Anzahl der Getriebestufen: "))
 
-# Fakultät berechnen
-fakultaet = 1  # Wichtig: Mit 1 initialisieren, nicht 0!
-for i in range(1, zahl + 1):
-    fakultaet *= i
+# Gesamt-Übersetzung berechnen
+i_gesamt = 1.0  # Wichtig: Mit 1 initialisieren für Multiplikation!
+for stufe in range(1, n_stufen + 1):
+    i_stufe = float(input(f"Übersetzung Stufe {stufe}: "))
+    i_gesamt *= i_stufe
 
-# Ergebnis ausgeben
-print(f"Die Fakultät von {zahl} ist {fakultaet}")
+# Ausgangsdrehzahl berechnen
+n_ein = 1500  # U/min
+n_aus = n_ein / i_gesamt
+
+# Ergebnisse ausgeben
+print("─" * 31)
+print(f"Gesamt-Übersetzung: {i_gesamt:.2f}")
+print(f"Eingangsdrehzahl: {n_ein} U/min")
+print(f"Ausgangsdrehzahl: {n_aus:.2f} U/min")
 ```
 
-**Erweiterung: Tabelle von 0! bis 10!**
+**Zusatzaufgabe mit Drehmoment**:
 
 ```python
-# Erweiterte Version: Tabelle ausgeben
-print("Fakultäten von 0 bis 10:")
-print("-" * 30)
+# Drehmoment-Berechnung (mit Wirkungsgrad)
+m_ein = 50  # Nm
+eta = 0.95  # Wirkungsgrad pro Stufe
+eta_gesamt = eta ** n_stufen  # Gesamt-Wirkungsgrad
+m_aus = m_ein * i_gesamt * eta_gesamt
 
-for n in range(11):  # 0 bis 10
-    fakultaet = 1
-    for i in range(1, n + 1):
-        fakultaet *= i
-    print(f"{n}! = {fakultaet}")
-```
-
-**Ausgabe der Erweiterung**:
-```
-Fakultäten von 0 bis 10:
-------------------------------
-0! = 1
-1! = 1
-2! = 2
-3! = 6
-4! = 24
-5! = 120
-6! = 720
-7! = 5040
-8! = 40320
-9! = 362880
-10! = 3628800
+print(f"\nEingangsdrehmoment: {m_ein} Nm")
+print(f"Ausgangsdrehmoment: {m_aus:.2f} Nm")
+print(f"Gesamt-Wirkungsgrad: {eta_gesamt:.2%}")
 ```
 
 **Erklärung**:
 
-Die Fakultät wird durch Akkumulation berechnet: Wir starten mit `fakultaet = 1` (der Initialwert für Multiplikation, analog zu `summe = 0` für Addition). In jedem Durchlauf multiplizieren wir `fakultaet` mit dem aktuellen Wert von `i`. Nach n Durchläufen haben wir 1 × 2 × 3 × ... × n berechnet.
-
-Die Initialisierung mit 1 ist entscheidend: Bei Multiplikation ist 1 das neutrale Element (1 × x = x). Würden wir mit 0 initialisieren, wäre das Ergebnis immer 0.
-
-**Schritt-für-Schritt für n = 5**:
-
-| Durchlauf | i | fakultaet vor | fakultaet nach | Berechnung |
-|-----------|---|---------------|----------------|------------|
-| Start | - | 1 | 1 | Initialisierung |
-| 1 | 1 | 1 | 1 | 1 × 1 = 1 |
-| 2 | 2 | 1 | 2 | 1 × 2 = 2 |
-| 3 | 3 | 2 | 6 | 2 × 3 = 6 |
-| 4 | 4 | 6 | 24 | 6 × 4 = 24 |
-| 5 | 5 | 24 | 120 | 24 × 5 = 120 |
-
-**Konzepte in dieser Lösung**:
-- **Akkumulation (Multiplikation)**: Schrittweises Aufbauen des Produkts über mehrere Iterationen
-- **Korrekte Initialisierung**: `fakultaet = 1` statt 0, da 1 das neutrale Element der Multiplikation ist
-- **`range(1, n+1)`**: Erzeugt 1, 2, 3, ..., n (die Faktoren der Fakultät)
-- **Zusammengesetzte Zuweisung**: `*=` ist Kurzform für `fakultaet = fakultaet * i`
+Die Gesamt-Übersetzung wird durch Multiplikation aller Einzelübersetzungen berechnet. Initialisierung mit `1.0` ist entscheidend (neutrales Element der Multiplikation). Die Ausgangsdrehzahl ergibt sich aus Division: $ n_{aus} = n_{ein} / i_{gesamt} $.
 
 **Häufige Fehler**:
-- **Fehler**: `fakultaet = 0` als Initialisierung
-  - **Warum falsch**: 0 × irgendetwas = 0, das Ergebnis wäre immer 0
-  - **Richtig**: `fakultaet = 1` verwenden
-
-- **Fehler**: `range(zahl)` statt `range(1, zahl + 1)`
-  - **Warum falsch**: `range(5)` erzeugt 0, 1, 2, 3, 4 (multipliziert mit 0 → Ergebnis 0!)
-  - **Richtig**: `range(1, zahl + 1)` für 1, 2, 3, 4, 5
-
-- **Fehler**: Fakultät von 0 nicht behandeln
-  - **Warum potentiell falsch**: 0! = 1 per Definition, nicht 0
-  - **Richtig**: Die obige Lösung funktioniert korrekt für 0, da die Schleife `range(1, 1)` leer ist und `fakultaet` bei 1 bleibt
+- **Fehler**: `i_gesamt = 0` als Initialisierung
+  - **Warum falsch**: 0 × irgendetwas = 0, Ergebnis wäre immer 0
+  - **Richtig**: `i_gesamt = 1.0` verwenden
 
 ---
 
-### Lösung P3: Zeichenketten analysieren
+### Lösung P3: G-Code Programm analysieren
 
 **Vollständiger Code**:
 
 ```python
-# Textanalyse-Programm
-text = input("Bitte einen Text eingeben: ")
+# G-Code Analyse-Programm
+print("Geben Sie Ihr G-Code-Programm ein (leere Zeile zum Beenden):")
+gcode_zeilen = []
+while True:
+    zeile = input("> ")
+    if zeile == "":
+        break
+    gcode_zeilen.append(zeile)
+
+# Zusammenfügen zu einem String
+gcode = '\n'.join(gcode_zeilen)
 
 # Zähler initialisieren
-anzahl_zeichen = len(text)
-anzahl_buchstaben = 0
-anzahl_ziffern = 0
-anzahl_leerzeichen = 0
-anzahl_vokale = 0
-anzahl_konsonanten = 0
+anzahl_zeilen = len(gcode_zeilen)
+anzahl_g = 0
+anzahl_m = 0
+anzahl_x = 0
+anzahl_y = 0
+anzahl_z = 0
+anzahl_kommentare = 0
 
-# Vokale definieren
-vokale = "aeiouAEIOU"
+# Zeilenweise analysieren
+for zeile in gcode_zeilen:
+    anzahl_g += zeile.count('G')
+    anzahl_m += zeile.count('M')
+    anzahl_x += zeile.count('X')
+    anzahl_y += zeile.count('Y')
+    anzahl_z += zeile.count('Z')
+    if ';' in zeile:
+        anzahl_kommentare += 1
 
-# Text zeichenweise durchgehen
-for zeichen in text:
-    # Buchstaben zählen
-    if zeichen.isalpha():
-        anzahl_buchstaben += 1
-        # Vokale und Konsonanten unterscheiden
-        if zeichen in vokale:
+# Ergebnisse ausgeben
+print("\n" + "═" * 35)
+print("G-Code Analyse-Ergebnis:")
+print("═" * 35)
+print(f"- Zeilen gesamt: {anzahl_zeilen}")
+print(f"- G-Befehle: {anzahl_g}")
+print(f"- M-Befehle: {anzahl_m}")
+print(f"- X-Koordinaten: {anzahl_x}")
+print(f"- Y-Koordinaten: {anzahl_y}")
+print(f"- Z-Koordinaten: {anzahl_z}")
+print(f"- Kommentare: {anzahl_kommentare}")
+print("═" * 35)
+```
+
+**Erklärung**:
+
+Das Programm liest G-Code zeilenweise ein und zählt Vorkommen von Befehlen und Koordinaten mit der String-Methode `.count()`. Die Eingabeschleife läuft bis eine leere Zeile eingegeben wird.
+
+**Häufige Fehler**:
+- **Fehler**: `text.count('G')` zählt auch 'G' in Wörtern wie "AUSGABE"
+  - **Hinweis**: Für eine genauere Analyse wären reguläre Ausdrücke besser (`re.findall(r'G\d+')`)
+  - **Für diese Aufgabe**: Einfaches `.count()` reicht aus
+
+---
+
+### Lösung P4: Material-Zugversuch mit Eingabevalidierung
+
+**Vollständiger Code**:
+
+```python
+import random
+
+# Werkstoff-Datenbank
+werkstoffe = {
+    "Baustahl S235": 360,
+    "Aluminium 6061": 310,
+    "Edelstahl 1.4301": 520,
+    "Kunststoff POM": 65
+}
+
+# Zufälligen Werkstoff wählen
+werkstoff = random.choice(list(werkstoffe.keys()))
+zugfestigkeit = werkstoffe[werkstoff]
+
+# Spielvariablen
+versuch = 0
+max_versuche = 5
+erraten = False
+
+# Begrüßung
+print("═" * 35)
+print("  Zugversuch-Simulator")
+print("═" * 35)
+print(f"Zu testender Werkstoff: {werkstoff}")
+print("Schätze die Zugfestigkeit Rm (MPa)!")
+print(f"Du hast {max_versuche} Versuche.\n")
+
+# Spielschleife
+while versuch < max_versuche and not erraten:
+    eingabe = input(f"Versuch {versuch + 1}/{max_versuche} - Deine Schätzung (MPa): ")
+    
+    # Validierung
+    try:
+        schaetzung = float(eingabe)
+        if schaetzung <= 0:
+            print("⚠️  Ungültige Eingabe! Bitte eine positive Zahl eingeben.\n")
+            continue
+    except ValueError:
+        print("⚠️  Ungültige Eingabe! Bitte eine positive Zahl eingeben.\n")
+        continue
+    
+    # Gültige Eingabe: Versuch zählen
+    versuch += 1
+    
+    # Vergleich
+    if abs(schaetzung - zugfestigkeit) <= 5:  # Toleranz ±5 MPa
+        erraten = True
+        print(f"✅ Richtig! Du hast die Zugfestigkeit in {versuch} Versuchen erraten.\n")
+    elif schaetzung < zugfestigkeit:
+        print("❌ Zu niedrig!\n")
+    else:
+        print("❌ Zu hoch!\n")
+
+# Ergebnis
+if erraten:
+    print("Ergebnis:")
+    print(f"- Werkstoff: {werkstoff}")
+    print(f"- Zugfestigkeit Rm: {zugfestigkeit} MPa")
+    print(f"- Benötigte Versuche: {versuch}")
+else:
+    print(f"Leider verloren! Du hast die Zugfestigkeit nicht erraten.")
+    print(f"Die korrekte Zugfestigkeit von {werkstoff} ist {zugfestigkeit} MPa.")
+```
+
+**Erklärung**:
+
+Die Lösung verwendet `try-except` für robuste Eingabevalidierung. Die Toleranz von ±5 MPa macht das Spiel fairer. Der Versuchszähler wird nur bei gültiger Eingabe erhöht.
+
+---
+
+### Lösung P5: Fertigungslinie-Simulation mit verschachtelten Schleifen
+
+**Vollständiger Code**:
+
+```python
+def linien_layout(n):
+    """Zeigt n Maschinen in Reihe."""
+    zeile = ""
+    for i in range(1, n + 1):
+        zeile += f"[M{i}]"
+        if i < n:
+            zeile += " → "
+    print(zeile)
+
+def u_layout(n):
+    """Zeigt n Maschinen in U-Form."""
+    # Obere Reihe
+    obere = []
+    for i in range(1, n//2 + 1):
+        obere.append(f"[M{i}]")
+    print(" → ".join(obere))
+    
+    # Verbindung
+    print(" " * (len(" → ".join(obere)) - 1) + "↓")
+    
+    # Untere Reihe (rückwärts)
+    untere = []
+    for i in range(n, n//2, -1):
+        untere.append(f"[M{i}]")
+    print(" ← ".join(untere))
+
+def matrix_layout(n):
+    """Zeigt n Maschinen in Matrix."""
+    zeilen = int(n**0.5) + 1
+    spalten = (n + zeilen - 1) // zeilen
+    nr = 1
+    for z in range(zeilen):
+        zeile = ""
+        for s in range(spalten):
+            if nr <= n:
+                zeile += f"[M{nr:02d}] "
+                nr += 1
+        print(zeile)
+
+def auslastungs_heatmap(n):
+    """Zeigt Auslastungs-Heatmap."""
+    import random
+    print("Maschinen-Auslastung (Schicht 1):")
+    zeilen = 3
+    spalten = (n + zeilen - 1) // zeilen
+    for z in range(zeilen):
+        zeile = ""
+        for s in range(spalten):
+            auslastung = random.randint(0, 100)
+            if auslastung >= 81:
+                zeile += "█ "
+            elif auslastung >= 61:
+                zeile += "▓ "
+            elif auslastung >= 41:
+                zeile += "▒ "
+            elif auslastung >= 21:
+                zeile += "░ "
+            else:
+                zeile += "· "
+        print(zeile)
+
+# Hauptprogramm
+print("═" * 35)
+print("  Fertigungslinen-Visualisierung")
+print("═" * 35)
+n = int(input("Anzahl der Maschinen: "))
+
+print("\nWähle ein Layout:")
+print("1. Linien-Layout (Fließfertigung)")
+print("2. U-förmiges Layout")
+print("3. Matrix-Layout (Raster)")
+print("4. Auslastungs-Heatmap")
+wahl = int(input("Deine Wahl: "))
+
+print()
+if wahl == 1:
+    print(f"Linien-Layout ({n} Maschinen):")
+    linien_layout(n)
+elif wahl == 2:
+    print(f"U-förmiges Layout ({n} Maschinen):")
+    u_layout(n)
+elif wahl == 3:
+    print(f"Matrix-Layout ({n} Maschinen):")
+    matrix_layout(n)
+elif wahl == 4:
+    print(f"Auslastungs-Heatmap ({n} Maschinen):")
+    auslastungs_heatmap(n)
+else:
+    print("Ungültige Wahl!")
+```
+
+**Erklärung**:
+
+Die Lösung nutzt Funktionen für jedes Layout. Verschachtelte Schleifen erstellen die Matrix-Layouts. String-Konkatenation baut die Ausgabe auf. Die Heatmap verwendet Zufallswerte und Mapping zu Unicode-Blöcken.
+
+**Häufige Fehler**:
+- **Fehler**: U-Layout ohne korrekte Leerzeichen-Berechnung
+  - **Hinweis**: Die Verbindungszeile muss genau unter dem letzten Element der oberen Reihe enden
             anzahl_vokale += 1
         else:
             anzahl_konsonanten += 1
