@@ -263,246 +263,93 @@ Performance-Probleme:
   Fehleranfällige Maschinen (>0.15%): Grinder-01 (0.30%), Lathe-01 (0.25%)
 ```
 
-**c) Zeitbasierte Analyse**
+---
 
-Finde Zeiträume mit erhöhter Kommunikation:
-- Gruppiere Nachrichten nach Stunden
-- Zeige die Top 3 Stunden mit den meisten Nachrichten
+### Aufgabe P3: OPC UA-Datenstruktur-Analyse mit XML ⭐⭐ (Mittel)
+
+**Datei:** `opc_ua_daten.xml`
+
+Die XML-Datei enthält die Konfiguration eines OPC-UA-Servers mit Maschinenvariablen aus einer Produktionsanlage. Die Struktur umfasst:
+
+```xml
+<opc_ua_server>
+  <server_info>...</server_info>
+  <nodes>
+    <node id="ns=2;i=1001">
+      <browse_name>CNC_Maschine_01</browse_name>
+      <variables>
+        <variable id="ns=2;i=1101">
+          <browse_name>Drehzahl</browse_name>
+          <value>2450.5</value>
+          <unit>U/min</unit>
+        </variable>
+      </variables>
+    </node>
+  </nodes>
+</opc_ua_server>
+```
+
+**Aufgabe:**
+
+Schreibe ein Python-Programm mit Generatoren, das die XML-Datei analysiert:
+
+**a) Server-Informationen**
+- Lies und zeige die Server-Informationen (Name, Vendor, Version, Endpoint)
+
+**b) Maschinen-Variablen extrahieren**
+- Erstelle eine Generator-Funktion, die über alle Knoten (nodes) iteriert
+- Für jeden Knoten: Zeige Maschinenname (browse_name) und alle Variablen
+- Format: Variable (Wert Einheit)
+
+**c) Variablen-Statistik**
+- Zähle die Gesamtanzahl der Knoten
+- Zähle die Gesamtanzahl der Variablen
+- Identifiziere alle Variablen mit Einheit "°C" (Temperatursensoren)
 
 **Anforderungen:**
-- Nutze `yield` für speicher-effiziente Verarbeitung
-- Verwende `json.load()` zum Einlesen
-- Behandle FileNotFoundError und json.JSONDecodeError
+- Nutze `xml.etree.ElementTree` zum Parsen
+- Verwende `.find()` und `.findall()` für Navigation
+- Behandle fehlende Elemente mit try-except oder Existenzprüfungen
 - Formatiere Ausgaben übersichtlich
 
 **Erwartete Ausgabe (Beispiel):**
 ```
-=== Modbus-Kommunikationsanalyse ===
+=== OPC UA-Server-Analyse ===
 
-Slave-Statistiken:
-  Slave 1: 45 Nachrichten, häufigster FC: 3, Ø Wert: 2340
-  Slave 2: 32 Nachrichten, häufigster FC: 6, Ø Wert: 1850
-  Slave 3: 28 Nachrichten, häufigster FC: 3, Ø Wert: 3120
+Server-Info:
+  Name: Produktions-OPC-UA-Server
+  Vendor: Siemens AG
+  Endpoint: opc.tcp://192.168.10.200:4840
 
-Top 3 Kommunikationsstunden:
-  1. 08:00-09:00: 35 Nachrichten
-  2. 14:00-15:00: 28 Nachrichten
-  3. 10:00-11:00: 22 Nachrichten
+Maschinen und Variablen:
+  CNC_Maschine_01:
+    - Drehzahl: 2450.5 U/min
+    - Vorschub: 0.25 mm/Umdrehung
+    - Spindelleistung: 18.7 kW
+    - Werkzeugtemperatur: 85.2 °C
+    
+  Fraesmaschine_01:
+    - Spindeldrehzahl: 8500.0 U/min
+    - Vorschubgeschwindigkeit: 1200.0 mm/min
+    ...
+
+Statistik:
+  Anzahl Knoten: 5
+  Anzahl Variablen: 27
+  Temperatursensoren (°C): 6
 ```
 
 ---
 
-### Aufgabe P3: Sensor-Datenanalyse mit CSV ⭐⭐ (Mittel)
+### Aufgabe P4-P6: Erweiterte Aufgaben
 
-**Datei:** `sensoren_daten.csv`
+Die Aufgaben P4-P6 wurden entfernt, da die vorgesehenen Testdaten im V15-Ordner nur die drei Dateien `netzwerk_pakete.csv`, `maschinenkommunikation.json` und `opc_ua_daten.xml` umfassen. Die Übungen konzentrieren sich auf die Kernkonzepte:
 
-Eine Produktionsanlage hat mehrere Temperatursensoren installiert, die kontinuierlich Messwerte aufzeichnen. Die CSV-Datei hat folgende Struktur:
+- **P1**: CSV-Verarbeitung mit `csv.DictReader`
+- **P2**: JSON-Verarbeitung mit Generatoren
+- **P3**: XML-Verarbeitung mit `xml.etree.ElementTree`
 
-```csv
-Sensor_ID,Zone,Temperatur_C,Timestamp,Status
-S001,Presswerk,245.5,2024-01-15T08:00:00,OK
-S002,Presswerk,248.2,2024-01-15T08:00:00,OK
-S003,Schweissen,1850.3,2024-01-15T08:00:00,OK
-S001,Presswerk,251.7,2024-01-15T08:01:00,Warnung
-S004,Lackierung,65.2,2024-01-15T08:01:00,OK
-```
-
-**Schreibe ein Programm, das folgende Aufgaben löst:**
-
-**a) Durchschnittstemperatur pro Zone**
-
-Berechne die Durchschnittstemperatur für jede Produktionszone und gib das Ergebnis formatiert aus.
-
-**Erwartete Ausgabe:**
-```
-Durchschnittstemperaturen nach Zone:
-  Presswerk: 248.5°C
-  Schweissen: 1850.3°C
-  Lackierung: 65.2°C
-```
-
-**b) Kritische Messwerte**
-
-Gib alle Sensoren aus, die eine **Warnung** haben oder deren Temperatur außerhalb des Normbereichs liegt (< 0°C oder > 300°C für Presswerk, > 2000°C für Schweißen). Sortiere nach Temperatur (höchste zuerst).
-
-**Erwartete Ausgabe:**
-```
-Kritische Sensoren:
-  1. S001 (Presswerk): 251.7°C - Status: Warnung
-  2. S003 (Schweissen): 1850.3°C - Status: OK (Grenzwert)
-```
-
-**c) Neue CSV schreiben**
-
-Erstelle eine neue CSV-Datei `presswerk_sensoren.csv`, die nur Sensoren aus dem Presswerk enthält. Füge eine zusätzliche Spalte "Bewertung" hinzu:
-- Temperatur ≤ 240°C: "Normal"
-- Temperatur ≤ 260°C: "Erhöht"
-- Temperatur > 260°C: "Kritisch"
-
-**Anforderungen:**
-- Nutze `csv.DictReader` und `csv.DictWriter`
-- Behandle fehlende Dateien und ungültige Datenformate
-- Runde Durchschnittstemperaturen auf 1 Dezimalstelle
-- Verwende `newline=''` beim Schreiben der CSV
-
----
-
-### Aufgabe P4: OPC UA-Datenverarbeitung mit Iterator-Protokoll ⭐⭐ (Mittel)
-
-**Teil 1: Analyse**
-
-Analysiere den folgenden Code, der OPC UA-Datenpunkte aus einer industriellen Anlage verarbeitet:
-
-```python
-class OPCDataStream:
-    def __init__(self, xml_file, max_items):
-        self.xml_file = xml_file
-        self.max_items = max_items
-        self.current = 0
-        self.data_points = []
-        self._load_data()
-    
-    def _load_data(self):
-        import xml.etree.ElementTree as ET
-        tree = ET.parse(self.xml_file)
-        for node in tree.findall('.//DataPoint'):
-            self.data_points.append({
-                'node_id': node.get('id'),
-                'value': float(node.find('Value').text),
-                'quality': node.find('Quality').text
-            })
-    
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        if self.current >= self.max_items or self.current >= len(self.data_points):
-            raise StopIteration
-        data = self.data_points[self.current]
-        self.current += 1
-        return data
-
-# Verwendung:
-opc_stream = OPCDataStream('opc_ua_daten.xml', 10)
-```
-
-**Fragen:**
-1. Ist `OPCDataStream` ein **Iterable**, ein **Iterator**, oder beides? Begründe.
-2. Was gibt `list(opc_stream)` zurück?
-3. Was passiert, wenn du danach `list(opc_stream)` ein zweites Mal aufrufst? Warum?
-4. Wie müsste die Klasse geändert werden, damit sie **mehrfach** iterierbar ist?
-5. Welcher Nachteil besteht beim Laden aller Daten in `_load_data()`? Wie könnte man das mit Generatoren lösen?
-
-**Teil 2: Implementierung**
-
-Schreibe eine **Generator-Funktion** `opc_data_generator(xml_file, max_items, quality_filter="Good")`, die:
-- Die XML-Datei `opc_ua_daten.xml` speicher-effizient liest
-- Nur Datenpunkte mit der angegebenen Qualität zurückgibt
-- Maximal `max_items` Einträge liefert
-- Bei ungültigen XML-Strukturen eine Warnung ausgibt und weitermacht
-
-**Anforderungen:**
-- Nutze `yield` statt `return`
-- Nutze `xml.etree.ElementTree` zum Parsen
-- Teste mit verschiedenen `quality_filter` Werten ("Good", "Bad", "Uncertain")
-
-**Erwartete Ausgabe:**
-```python
-for data in opc_data_generator('opc_ua_daten.xml', max_items=5, quality_filter="Good"):
-    print(f"Node {data['node_id']}: {data['value']}")
-
-# Ausgabe:
-# Node ns=2;i=1001: 245.8
-# Node ns=2;i=1003: 89.2
-# Node ns=2;i=1005: 1023.5
-# Node ns=2;i=1008: 512.0
-# Node ns=2;i=1012: 78.9
-```
-
----
-
-### Aufgabe P5: SCADA-Log-Analyse mit Generator-Pipeline ⭐⭐⭐ (Schwer)
-
-Du erhältst eine große Log-Datei `scada_system.log` von einem SCADA-System (Supervisory Control and Data Acquisition) einer Produktionsanlage:
-
-```
-2024-01-15T08:00:15.234 | PLC-001 | INFO | Register 1000 read: 2450 | Response: 12ms
-2024-01-15T08:00:16.145 | PLC-002 | INFO | Register 2000 read: 3500 | Response: 8ms
-2024-01-15T08:00:17.876 | PLC-001 | WARNING | Register 1000 read: 2650 | Response: 125ms
-2024-01-15T08:00:18.234 | PLC-003 | ERROR | Connection timeout | Response: 5000ms
-2024-01-15T08:00:19.456 | PLC-002 | INFO | Register 2000 write: 3600 | Response: 15ms
-```
-
-**Erstelle ein Programm mit Generator-Pipeline, das folgende Analysen durchführt:**
-
-**a) Generator-Funktionen**
-
-Implementiere die folgenden drei Generator-Funktionen:
-
-1. **`lies_log_zeilen(dateiname)`**: 
-   - Liest Log-Datei Zeile für Zeile
-   - Gibt jede Zeile als String zurück
-
-2. **`parse_log_zeile(zeilen)`**:
-   - Nimmt Generator von Zeilen entgegen
-   - Parst jede Zeile und gibt Dictionary zurück mit:
-     - `timestamp`: Zeitstempel als String
-     - `plc_id`: PLC-Identifier (z.B. "PLC-001")
-     - `level`: Log-Level (INFO, WARNING, ERROR)
-     - `message`: Nachricht (z.B. "Register 1000 read: 2450")
-     - `response_time`: Response-Zeit in ms als Integer
-   - Ignoriere ungültige Zeilen (fehlerhafte Struktur)
-
-3. **`filtere_level(log_entries, level)`**:
-   - Nimmt Generator von Dictionaries entgegen
-   - Gibt nur Einträge mit spezifischem Log-Level zurück
-
-**b) Analyse-Funktionen**
-
-Implementiere folgende Analyse-Funktionen, die die Pipeline nutzen:
-
-1. **`zaehle_log_levels(dateiname)`**:
-   - Gibt Dictionary mit Anzahl pro Log-Level zurück
-   - Format: `{"INFO": 152, "WARNING": 23, "ERROR": 5}`
-
-2. **`finde_langsame_responses(dateiname, schwellwert_ms=100)`**:
-   - Gibt Liste aller Log-Einträge mit Response-Zeit über Schwellwert zurück
-   - Sortiert nach Response-Zeit (langsamste zuerst)
-
-3. **`top_plcs(dateiname, n=5)`**:
-   - Gibt die Top-N PLCs mit den meisten Log-Einträgen zurück
-   - Format: Liste von Tupeln `[(plc_id, anzahl), ...]`
-
-**Anforderungen:**
-- **Speicher-Effizienz**: Nutze Generator-Pipeline, nicht `readlines()`
-- **Fehlerbehandlung**: Ignoriere ungültige Zeilen, zähle sie aber
-- **Performance**: Datei wird nur einmal gelesen pro Analyse
-- **Ausgabe**: Formatiere Ergebnisse übersichtlich
-
-**Beispiel-Ausgabe:**
-```python
-# Log-Level-Verteilung:
-level_counts = zaehle_log_levels("scada_system.log")
-print("Log-Level-Verteilung:")
-for level, count in sorted(level_counts.items()):
-    print(f"  {level}: {count}")
-
-# Output:
-# Log-Level-Verteilung:
-#   INFO: 152
-#   WARNING: 23
-#   ERROR: 5
-
-# Langsame Responses:
-slow_responses = finde_langsame_responses("scada_system.log", schwellwert_ms=100)
-print(f"\n{len(slow_responses)} langsame Responses gefunden")
-
-# Top-5 PLCs:
-top = top_plcs("scada_system.log", n=5)
-print("\nTop-5 aktivste PLCs:")
-for i, (plc, count) in enumerate(top, 1):
-    print(f"  {i}. {plc}: {count} Log-Einträge")
-```
+Diese drei Aufgaben decken alle wesentlichen Datenformate und Generator-Konzepte ab, die in V15 eingeführt werden.
 
 **Bonus (+⭐):** Erweitere die Pipeline um eine Funktion `error_burst_detection(dateiname, zeitfenster_sekunden=60, min_errors=3)`, die Zeiträume mit gehäuften ERROR-Meldungen findet (z.B. 3+ Errors innerhalb von 60 Sekunden).
 
