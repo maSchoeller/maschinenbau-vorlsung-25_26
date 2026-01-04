@@ -116,24 +116,27 @@ for spalte in range(1000):
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Erste Plots mit Matplotlib (Leicht)
+### Aufgabe P1: CNC-Werkzeugverschleiß Visualisierung (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 15-20 Minuten  
 **Vorkenntnisse**: Matplotlib-Installation, `plt.plot()`, Achsenbeschriftungen
 
-Erstelle ein Python-Programm, das folgende lineare Funktionen im Bereich x = 0 bis x = 10 (in 0.5er-Schritten) visualisiert:
-- `y₁ = 2x + 1`
-- `y₂ = -0.5x + 8`
-- `y₃ = x`
+Erstelle ein Python-Programm, das den Werkzeugverschleiß verschiedener Fräswerkzeuge über die Betriebszeit visualisiert. In der Zerspanung nimmt der Werkzeugverschleiß mit der Standzeit zu.
+
+Gegeben sind drei Werkzeugtypen mit ihren Verschleißmodellen (Verschleiß in mm nach t Minuten):
+- **Hartmetall-Fräser**: `verschleiß = 0.002 * t + 0.05` (langsamer Verschleiß)
+- **HSS-Fräser**: `verschleiß = 0.008 * t + 0.10` (mittlerer Verschleiß)
+- **Schnellstahl**: `verschleiß = 0.015 * t + 0.15` (schneller Verschleiß)
 
 **Anforderungen**:
-1. Alle drei Funktionen sollen im selben Plot dargestellt werden
-2. Verwende unterschiedliche Farben für jede Funktion (rot, blau, grün)
-3. Füge eine Legende hinzu mit den Funktionsgleichungen
-4. Beschrifte die X-Achse mit "x-Wert" und die Y-Achse mit "y-Wert"
-5. Setze den Titel "Lineare Funktionen im Vergleich"
+1. Visualisiere den Verschleiß für Betriebszeiten von 0 bis 100 Minuten (in 5-Minuten-Schritten)
+2. Verwende unterschiedliche Farben: Hartmetall (blau), HSS (grün), Schnellstahl (rot)
+3. Füge eine Legende hinzu mit den Werkzeugbezeichnungen
+4. Beschrifte die X-Achse mit "Betriebszeit (Minuten)" und die Y-Achse mit "Verschleiß (mm)"
+5. Setze den Titel "Werkzeugverschleiß bei Fräsoperationen"
 6. Aktiviere Gitterlinien
+7. Markiere die kritische Verschleißgrenze von 1.0 mm mit einer horizontalen roten gestrichelten Linie
 
 **Beispiel Ein-/Ausgabe**:
 ```
@@ -144,106 +147,112 @@ Erstelle ein Python-Programm, das folgende lineare Funktionen im Bereich x = 0 b
 ```python
 import matplotlib.pyplot as plt
 
-# Erstelle x-Werte von 0 bis 10 in 0.5er-Schritten
-x = [i * 0.5 for i in range(21)]  # 0, 0.5, 1.0, ..., 10.0
+# Erstelle Betriebszeit-Werte von 0 bis 100 Minuten in 5-Minuten-Schritten
+betriebszeit = [i * 5 for i in range(21)]  # 0, 5, 10, ..., 100
 
-# Berechne y-Werte für die drei Funktionen
+# Berechne Verschleiß-Werte für die drei Werkzeugtypen
 # Dein Code hier
 
 # Erstelle den Plot
 # Dein Code hier
+
+# Markiere kritische Verschleißgrenze
+# Dein Code hier
 ```
 
 **Hinweise**:
-- Verwende `range(21)`, da 0 bis 10 in 0.5er-Schritten 21 Werte ergibt (0, 0.5, 1.0, ..., 10.0)
-- List Comprehension ist nützlich für die Berechnung der y-Werte
+- Verwende `range(21)`, da 0 bis 100 in 5er-Schritten 21 Werte ergibt
+- List Comprehension ist nützlich für die Berechnung der Verschleißwerte
+- `plt.axhline(y=1.0, ...)` zeichnet eine horizontale Linie
 
 ---
 
-### Aufgabe P2: Temperaturverlauf visualisieren (Leicht-Mittel)
+### Aufgabe P2: Hydrauliksystem-Überwachung (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 20-25 Minuten  
 **Vorkenntnisse**: `plt.plot()`, Linienstile, Marker
 
-Ein Temperatur-Sensor in einer Fertigungshalle misst die Temperatur stündlich über 24 Stunden. Gegeben sind folgende Messdaten:
+Ein Drucksensor überwacht den Hydraulikdruck einer Pressmaschine während eines 24-Stunden-Produktionszyklus (stündliche Messung). Gegeben sind folgende Messdaten:
 
 ```python
 stunden = list(range(24))  # 0 bis 23 Uhr
-temperaturen = [18, 18, 17, 17, 16, 16, 17, 19, 21, 23, 
-                25, 27, 28, 29, 28, 27, 26, 24, 22, 21, 
-                20, 19, 19, 18]  # °C
+druck_bar = [145, 148, 152, 158, 165, 170, 178, 185, 192, 198, 
+             205, 210, 215, 218, 215, 210, 205, 198, 190, 182, 
+             170, 160, 152, 148]  # bar
 ```
 
 **Aufgaben**:
 
-**Teil a)**: Erstelle einen Linienplot der Temperatur über die Zeit:
+**Teil a)**: Erstelle einen Linienplot des Hydraulikdrucks über die Zeit:
 - X-Achse: "Uhrzeit (Stunde)"
-- Y-Achse: "Temperatur (°C)"
-- Titel: "Temperaturverlauf über 24 Stunden"
+- Y-Achse: "Hydraulikdruck (bar)"
+- Titel: "Hydraulikdruck-Überwachung über 24 Stunden"
 - Verwende eine durchgezogene Linie mit Marker-Punkten (`'o-'`)
-- Farbe: Orange
+- Farbe: Dunkelblau (`'darkblue'`)
 - Gitterlinien aktiviert
 
-**Teil b)**: Füge eine horizontale Linie bei 20°C hinzu, die die **Soll-Temperatur** markiert:
-- Verwende `plt.axhline(y=20, color='red', linestyle='--', label='Soll-Temperatur')`
+**Teil b)**: Füge zwei horizontale Linien hinzu für die zulässigen Druckgrenzen:
+- Minimaler Betriebsdruck: 150 bar (grüne gestrichelte Linie)
+- Maximaler Betriebsdruck: 200 bar (rote gestrichelte Linie)
+- Verwende `plt.axhline()` mit entsprechenden Labels
 - Ergänze die Legende
 
-**Teil c)**: Markiere alle Zeitpunkte, an denen die Temperatur über 25°C liegt, mit roten Scatter-Punkten:
-- Filtere Stunden und Temperaturen, bei denen `temperatur > 25`
-- Verwende `plt.scatter()` für diese Punkte mit Farbe Rot und größerem Marker (`s=100`)
-- Label: "Überhitzung (>25°C)"
+**Teil c)**: Markiere alle Zeitpunkte, an denen der Druck **außerhalb** des zulässigen Bereichs liegt (< 150 bar ODER > 200 bar):
+- Filtere die kritischen Stunden
+- Verwende `plt.scatter()` für diese Punkte mit oranger Farbe und größerem Marker (`s=120`)
+- Label: "Kritischer Druck"
 
 **Beispiel-Ausgabe**:
-Ein Plot mit orangener Linie, roter gestrichelter Soll-Linie und roten Markierungen bei Überhitzungen.
+Ein Plot mit blauer Druckkurve, grünen und roten Grenzlinien, und orangen Markierungen bei kritischen Druckwerten.
 
 **Hinweise**:
-- Verwende List Comprehension oder eine Schleife zum Filtern der Überhitzungs-Punkte
+- Verwende `or`-Operator zum Filtern: `druck < 150 or druck > 200`
 - `plt.axhline()` zeichnet eine horizontale Linie über die gesamte X-Achse
+- `zorder=5` stellt sicher, dass Scatter-Punkte über der Linie liegen
 
 ---
 
-### Aufgabe P3: CPU-Frequenzen im Vergleich (Mittel)
+### Aufgabe P3: Produktionsqualität im Vergleich (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 25-30 Minuten  
 **Vorkenntnisse**: Scatter Plots, Farben, Marker-Größen
 
-Historische Daten über CPU-Taktfrequenzen verschiedener Prozessor-Generationen:
+Historische Daten zur Produktionsqualität verschiedener Fertigungslinien über 9 Quartale:
 
 ```python
-jahre = [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023]
-intel_mhz = [16, 33, 150, 1400, 3800, 3600, 4000, 5300, 6000]
-amd_mhz = [12, 40, 133, 1000, 2600, 3200, 4700, 4900, 5700]
-kerne = [1, 1, 1, 1, 2, 4, 8, 16, 24]  # Anzahl CPU-Kerne
+quartale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+linie_a_ausschuss_prozent = [8.5, 7.2, 6.1, 5.5, 4.8, 4.2, 3.5, 2.9, 2.1]
+linie_b_ausschuss_prozent = [9.2, 8.5, 7.8, 7.0, 6.5, 6.0, 5.2, 4.5, 3.8]
+produktionsvolumen_tsd = [10, 12, 15, 18, 22, 25, 30, 35, 42]  # in Tausend Stück
 ```
 
 **Aufgaben**:
 
-**Teil a)**: Erstelle einen Scatter Plot, der die Entwicklung von Intel und AMD CPU-Frequenzen über die Zeit zeigt:
-- X-Achse: "Jahr"
-- Y-Achse: "Taktfrequenz (MHz)"
-- Titel: "CPU-Taktfrequenzen: Intel vs. AMD (1985-2023)"
-- Intel: Blaue Kreise
-- AMD: Rote Quadrate (`marker='s'`)
+**Teil a)**: Erstelle einen Scatter Plot für beide Fertigungslinien:
+- X-Achse: "Quartal"
+- Y-Achse: "Ausschussquote (%)"
+- Titel: "Qualitätsentwicklung: Linie A vs. Linie B"
+- Linie A: Blaue Kreise
+- Linie B: Rote Quadrate (`marker='s'`)
 - Beide mit Label für Legende
 
-**Teil b)**: Skaliere die **Marker-Größe** proportional zur Anzahl der CPU-Kerne:
-- Verwende `s=kerne * 20` für die Marker-Größe bei beiden Scatter-Plots
-- Füge eine Anmerkung hinzu: `plt.text(2018, 1000, "Größe ∝ Kerne", fontsize=10)`
+**Teil b)**: Skaliere die **Marker-Größe** proportional zum Produktionsvolumen:
+- Verwende `s=produktionsvolumen_tsd` für beide Scatter-Plots
+- Füge eine Anmerkung hinzu: `plt.text(7, 8, "Größe ∝ Produktionsvolumen", fontsize=10)`
 
-**Teil c)**: Verbinde die Intel-Datenpunkte mit einer gestrichelten Linie und die AMD-Datenpunkte mit einer gepunkteten Linie:
-- Verwende zusätzlich `plt.plot()` mit `linestyle='--'` (Intel) und `linestyle=':'` (AMD)
-- Wichtig: Verwende dieselben Farben wie bei den Scatter-Punkten
+**Teil c)**: Verbinde die Datenpunkte mit Linien:
+- Linie A: Gestrichelte blaue Linie (`linestyle='--'`)
+- Linie B: Gepunktete rote Linie (`linestyle=':'`)
+- Verwende dieselben Farben wie bei den Scatter-Punkten
 
-**Teil d)**: Setze die Y-Achse auf logarithmische Skalierung:
-- `plt.yscale('log')`
-- Dies zeigt das exponentielle Wachstum deutlicher
+**Teil d)**: Markiere die Zielausschussquote von 3% mit einer horizontalen grünen Linie:
+- `plt.axhline(y=3, color='green', linestyle='-.', label='Ziel-Ausschussquote (3%)')`
 
 **Hinweise**:
-- Scatter-Plots und Linienplots können im selben Plot kombiniert werden
-- Logarithmische Skala eignet sich für Daten mit großem Wertebereich
-- `plt.text(x, y, text)` fügt Text an Position (x, y) ein
+- Scatter-Plots und Linienplots können kombiniert werden
+- Kleinere Marker-Größen am Anfang zeigen geringeres Produktionsvolumen
 
 ---
 
