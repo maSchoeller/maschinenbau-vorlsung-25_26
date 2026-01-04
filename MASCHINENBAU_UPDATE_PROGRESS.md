@@ -1,7 +1,7 @@
 # Maschinenbau-Kontext Update - Fortschritt
 
 ## Ziel
-Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten Maschinenbau-Bezug haben und notwendige Testdaten vorhanden sind.
+Alle Vorlesungen V01-V16 überarbeiten, sodass Python-Aufgaben einen konkreten Maschinenbau-Bezug haben und notwendige Testdaten vorhanden sind.
 
 ## Status
 
@@ -22,6 +22,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V13 | ✅ | ✅ | ✅ (2 Dateien) | ✅ Abgeschlossen |
 | V14 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
 | V15 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
+| V16 | ✅ | ✅ | ✅ (5 Dateien) | ✅ Abgeschlossen |
 
 ## Prinzipien
 
@@ -56,6 +57,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V13: CNC-Werkzeugverschleiß-Visualisierung, Hydrauliksystem-Überwachung, Produktionsqualitäts-Dashboard, FEM-Spannungsanalyse, Lager-Schwingungsanalyse – ✅ Abgeschlossen (Testdaten: lager_vibrationsdaten.csv, TESTDATEN_README.md)
 - V14: CNC-Präzisions-Analyse, Hydraulik-Durchfluss-Monitoring, Material-Festigkeits-Vergleich, Werkzeugverschleiß-Heatmap, Fertigungsprozess-Radar-Analyse – ✅ Abgeschlossen (Testdaten: cnc_praezision.csv, werkstoff_pruefung.json, produktionslinien_vergleich.xml, TESTDATEN_README.md)
 - V15: Netzwerk-Paket-Analyse, Maschinen-Kommunikations-Monitoring, OPC-UA-Datenverarbeitung, Modbus-Protokoll-Decoder, Industrienetzwerk-Latenz-Analyse – ✅ Abgeschlossen (Testdaten: netzwerk_pakete.csv, maschinenkommunikation.json, opc_ua_daten.xml, TESTDATEN_README.md)
+- V16: Pandas Sensor-Datenanalyse, Filtern/Sortieren von Sensordaten, Wartungsaufträge-Aggregation, Performance-Optimierung (Vektorisierung), Produktionsplanungs-Dashboard – ✅ Abgeschlossen (Testdaten: sensoren_daten.csv, wartungsauftraege.json, produktionsplanung.xml, produkte_katalog.csv, TESTDATEN_README.md)
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)

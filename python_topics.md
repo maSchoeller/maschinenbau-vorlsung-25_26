@@ -29,6 +29,7 @@ Diese Datei dient der **Konsistenz** über alle Vorlesungen hinweg: Welche **Pyt
 | V13 | Plots & Grafiken (Matplotlib) – Teil 1 | `matplotlib.pyplot`, `plt.plot()`, `plt.scatter()`, `plt.xlabel()`, `plt.ylabel()`, `plt.title()`, `plt.legend()`, `plt.grid()`, `plt.show()`, `plt.xlim()`, `plt.ylim()`, `plt.axhline()`, `plt.axvline()`, `plt.errorbar()`, `plt.fill_between()`, `plt.subplots()`, `plt.tight_layout()`, `plt.savefig()`, `np.polyfit()`, `np.polyval()` |
 | V14 | Plots & Grafiken (Matplotlib) – Teil 2 + XML | `plt.hist()`, `plt.boxplot()`, `plt.bar()` (grouped), `plt.barh()`, Polar/Radar Charts (`projection='polar'`), `xml.etree.ElementTree`, `ET.parse()`, `ET.fromstring()`, `.find()`, `.findall()`, `.text`, `pandas.read_csv()`, Multiple Data Formats (CSV, JSON, XML) |
 | V15 | Netzwerktechnik & Industrielle Kommunikation | `socket`, `struct`, `ipaddress`, `socket.socket()`, `socket.bind()`, `socket.listen()`, `socket.accept()`, `socket.connect()`, `socket.send()`, `socket.recv()`, `struct.pack()`, `struct.unpack()`, `ipaddress.ip_address()`, `ipaddress.ip_network()`, Binary Data Processing, Network Protocols, CSV/JSON/XML for Industrial Data |
+| V16 | Pandas & DataFrame-Operationen | `pandas`, `pd.read_csv()`, `pd.read_json()`, `pd.read_xml()`, `pd.DataFrame()`, `.head()`, `.tail()`, `.info()`, `.describe()`, `.shape`, `.columns`, `pd.to_datetime()`, Boolean Indexing, `.loc[]`, `.iloc[]`, `.query()`, `.isin()`, `.sort_values()`, `.groupby()`, `.agg()`, `.apply()`, Vectorization, `.iterrows()` (discouraged), Time Series Analysis |
 
 ---
 
