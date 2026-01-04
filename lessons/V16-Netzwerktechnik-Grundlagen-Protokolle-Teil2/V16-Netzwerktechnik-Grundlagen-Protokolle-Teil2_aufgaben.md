@@ -93,163 +93,167 @@ c) **Caching und TTL**: Die A-Records haben eine TTL (Time To Live) von 300 Seku
 
 ---
 
-### Aufgabe P1: Pandas-Grundlagen - CSV einlesen und erkunden (⭐)
+### Aufgabe P1: Pandas-Grundlagen - Sensordaten einlesen und erkunden (⭐)
 
-**Kontext**: Du hast eine CSV-Datei mit Mitarbeiterdaten eines Unternehmens erhalten. Deine Aufgabe ist es, die Daten einzulesen und einen ersten Überblick zu gewinnen.
+**Kontext**: Eine Produktionsanlage hat mehrere Sensoren installiert, die kontinuierlich Betriebsdaten aufzeichnen. Die Sensordaten wurden bereits in einer CSV-Datei gesammelt. Deine Aufgabe ist es, die Daten einzulesen und einen ersten Überblick zu gewinnen.
 
-**Datensatz** (`employees.csv`):
-```csv
-ID,Name,Abteilung,Gehalt,Eintritt,Alter
-1,Alice Mueller,IT,65000,2020-03-15,32
-2,Bob Schmidt,Vertrieb,55000,2019-07-22,28
-3,Charlie Weber,IT,70000,2018-11-05,35
-4,Diana Fischer,HR,52000,2021-01-10,29
-5,Eva Wagner,Vertrieb,58000,2019-12-03,31
-6,Frank Becker,IT,72000,2017-05-18,38
-7,Gina Hoffmann,HR,54000,2020-09-25,27
-8,Hans Schulz,Vertrieb,60000,2018-08-14,33
+**Datensatz** (`sensoren_daten.csv` - 15 Zeilen verfügbar im Ordner):
+
+Die CSV-Datei enthält folgende Spalten:
+```
+Sensor_ID,Sensor_Name,Typ,Position,Temperatur_C,Vibration_mm_s,Druck_bar,Letztwartung,Status
 ```
 
 **Aufgabenstellung**:
 
-a) Erstelle die CSV-Datei `employees.csv` mit dem obigen Inhalt.
+a) Lies die CSV-Datei `sensoren_daten.csv` mit Pandas ein und speichere den DataFrame in der Variable `df`.
 
-b) Lies die CSV-Datei mit Pandas ein und speichere den DataFrame in der Variable `df`.
+b) Zeige die **ersten 3 Zeilen** des DataFrames an.
 
-c) Zeige die **ersten 3 Zeilen** des DataFrames an.
+c) Zeige **detaillierte Informationen** über den DataFrame an (Datentypen, fehlende Werte, Speicherverbrauch).
 
-d) Zeige **detaillierte Informationen** über den DataFrame an (Datentypen, fehlende Werte, Speicherverbrauch).
+d) Berechne **deskriptive Statistiken** für numerische Spalten (Mittelwert, Standardabweichung, Min, Max, Quartile).
 
-e) Berechne **deskriptive Statistiken** für numerische Spalten (Mittelwert, Standardabweichung, Min, Max, Quartile).
+e) Wie viele **Zeilen und Spalten** hat der DataFrame?
 
-f) Wie viele **Zeilen und Spalten** hat der DataFrame?
+f) Welche **Spaltennamen** existieren?
 
-g) Welche **Spaltennamen** existieren?
+g) Konvertiere die Spalte `Letztwartung` in den Datentyp **datetime**.
 
-h) Konvertiere die Spalte `Eintritt` in den Datentyp **datetime**.
-
-**Lernziele**: CSV-Dateien einlesen; DataFrame inspizieren; Basis-Methoden anwenden.
+**Lernziele**: CSV-Dateien einlesen; DataFrame inspizieren; Basis-Methoden anwenden; Zeitstempel-Konvertierung.
 
 ---
 
-### Aufgabe P2: Filtern und Sortieren (⭐⭐)
+### Aufgabe P2: Qualitätskontrolle - Filtern und Sortieren (⭐⭐)
 
-**Kontext**: Verwende den DataFrame aus Aufgabe P1.
+**Kontext**: Die Qualitätsabteilung möchte die Sensordaten filtern, um potenzielle Probleme zu identifizieren. Verwende den DataFrame aus Aufgabe P1.
 
 **Aufgabenstellung**:
 
-a) **Filter 1**: Zeige alle Mitarbeiter, die in der Abteilung **"IT"** arbeiten.
+a) **Filter 1**: Zeige alle Sensoren der Maschine **"CNC-01"**.
 
-b) **Filter 2**: Zeige alle Mitarbeiter, deren Gehalt **größer als 60000** ist.
+b) **Filter 2**: Zeige alle Sensormessungen mit **Wert > 100** (unabhängig von der Einheit).
 
-c) **Filter 3**: Zeige alle Mitarbeiter, die **zwischen 30 und 35 Jahre alt** sind (inklusive).
+c) **Filter 3**: Zeige alle Temperatursensoren, die zwischen **70°C und 90°C** messen (inklusive).
 
-d) **Kombinierter Filter**: Zeige alle Mitarbeiter aus der Abteilung **"Vertrieb"**, die ein Gehalt **größer als 55000** haben.
+d) **Kombinierter Filter**: Zeige alle Drucksensoren (Typ = "Druck"), die einen Wert **größer als 145 bar** haben.
 
-e) **Filter mit `.isin()`**: Zeige alle Mitarbeiter aus den Abteilungen **"IT"** oder **"HR"**.
+e) **Filter mit `.isin()`**: Zeige alle Sensoren der Maschinen **"CNC-01"** oder **"CNC-02"**.
 
-f) **Sortierung 1**: Sortiere den DataFrame nach **Gehalt** (aufsteigend) und zeige das Ergebnis an.
+f) **Sortierung 1**: Sortiere den DataFrame nach **Wert** (absteigend) und zeige das Ergebnis an.
 
-g) **Sortierung 2**: Sortiere den DataFrame nach **Abteilung** (alphabetisch aufsteigend) und innerhalb jeder Abteilung nach **Gehalt** (absteigend).
+g) **Sortierung 2**: Sortiere den DataFrame nach **Maschine** (alphabetisch aufsteigend) und innerhalb jeder Maschine nach **Wert** (absteigend).
 
-**Lernziele**: Filtern mit Bedingungen; Kombinierte Bedingungen mit `&`, `|`; Sortieren nach einer oder mehreren Spalten.
+h) **Qualitätskontrolle**: Filtere alle Einträge mit Status **"Warnung"** und sortiere nach Wert (höchste zuerst).
+
+**Lernziele**: Filtern mit Bedingungen; Kombinierte Bedingungen mit `&`, `|`; Sortieren nach einer oder mehreren Spalten; Praktische Qualitätskontrolle.
 
 ---
 
-### Aufgabe P3: Aggregation und Gruppierung (⭐⭐⭐)
+### Aufgabe P3: Wartungsplanung - Aggregation und Gruppierung (⭐⭐⭐)
 
-**Kontext**: Verwende den DataFrame aus Aufgabe P1.
+**Kontext**: Die Wartungsabteilung möchte Statistiken pro Maschine erstellen. Verwende den DataFrame aus Aufgabe P1.
+
+**Datensatz erweitern** - Füge weitere Zeilen hinzu für statistische Relevanz:
+```csv
+S009,CNC-01,Schwingung,0.8,mm/s,2024-01-15 08:00:00,Normal
+S010,Presse-01,Schwingung,1.2,mm/s,2024-01-15 08:00:00,Warnung
+S011,CNC-02,Schwingung,0.5,mm/s,2024-01-15 08:00:00,Normal
+S012,Presse-02,Schwingung,0.9,mm/s,2024-01-15 08:00:00,Normal
+```
 
 **Aufgabenstellung**:
 
-a) Berechne das **durchschnittliche Gehalt** aller Mitarbeiter.
+a) Berechne den **durchschnittlichen Wert** aller Sensoren.
 
-b) Berechne das **durchschnittliche Gehalt pro Abteilung**.
+b) Berechne den **durchschnittlichen Wert pro Maschine**.
 
-c) Finde das **höchste Gehalt pro Abteilung**.
+c) Finde den **höchsten Wert pro Maschine**.
 
-d) Zähle, wie viele **Mitarbeiter pro Abteilung** arbeiten.
+d) Zähle, wie viele **Sensoren pro Maschine** installiert sind.
 
-e) Erstelle eine **Übersichtstabelle** pro Abteilung, die folgende Informationen enthält:
-   - Anzahl der Mitarbeiter
-   - Durchschnittliches Gehalt
-   - Minimales Gehalt
-   - Maximales Gehalt
-   - Gesamtsumme der Gehälter
+e) Erstelle eine **Wartungsübersicht** pro Maschine, die folgende Informationen enthält:
+   - Anzahl der Sensoren
+   - Durchschnittlicher Wert
+   - Minimaler Wert
+   - Maximaler Wert
+   - Anzahl Warnungen (Status = "Warnung")
 
-f) Welche Abteilung hat die **höchste Gesamtsumme an Gehältern**?
+f) Welche Maschine hat die **höchste Anzahl an Warnungen**?
 
-g) **Bonus-Challenge**: Berechne das durchschnittliche Alter der Mitarbeiter pro Abteilung und zeige nur Abteilungen, deren Durchschnittsalter **über 30** liegt.
+g) **Bonus-Challenge**: Berechne die durchschnittliche Temperatur pro Maschine und zeige nur Maschinen, deren Durchschnittstemperatur **über 80°C** liegt.
 
-**Lernziele**: Aggregatfunktionen anwenden; `.groupby()` verwenden; Mehrfache Aggregationen mit `.agg()`.
+**Lernziele**: Aggregatfunktionen anwenden; `.groupby()` verwenden; Mehrfache Aggregationen mit `.agg()`; Wartungsrelevante Statistiken erstellen.
 
 ---
 
-### Aufgabe P4: Performance-Optimierung - Vektorisierung (⭐⭐⭐)
+### Aufgabe P4: Performance-Optimierung - Maschinenlaufzeit-Berechnung (⭐⭐⭐)
 
-**Kontext**: Du hast einen großen Datensatz mit Verkaufsdaten und möchtest eine neue Spalte mit berechneten Werten hinzufügen.
+**Kontext**: Eine Produktionsanlage zeichnet Zyklusdaten auf. Du möchtest die Gesamtlaufzeit berechnen und Performance-Unterschiede zwischen Schleifen und Vektorisierung demonstrieren.
 
 **Aufgabenstellung**:
 
 a) Erstelle einen DataFrame mit **100.000 Zeilen** und folgenden Spalten:
-   - `Produkt_ID`: Fortlaufende IDs von 1 bis 100.000
-   - `Preis`: Zufällige Preise zwischen 10 und 1000 (verwende `numpy.random.randint()` oder `random.randint()`)
-   - `Anzahl`: Zufällige Anzahlen zwischen 1 und 10
+   - `Maschine_ID`: Zufällige IDs von 1 bis 50 (verwende `numpy.random.randint()`)
+   - `Zykluszeit_s`: Zufällige Zykluszeiten zwischen 10 und 120 Sekunden
+   - `Ausschuss`: Zufällige Ausschusszahlen zwischen 0 und 5
 
-b) **Methode 1 (LANGSAM)**: Berechne den **Gesamtpreis** (Preis × Anzahl) mit einer **for-Schleife** über alle Zeilen (`.iterrows()`). Messe die benötigte Zeit mit `time.time()`.
+b) **Methode 1 (LANGSAM)**: Berechne die **Netto-Zykluszeit** ((Zykluszeit_s × (100 - Ausschuss)) / 100) mit einer **for-Schleife** über alle Zeilen (`.iterrows()`). Messe die benötigte Zeit mit `time.time()`.
 
-c) **Methode 2 (SCHNELL)**: Berechne den **Gesamtpreis** mit **Vektorisierung** (direkte Spaltenoperation). Messe die benötigte Zeit.
+c) **Methode 2 (SCHNELL)**: Berechne die **Netto-Zykluszeit** mit **Vektorisierung** (direkte Spaltenoperation). Messe die benötigte Zeit.
 
 d) Vergleiche die Laufzeiten und berechne, um welchen **Faktor** die Vektorisierung schneller ist.
 
-e) **Zusatzfrage**: Erkläre in 2-3 Sätzen, warum Vektorisierung so viel schneller ist als Schleifen.
+e) **Zusatzfrage**: Erkläre in 2-3 Sätzen, warum Vektorisierung in Pandas/NumPy so viel schneller ist als Python-Schleifen.
 
-**Lernziele**: Verstehen, warum Schleifen in Pandas langsam sind; Vektorisierung anwenden; Performance messen und vergleichen.
+f) **Bonus**: Berechne die durchschnittliche Netto-Zykluszeit pro Maschine mit vektorisierten Operationen und finde die effizienteste Maschine.
+
+**Lernziele**: Verstehen, warum Schleifen in Pandas langsam sind; Vektorisierung anwenden; Performance messen und vergleichen; Praktische Produktionskennzahlen berechnen.
 
 ---
 
-### Aufgabe P5: Reale Datenanalyse - E-Commerce-Dashboard (⭐⭐⭐⭐)
+### Aufgabe P5: Produktionsplanung - Auftragsanalyse-Dashboard (⭐⭐⭐⭐)
 
-**Kontext**: Du arbeitest für einen Online-Shop und sollst ein einfaches Analyse-Dashboard mit Pandas erstellen.
+**Kontext**: Ein Maschinenbau-Unternehmen fertigt verschiedene Bauteile. Die Produktionsdaten wurden bereits in einer CSV-Datei gesammelt. Du sollst ein Analyse-Dashboard mit Pandas erstellen, um Produktionseffizienz zu überwachen.
 
-**Datensatz** (`orders.csv`):
+**Datensatz** (`produktion_auftrage.csv` - verfügbar im Ordner):
+
+Die CSV-Datei enthält folgende Spalten:
+```
+Auftrag_ID,Maschine,Bauteil,Zielmenge,Produziert,Ausschuss,Zykluszeit_s,Datum,Status
+```
+
+Beispiel-Einträge:
 ```csv
-Bestellung_ID,Kunde_ID,Kunde_Name,Produkt,Kategorie,Preis,Anzahl,Datum,Status
-1,101,Max Mustermann,Laptop,Elektronik,1200,1,2025-12-01,Abgeschlossen
-2,102,Anna Schmidt,Maus,Elektronik,25,2,2025-12-01,Abgeschlossen
-3,101,Max Mustermann,Tastatur,Elektronik,75,1,2025-12-02,Abgeschlossen
-4,103,Tom Wagner,Monitor,Elektronik,300,1,2025-12-02,Storniert
-5,102,Anna Schmidt,Laptop,Elektronik,1200,1,2025-12-03,Abgeschlossen
-6,104,Lisa Mueller,Buch,Bücher,15,3,2025-12-03,Abgeschlossen
-7,101,Max Mustermann,Monitor,Elektronik,300,2,2025-12-04,Abgeschlossen
-8,105,Peter Schulz,Stuhl,Möbel,150,1,2025-12-04,Versandt
-9,103,Tom Wagner,Tastatur,Elektronik,75,1,2025-12-05,Abgeschlossen
-10,102,Anna Schmidt,Maus,Elektronik,25,3,2025-12-05,Abgeschlossen
-11,106,Sarah Klein,Tisch,Möbel,400,1,2025-12-06,Versandt
-12,104,Lisa Mueller,Lampe,Möbel,80,2,2025-12-06,Abgeschlossen
+A0001,CNC-01,Welle-A,100,98,2,12.5,2024-01-15,Abgeschlossen
+A0002,CNC-02,Flansch-B,200,195,5,8.3,2024-01-15,Abgeschlossen
+...
 ```
 
 **Aufgabenstellung**:
 
-a) Erstelle die CSV-Datei und lies sie mit Pandas ein. Konvertiere die Spalte `Datum` in datetime.
+a) Lies die CSV-Datei `produktion_auftrage.csv` mit Pandas ein. Konvertiere die Spalte `Datum` in datetime.
 
-b) Füge eine neue Spalte **`Gesamtpreis`** hinzu, die den Gesamtpreis pro Bestellung berechnet (Preis × Anzahl).
+b) Füge folgende neue Spalten hinzu:
+   - **`Ausschussrate`**: (Ausschuss / Zielmenge) × 100 in Prozent
+   - **`Gutmenge`**: Produziert - Ausschuss
+   - **`OEE_Availability`**: (Produziert / Zielmenge) × 100 (vereinfachte OEE-Kennzahl)
 
-c) **Analyse 1 - Umsatz**: Berechne den **Gesamtumsatz** (Summe aller abgeschlossenen Bestellungen). Ignoriere stornierte Bestellungen.
+c) **Analyse 1 - Gesamtproduktion**: Berechne die **Gesamtgutmenge** aller abgeschlossenen Aufträge. Ignoriere verzögerte Aufträge.
 
-d) **Analyse 2 - Top-Kunden**: Welche 3 Kunden haben den **höchsten Gesamtumsatz**? Zeige Kunde_Name und Gesamtumsatz.
+d) **Analyse 2 - Top-Maschinen**: Welche 3 Maschinen haben die **höchste Gutmenge** produziert? Zeige Maschine und Gutmenge.
 
-e) **Analyse 3 - Kategorien**: Welche **Produktkategorie** generiert den höchsten Umsatz? Zeige Kategorie und Gesamtumsatz pro Kategorie.
+e) **Analyse 3 - Bauteile**: Welches **Bauteil** hat die höchste Gesamtproduktionsmenge? Zeige Bauteil, Gesamtproduktion und durchschnittliche Ausschussrate.
 
-f) **Analyse 4 - Zeitreihe**: Berechne den **täglichen Umsatz** (nur abgeschlossene Bestellungen) und zeige das Ergebnis als Tabelle.
+f) **Analyse 4 - Zeitreihe**: Berechne die **tägliche Gutmenge** (nur abgeschlossene Aufträge) und zeige das Ergebnis als Tabelle.
 
-g) **Analyse 5 - Bestellstatus**: Wie viele Bestellungen haben welchen Status? Erstelle eine Zählung.
+g) **Analyse 5 - Qualitätskontrolle**: Wie viele Aufträge haben eine Ausschussrate **> 5%**? Liste diese Aufträge auf.
 
-h) **Analyse 6 - Durchschnitt**: Was ist der **durchschnittliche Bestellwert** (Gesamtpreis pro Bestellung) für abgeschlossene Bestellungen?
+h) **Analyse 6 - Effizienz**: Welche Maschine hat die **beste durchschnittliche OEE_Availability**? Zeige Top 3 Maschinen mit ihren OEE-Werten.
 
-i) **Bonus - Visualisierung**: Falls du Matplotlib kennst (aus V13/V14), erstelle ein **Balkendiagramm**, das den Umsatz pro Kategorie zeigt.
+i) **Bonus - Visualisierung**: Falls du Matplotlib kennst (aus V13/V14), erstelle ein **Balkendiagramm**, das die Gutmenge pro Maschine zeigt.
 
-**Lernziele**: Komplette Datenanalyse-Pipeline durchführen; Daten filtern, gruppieren und aggregieren; Mehrere Analysen kombinieren; Praktisches Anwendungsbeispiel.
+**Lernziele**: Komplette Produktionsdatenanalyse durchführen; OEE-Kennzahlen berechnen; Daten filtern, gruppieren und aggregieren; Mehrere Analysen kombinieren; Praktisches Anwendungsbeispiel aus dem Maschinenbau.
 
 ---
 

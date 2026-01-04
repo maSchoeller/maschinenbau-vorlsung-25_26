@@ -236,10 +236,434 @@ Zwei benachbarte `/27`-Subnetze ergeben zusammen ein `/26`-Subnetz.
 
 ## Teil B: Python-Lösungen
 
-### Lösung 4: Zeilen-Filter mit Generator ⭐
+### Lösung P1: Netzwerk-Paket-Analyse
+
+**Lösung** (`netzwerk_analyse.py`):
 
 ```python
-def filtere_zeilen(dateiname, mindestlaenge):
+import csv
+
+def analysiere_pakete(dateiname):
+    # Dicts für Zählungen initialisieren
+    protokoll_count = {}
+    port_count = {}
+    maschinen_count = {}
+    scada_maschinen = []
+    gesamt_bytes = 0
+    pakete_gesamt = 0
+    
+    try:
+        with open(dateiname, 'r') as f:
+            reader = csv.DictReader(f)
+            for zeile in reader:
+                try:
+                    protokoll = zeile['Protokoll']
+                    port = int(zeile['Port'])
+                    groesse = int(zeile['Paketgroesse_Bytes'])
+                    maschine = zeile['Maschine_ID']
+                    ziel_ip = zeile['Ziel_IP']
+                    
+                    # Protokoll zählen
+                    if protokoll in protokoll_count:
+                        protokoll_count[protokoll] += 1
+                    else:
+                        protokoll_count[protokoll] = 1
+                    
+                    # Port zählen
+                    if port in port_count:
+                        port_count[port] += 1
+                    else:
+                        port_count[port] = 1
+                    
+                    # Maschinen zählen
+                    if maschine in maschinen_count:
+                        maschinen_count[maschine] += 1
+                    else:
+                        maschinen_count[maschine] = 1
+                    
+                    gesamt_bytes += groesse
+                    pakete_gesamt += 1
+                    
+                    # SCADA-Kommunikation
+                    if ziel_ip == '192.168.10.200' and maschine not in scada_maschinen:
+                        scada_maschinen.append(maschine)
+                        
+                except (KeyError, ValueError):
+                    continue
+        
+        # Ausgabe
+        print("=== Netzwerk-Paket-Analyse ===\n")
+        print("Protokoll-Verteilung:")
+        for prot in sorted(protokoll_count.keys()):
+            count = protokoll_count[prot]
+            prozent = (count / pakete_gesamt * 100) if pakete_gesamt > 0 else 0
+            print(f"  {prot}: {count} Pakete ({prozent:.1f}%)")
+        
+        print("\nIndustrieprotokolle (nach Port):")
+        port_namen = {502: "Modbus TCP", 1883: "MQTT", 44818: "OPC UA"}
+        for port in sorted(port_count.keys()):
+            if port in port_namen:
+                print(f"  {port_namen[port]} ({port}): {port_count[port]} Pakete")
+        
+        print(f"\nNetzwerk-Last:")
+        print(f"  Gesamt: {gesamt_bytes / 1024:.1f} KB")
+        print(f"  Ø Paketgröße: {gesamt_bytes // pakete_gesamt if pakete_gesamt > 0 else 0} Bytes")
+        
+        # Top 3 Maschinen
+        maschinen_liste = list(maschinen_count.items())
+        maschinen_liste.sort(key=lambda x: x[1], reverse=True)
+        print(f"\nTop 3 aktivste Maschinen:")
+        for i in range(min(3, len(maschinen_liste))):
+            maschine, count = maschinen_liste[i]
+            print(f"  {i+1}. {maschine}: {count} Pakete")
+        
+        print(f"\nKommunikation mit SCADA (192.168.10.200):")
+        print(f"  Maschinen: {', '.join(sorted(scada_maschinen))}")
+            
+    except FileNotFoundError:
+        print(f"Fehler: Datei '{dateiname}' nicht gefunden")
+
+if __name__ == "__main__":
+    analysiere_pakete("netzwerk_pakete.csv")
+```
+
+**Erklärung**: Verwendet nur reguläre `dict` mit manueller Prüfung, ob Keys existieren. Keine `defaultdict` oder `Counter`.
+
+---
+
+### Lösung P2: Maschinenkommunikations-Analyse (28 lines)
+
+```python
+import json
+
+def lies_maschinen(dateiname):
+    try:
+        with open(dateiname, 'r') as f:
+            daten = json.load(f)
+            for maschine in daten['maschinen']:
+                yield maschine
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Fehler: {e}")
+
+def analysiere_maschinenkommunikation(dateiname):
+    try:
+        with open(dateiname, 'r') as f:
+            daten = json.load(f)
+            
+        print("=== Maschinenkommunikations-Analyse ===\n")
+        print(f"Produktionshalle: {daten['produktionshalle']['name']} ({daten['produktionshalle']['standort']})\n")
+        
+        print("Maschinen-Übersicht:")
+        for maschine in lies_maschinen(dateiname):
+            latenz = maschine['kommunikation']['durchschnittliche_latenz_ms']
+            pakete = maschine['kommunikation']['pakete_pro_sekunde']
+            print(f"  {maschine['maschine_id']} ({maschine['typ']}): Latenz {latenz}ms, {pakete} Pakete/s")
+        
+        # Protokoll-Zählung
+        protokoll_count = {}
+        langsame = []
+        fehleranfaellig = []
+        
+        for maschine in lies_maschinen(dateiname):
+            for proto in maschine['protokolle']:
+                if proto in protokoll_count:
+                    protokoll_count[proto] += 1
+                else:
+                    protokoll_count[proto] = 1
+            
+            latenz = maschine['kommunikation']['durchschnittliche_latenz_ms']
+            fehlerrate = maschine['kommunikation']['fehlerrate_prozent']
+            
+            if latenz > 15:
+                langsame.append((maschine['maschine_id'], latenz))
+            if fehlerrate > 0.15:
+                fehleranfaellig.append((maschine['maschine_id'], fehlerrate))
+        
+        print("\nProtokoll-Unterstützung:")
+        for proto in sorted(protokoll_count.keys()):
+            print(f"  {proto}: {protokoll_count[proto]} Maschinen")
+        
+        if langsame or fehleranfaellig:
+            print("\nPerformance-Probleme:")
+            if langsame:
+                print(f"  Langsame Maschinen (>15ms): {', '.join([f'{m} ({l}ms)' for m, l in langsame])}")
+            if fehleranfaellig:
+                print(f"  Fehleranfällige Maschinen (>0.15%): {', '.join([f'{m} ({f}%)' for m, f in fehleranfaellig])}")
+    
+    except (FileNotFoundError, KeyError) as e:
+        print(f"Fehler: {e}")
+
+if __name__ == "__main__":
+    analysiere_maschinenkommunikation("maschinenkommunikation.json")
+```
+
+**Erklärung**: Generator-Funktion `lies_maschinen` verwendet `yield`. Manuelle Zählung mit `dict` statt `Counter`.
+
+---
+
+### Lösung P3: OPC UA-Datenstruktur-Analyse (35 lines)
+
+```python
+import xml.etree.ElementTree as ET
+
+def analysiere_opc_server(dateiname):
+    try:
+        tree = ET.parse(dateiname)
+        root = tree.getroot()
+        
+        print("=== OPC UA-Server-Analyse ===\n")
+        
+        # Server-Info
+        server_info = root.find('server_info')
+        if server_info is not None:
+            print("Server-Info:")
+            name = server_info.find('name')
+            vendor = server_info.find('vendor')
+            endpoint = server_info.find('endpoint')
+            if name is not None:
+                print(f"  Name: {name.text}")
+            if vendor is not None:
+                print(f"  Vendor: {vendor.text}")
+            if endpoint is not None:
+                print(f"  Endpoint: {endpoint.text}")
+        
+        print("\nMaschinen und Variablen:")
+        
+        # Knoten durchgehen
+        nodes = root.findall('.//node')
+        anzahl_knoten = 0
+        anzahl_variablen = 0
+        temp_sensoren = 0
+        
+        for node in nodes:
+            anzahl_knoten += 1
+            browse_name = node.find('browse_name')
+            if browse_name is not None:
+                print(f"  {browse_name.text}:")
+                
+                variables = node.findall('.//variable')
+                for var in variables:
+                    anzahl_variablen += 1
+                    var_name = var.find('browse_name')
+                    var_value = var.find('value')
+                    var_unit = var.find('unit')
+                    
+                    if var_name is not None and var_value is not None:
+                        unit_text = var_unit.text if var_unit is not None else ""
+                        print(f"    - {var_name.text}: {var_value.text} {unit_text}")
+                        
+                        if unit_text == "°C":
+                            temp_sensoren += 1
+                
+                print()  # Leerzeile
+        
+        print("Statistik:")
+        print(f"  Anzahl Knoten: {anzahl_knoten}")
+        print(f"  Anzahl Variablen: {anzahl_variablen}")
+        print(f"  Temperatursensoren (°C): {temp_sensoren}")
+        
+    except (FileNotFoundError, ET.ParseError) as e:
+        print(f"Fehler: {e}")
+
+if __name__ == "__main__":
+    analysiere_opc_server("opc_ua_daten.xml")
+```
+
+**Erklärung**: XML-Parsing mit `ElementTree`. Manuelle Zählung der Knoten und Variablen ohne externe Hilfsbibliotheken.
+
+---
+
+### Lösung P4: Netzwerk-Latenz-Visualisierung
+
+**Lösung** (`latenz_visualisierung.py`):
+
+```python
+import random
+import matplotlib.pyplot as plt
+
+def generiere_latenz_messungen(anzahl, basis_latenz=15, varianz=10):
+    protokolle = ["Modbus TCP", "MQTT", "OPC UA"]
+    for i in range(anzahl):
+        yield {
+            'timestamp': i,
+            'latenz_ms': random.uniform(basis_latenz - varianz, basis_latenz + varianz),
+            'protokoll': random.choice(protokolle)
+        }
+
+# Daten sammeln
+messungen = list(generiere_latenz_messungen(300))
+
+# Nach Protokoll gruppieren
+daten_pro_protokoll = {}
+for protokoll in ["Modbus TCP", "MQTT", "OPC UA"]:
+    daten_pro_protokoll[protokoll] = {
+        'timestamps': [],
+        'latenzen': []
+    }
+
+for messung in messungen:
+    protokoll = messung['protokoll']
+    daten_pro_protokoll[protokoll]['timestamps'].append(messung['timestamp'])
+    daten_pro_protokoll[protokoll]['latenzen'].append(messung['latenz_ms'])
+
+# Visualisierung
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Liniendiagramm
+for protokoll, farbe in zip(["Modbus TCP", "MQTT", "OPC UA"], ['blue', 'green', 'red']):
+    ax1.plot(daten_pro_protokoll[protokoll]['timestamps'], 
+             daten_pro_protokoll[protokoll]['latenzen'], 
+             label=protokoll, color=farbe, alpha=0.6, linewidth=0.8)
+ax1.set_xlabel('Zeit (Sekunden)')
+ax1.set_ylabel('Latenz (ms)')
+ax1.set_title('Latenz-Verlauf über Zeit')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Boxplot
+boxplot_daten = [daten_pro_protokoll[p]['latenzen'] for p in ["Modbus TCP", "MQTT", "OPC UA"]]
+ax2.boxplot(boxplot_daten, labels=["Modbus TCP", "MQTT", "OPC UA"])
+ax2.set_ylabel('Latenz (ms)')
+ax2.set_title('Latenz-Verteilung nach Protokoll')
+ax2.grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.savefig('latenz_analyse.png', dpi=150)
+print("✓ Diagramm gespeichert: latenz_analyse.png")
+
+# Statistik
+print("\n=== Netzwerk-Latenz-Analyse ===\n")
+for protokoll in ["Modbus TCP", "MQTT", "OPC UA"]:
+    latenzen = daten_pro_protokoll[protokoll]['latenzen']
+    avg = sum(latenzen) / len(latenzen)
+    kritisch = sum(1 for l in latenzen if l > 25)
+    print(f"{protokoll}:")
+    print(f"  Ø Latenz: {avg:.1f} ms")
+    print(f"  Min: {min(latenzen):.1f} ms | Max: {max(latenzen):.1f} ms")
+    print(f"  Kritische Messwerte (>25ms): {kritisch}\n")
+```
+
+**Erklärung**: Generator produziert Messwerte on-the-fly. Daten werden nach Protokoll gruppiert (manuell mit Listen). Matplotlib erstellt professionelle Multi-Plot-Visualisierung.
+
+---
+
+### Lösung P5: Produktionsdaten-Simulator
+
+**Lösung** (`produktions_simulator.py`):
+
+```python
+import random
+import matplotlib.pyplot as plt
+
+def simuliere_produktion(maschinen, dauer_sekunden):
+    for sekunde in range(dauer_sekunden):
+        for maschine in maschinen:
+            basis_temp = 75 + (sekunde * 0.2)
+            temp = basis_temp + random.uniform(-5, 5)
+            
+            ausschuss = random.uniform(0, 2)
+            if random.random() < 0.05:
+                ausschuss = random.uniform(5, 8)
+            
+            yield {
+                'maschine_id': maschine,
+                'timestamp': sekunde,
+                'stueckzahl': random.randint(8, 12),
+                'temperatur_c': min(temp, 100),
+                'ausschuss': ausschuss
+            }
+
+# Simulation
+maschinen = ["CNC-01", "Presse-01", "Robot-01"]
+daten = list(simuliere_produktion(maschinen, 60))
+
+# Daten gruppieren
+maschinen_daten = {m: {'timestamps': [], 'stueckzahl': [], 'temperatur': [], 'ausschuss': []} for m in maschinen}
+
+for eintrag in daten:
+    m = eintrag['maschine_id']
+    maschinen_daten[m]['timestamps'].append(eintrag['timestamp'])
+    maschinen_daten[m]['stueckzahl'].append(eintrag['stueckzahl'])
+    maschinen_daten[m]['temperatur'].append(eintrag['temperatur_c'])
+    maschinen_daten[m]['ausschuss'].append(eintrag['ausschuss'])
+
+# Dashboard erstellen
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(14, 10))
+
+# Plot 1: Stückzahl über Zeit
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax1.plot(maschinen_daten[maschine]['timestamps'], 
+             maschinen_daten[maschine]['stueckzahl'],
+             label=maschine, color=farbe, linewidth=1.5)
+ax1.set_xlabel('Zeit (Sekunden)')
+ax1.set_ylabel('Stückzahl pro Sekunde')
+ax1.set_title('Produktionsrate über Zeit')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: Temperatur mit Warnschwelle
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax2.plot(maschinen_daten[maschine]['timestamps'],
+             maschinen_daten[maschine]['temperatur'],
+             label=maschine, color=farbe, linewidth=1.5)
+ax2.axhline(y=90, color='red', linestyle='--', label='Warnschwelle', linewidth=2)
+ax2.set_xlabel('Zeit (Sekunden)')
+ax2.set_ylabel('Temperatur (°C)')
+ax2.set_title('Temperaturverlauf')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Plot 3: Gesamtproduktion
+gesamt_produktion = {m: sum(maschinen_daten[m]['stueckzahl']) for m in maschinen}
+ax3.bar(maschinen, [gesamt_produktion[m] for m in maschinen], color=['blue', 'green', 'red'])
+ax3.set_ylabel('Gesamtproduktion (Stück)')
+ax3.set_title('Gesamtproduktion pro Maschine')
+ax3.grid(True, alpha=0.3, axis='y')
+
+# Plot 4: Ausschussrate
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax4.fill_between(maschinen_daten[maschine]['timestamps'],
+                      maschinen_daten[maschine]['ausschuss'],
+                      alpha=0.5, label=maschine, color=farbe)
+ax4.set_xlabel('Zeit (Sekunden)')
+ax4.set_ylabel('Ausschussrate (%)')
+ax4.set_title('Ausschussrate über Zeit')
+ax4.legend()
+ax4.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('produktion_dashboard.png', dpi=150)
+
+# Kennzahlen
+print("=== Produktions-Monitoring (60 Sekunden) ===\n")
+print("Gesamtproduktion:")
+for maschine in maschinen:
+    gesamt = gesamt_produktion[maschine]
+    avg_temp = sum(maschinen_daten[maschine]['temperatur']) / len(maschinen_daten[maschine]['temperatur'])
+    avg_ausschuss = sum(maschinen_daten[maschine]['ausschuss']) / len(maschinen_daten[maschine]['ausschuss'])
+    print(f"  {maschine}: {gesamt} Stück (Ø Temp: {avg_temp:.1f}°C, Ø Ausschuss: {avg_ausschuss:.1f}%)")
+
+print("\n⚠️  Temperatur-Warnungen:")
+for maschine in maschinen:
+    ueberschreitungen = sum(1 for t in maschinen_daten[maschine]['temperatur'] if t > 90)
+    if ueberschreitungen > 0:
+        print(f"  {maschine}: {ueberschreitungen} Überschreitungen (>90°C)")
+
+print("\n✓ Dashboard gespeichert: produktion_dashboard.png")
+```
+
+**Erklärung**: Komplexer Generator simuliert realistische Produktionsdaten mit Trends. Dashboard verwendet 2×2 Subplot-Grid mit verschiedenen Visualisierungstypen (Linien, Balken, Flächen). Praktisches SCADA-Monitoring-System.
+
+---
+
+## Zusammenfassung
+
+Die refaktorierten V15-Lösungen demonstrieren:
+- **P1-P3**: Datenverarbeitung (CSV/JSON/XML) ohne unauthorized features
+- **P4**: Professionelle Visualisierung mit Matplotlib (Subplots, Boxplot)
+- **P5**: Komplexe Echtzeit-Simulation mit Multi-Plot-Dashboard
+- **Manuelle Gruppierung**: Verwendung von Listen/Dicts statt defaultdict
+- **Praktische Anwendung**: SCADA-Monitoring, Performance-Analyse, Dashboards
     """
     Generator, der nur Zeilen zurückgibt, die mindestens
     'mindestlaenge' Zeichen haben (nach strip()).
