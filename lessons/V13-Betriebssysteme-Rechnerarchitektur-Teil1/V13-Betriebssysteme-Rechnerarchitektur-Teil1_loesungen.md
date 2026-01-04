@@ -663,532 +663,227 @@ for row in range(N):
 
 ## Teil B: Python-Lösungen
 
-### Lösung P1: Erste Plots mit Matplotlib (Leicht)
-
-**Aufgabenstellung**: Visualisierung von drei linearen Funktionen im Bereich x = 0 bis x = 10.
-
-#### Vollständige Lösung:
+### Lösung P1: CNC-Werkzeugverschleiß Visualisierung (Leicht)
 
 ```python
 import matplotlib.pyplot as plt
 
-# Erstelle x-Werte von 0 bis 10 in 0.5er-Schritten
-x = [i * 0.5 for i in range(21)]  # 0, 0.5, 1.0, ..., 10.0
+# Betriebszeit-Werte
+betriebszeit = [i * 5 for i in range(21)]  # 0 bis 100 Minuten
 
-# Berechne y-Werte für die drei Funktionen
-y1 = [2 * xi + 1 for xi in x]           # y1 = 2x + 1
-y2 = [-0.5 * xi + 8 for xi in x]        # y2 = -0.5x + 8
-y3 = [xi for xi in x]                   # y3 = x
+# Verschleiß-Werte berechnen
+hartmetall = [0.002 * t + 0.05 for t in betriebszeit]
+hss = [0.008 * t + 0.10 for t in betriebszeit]
+schnellstahl = [0.015 * t + 0.15 for t in betriebszeit]
 
-# Erstelle den Plot
-plt.plot(x, y1, color='red', label='y = 2x + 1')
-plt.plot(x, y2, color='blue', label='y = -0.5x + 8')
-plt.plot(x, y3, color='green', label='y = x')
+# Plot erstellen
+plt.plot(betriebszeit, hartmetall, 'b-', label='Hartmetall-Fräser', linewidth=2)
+plt.plot(betriebszeit, hss, 'g-', label='HSS-Fräser', linewidth=2)
+plt.plot(betriebszeit, schnellstahl, 'r-', label='Schnellstahl', linewidth=2)
 
-# Achsenbeschriftungen und Titel
-plt.xlabel('x-Wert')
-plt.ylabel('y-Wert')
-plt.title('Lineare Funktionen im Vergleich')
+# Kritische Verschleißgrenze
+plt.axhline(y=1.0, color='red', linestyle='--', linewidth=2, label='Kritische Grenze (1.0 mm)')
 
-# Legende und Gitterlinien
+plt.xlabel('Betriebszeit (Minuten)')
+plt.ylabel('Verschleiß (mm)')
+plt.title('Werkzeugverschleiß bei Fräsoperationen')
 plt.legend()
-plt.grid(True)
-
-# Plot anzeigen
+plt.grid(True, alpha=0.3)
 plt.show()
 ```
 
 ---
 
-#### Erklärung der Lösung:
-
-**Schritt 1: X-Werte generieren**
-```python
-x = [i * 0.5 for i in range(21)]
-```
-- `range(21)` erzeugt die Zahlen 0 bis 20 (21 Werte)
-- Multiplikation mit 0.5 ergibt: 0.0, 0.5, 1.0, 1.5, ..., 10.0
-- List Comprehension ist eine elegante Python-Methode zur Listenerstellung
-
-**Alternative mit NumPy** (falls installiert):
-```python
-import numpy as np
-x = np.linspace(0, 10, 21)  # 21 gleichmäßig verteilte Werte von 0 bis 10
-```
-
----
-
-**Schritt 2: Y-Werte berechnen**
-```python
-y1 = [2 * xi + 1 for xi in x]
-y2 = [-0.5 * xi + 8 for xi in x]
-y3 = [xi for xi in x]
-```
-- Für jeden x-Wert wird der entsprechende y-Wert berechnet
-- Die Funktionsgleichungen werden direkt umgesetzt
-- `xi` ist nur eine Hilfsvariable im List Comprehension
-
-**Beispielrechnung für x = 2**:
-- y1 = 2 × 2 + 1 = 5
-- y2 = -0.5 × 2 + 8 = 7
-- y3 = 2
-
----
-
-**Schritt 3: Plots erstellen**
-```python
-plt.plot(x, y1, color='red', label='y = 2x + 1')
-plt.plot(x, y2, color='blue', label='y = -0.5x + 8')
-plt.plot(x, y3, color='green', label='y = x')
-```
-- `plt.plot(x, y)` erstellt einen Linienplot
-- `color='red'` setzt die Linienfarbe (auch Abkürzungen möglich: `'r'`, `'b'`, `'g'`)
-- `label='...'` definiert den Text für die Legende
-
-**Alternative Farbangaben**:
-```python
-color='red'           # Name
-color='r'             # Abkürzung
-color='#FF0000'       # Hex-Code
-color=(1, 0, 0)       # RGB-Tupel (0-1 Bereich)
-```
-
----
-
-**Schritt 4: Beschriftungen hinzufügen**
-```python
-plt.xlabel('x-Wert')
-plt.ylabel('y-Wert')
-plt.title('Lineare Funktionen im Vergleich')
-```
-- Diese Funktionen machen den Plot selbsterklärend
-- Gute Praxis: **Immer Achsen beschriften** und einen aussagekräftigen Titel setzen
-
----
-
-**Schritt 5: Legende und Gitter**
-```python
-plt.legend()
-plt.grid(True)
-```
-- `plt.legend()` zeigt die Legende an (verwendet die `label`-Parameter aus `plt.plot()`)
-- `plt.grid(True)` aktiviert Gitterlinien für bessere Ablesbarkeit
-
-**Optionale Legende-Anpassungen**:
-```python
-plt.legend(loc='upper right')    # Position festlegen
-plt.legend(loc='best')           # Automatisch beste Position wählen
-plt.legend(fontsize=12)          # Schriftgröße anpassen
-```
-
----
-
-**Schritt 6: Plot anzeigen**
-```python
-plt.show()
-```
-- Öffnet ein interaktives Fenster mit dem Plot
-- **Wichtig**: In Jupyter Notebooks wird der Plot automatisch angezeigt, `plt.show()` ist dort optional
-- In normalen Python-Skripten ist `plt.show()` notwendig
-
----
-
-#### Erwartete Ausgabe:
-
-Ein grafisches Fenster mit drei farbigen Linien:
-- **Rote Linie** (y = 2x + 1): Steigt steil an, schneidet y-Achse bei 1
-- **Blaue Linie** (y = -0.5x + 8): Fällt leicht ab, schneidet y-Achse bei 8
-- **Grüne Linie** (y = x): Diagonale durch den Ursprung (Steigung 1)
-
-Die drei Linien schneiden sich bei verschiedenen Punkten, was durch das Gitter gut ablesbar ist.
-
----
-
-#### Häufige Fehler und Lösungen:
-
-> [!WARNING]
-> **Fehler 1: ModuleNotFoundError: No module named 'matplotlib'**
-> ```
-> Lösung: pip install matplotlib
-> ```
-
-> [!WARNING]
-> **Fehler 2: Listen haben unterschiedliche Längen**
-> ```python
-> x = [0, 1, 2]
-> y = [0, 1, 2, 3]  # 4 Werte statt 3!
-> plt.plot(x, y)  # ValueError: x and y must have same first dimension
-> ```
-> **Lösung**: Sicherstellen, dass x und y gleich viele Elemente haben.
-
-> [!WARNING]
-> **Fehler 3: Plot wird nicht angezeigt**
-> - In Skripten: `plt.show()` vergessen
-> - In Jupyter: `%matplotlib inline` am Anfang des Notebooks ausführen
-
-> [!WARNING]
-> **Fehler 4: Legende wird nicht angezeigt**
-> ```python
-> plt.plot(x, y)  # Kein label-Parameter!
-> plt.legend()    # Legende ist leer
-> ```
-> **Lösung**: Jeder Plot benötigt einen `label`-Parameter, damit er in der Legende erscheint.
-
----
-
-#### Erweiterungsmöglichkeiten:
-
-**1. Linienstile variieren:**
-```python
-plt.plot(x, y1, 'r-', label='y = 2x + 1')    # Durchgezogen
-plt.plot(x, y2, 'b--', label='y = -0.5x + 8')  # Gestrichelt
-plt.plot(x, y3, 'g:', label='y = x')         # Gepunktet
-```
-
-**2. Marker hinzufügen:**
-```python
-plt.plot(x, y1, 'ro-', label='y = 2x + 1')   # Rote Kreise mit Linie
-plt.plot(x, y2, 'bs--', label='y = -0.5x + 8')  # Blaue Quadrate
-plt.plot(x, y3, 'g^:', label='y = x')        # Grüne Dreiecke
-```
-
-**3. Schnittpunkte markieren:**
-```python
-# Schnittpunkt von y1 und y3: 2x + 1 = x → x = -1 (außerhalb unseres Bereichs)
-# Schnittpunkt von y1 und y2: 2x + 1 = -0.5x + 8 → 2.5x = 7 → x = 2.8
-x_schnitt = 2.8
-y_schnitt = 2 * x_schnitt + 1
-plt.plot(x_schnitt, y_schnitt, 'ko', markersize=10, label='Schnittpunkt')
-```
-
----
-
-### Lösung P2: Temperaturverlauf visualisieren (Leicht-Mittel)
-
-**Aufgabenstellung**: Visualisierung eines 24-Stunden-Temperaturverlaufs mit Soll-Temperatur und Überhitzungs-Markierungen.
-
-#### Vollständige Lösung:
+### Lösung P2: Hydrauliksystem-Überwachung (Leicht-Mittel)
 
 ```python
 import matplotlib.pyplot as plt
 
-# Gegeben Daten
-stunden = list(range(24))  # 0 bis 23 Uhr
-temperaturen = [18, 18, 17, 17, 16, 16, 17, 19, 21, 23, 
-                25, 27, 28, 29, 28, 27, 26, 24, 22, 21, 
-                20, 19, 19, 18]  # °C
+# Daten
+stunden = list(range(24))
+druck_bar = [145, 148, 152, 158, 165, 170, 178, 185, 192, 198, 
+             205, 210, 215, 218, 215, 210, 205, 198, 190, 182, 
+             170, 160, 152, 148]
 
-# Teil a) Linienplot mit Markern
-plt.plot(stunden, temperaturen, 'o-', color='orange', 
-         label='Temperaturverlauf', linewidth=2, markersize=6)
+# Plot mit Markern
+plt.plot(stunden, druck_bar, 'o-', color='darkblue', linewidth=2, 
+         markersize=6, label='Hydraulikdruck')
 
-# Teil b) Soll-Temperatur als horizontale Linie
-plt.axhline(y=20, color='red', linestyle='--', 
-            linewidth=2, label='Soll-Temperatur (20°C)')
+# Betriebsgrenzen
+plt.axhline(y=150, color='green', linestyle='--', linewidth=2, label='Min. Betriebsdruck (150 bar)')
+plt.axhline(y=200, color='red', linestyle='--', linewidth=2, label='Max. Betriebsdruck (200 bar)')
 
-# Teil c) Überhitzungs-Markierungen
-ueberhitzung_stunden = []
-ueberhitzung_temps = []
+# Kritische Druckwerte finden
+kritisch_stunden = [s for s, d in zip(stunden, druck_bar) if d < 150 or d > 200]
+kritisch_druck = [d for d in druck_bar if d < 150 or d > 200]
 
-for i in range(len(stunden)):
-    if temperaturen[i] > 25:
-        ueberhitzung_stunden.append(stunden[i])
-        ueberhitzung_temps.append(temperaturen[i])
+# Kritische Punkte markieren
+plt.scatter(kritisch_stunden, kritisch_druck, color='orange', s=120, 
+            zorder=5, label='Kritischer Druck', edgecolors='darkorange', linewidth=2)
 
-plt.scatter(ueberhitzung_stunden, ueberhitzung_temps, 
-            color='red', s=100, zorder=5, 
-            label='Überhitzung (>25°C)', marker='o', 
-            edgecolors='darkred', linewidth=2)
-
-# Achsenbeschriftungen und Titel
 plt.xlabel('Uhrzeit (Stunde)')
-plt.ylabel('Temperatur (°C)')
-plt.title('Temperaturverlauf über 24 Stunden')
-
-# Gitterlinien und Legende
-plt.grid(True, alpha=0.3)
+plt.ylabel('Hydraulikdruck (bar)')
+plt.title('Hydraulikdruck-Überwachung über 24 Stunden')
 plt.legend(loc='upper left')
-
-# X-Achse: Stundenbeschriftung
-plt.xticks(range(0, 25, 3))  # 0, 3, 6, 9, 12, 15, 18, 21, 24
-
-# Y-Achsen-Bereich anpassen
-plt.ylim(15, 30)
-
+plt.grid(True, alpha=0.3)
 plt.show()
 ```
 
 ---
 
-#### Erklärung der Lösung:
-
-**Teil a) Linienplot mit Markern**
-
-```python
-plt.plot(stunden, temperaturen, 'o-', color='orange', 
-         label='Temperaturverlauf', linewidth=2, markersize=6)
-```
-
-- **Format-String** `'o-'`: Kombiniert Marker (`o` = Kreise) und Linienstil (`-` = durchgezogen)
-- `linewidth=2`: Macht die Linie dicker (Standard ist 1.5)
-- `markersize=6`: Größe der Marker-Punkte
-
-**Alternative Format-Strings**:
-```python
-'o-'   # Kreise mit durchgezogener Linie
-'s--'  # Quadrate mit gestrichelter Linie
-'^:'   # Dreiecke mit gepunkteter Linie
-'D-.'  # Diamanten mit Strich-Punkt-Linie
-```
-
----
-
-**Teil b) Horizontale Soll-Temperatur-Linie**
-
-```python
-plt.axhline(y=20, color='red', linestyle='--', 
-            linewidth=2, label='Soll-Temperatur (20°C)')
-```
-
-- `plt.axhline(y=20)`: Zeichnet eine **horizontale Linie** bei y=20, die sich über die gesamte X-Achse erstreckt
-- `linestyle='--'`: Gestrichelte Linie (gut für Referenzwerte)
-- Diese Linie macht sofort sichtbar, wann die Temperatur über/unter der Soll-Temperatur liegt
-
-**Verwandte Funktionen**:
-```python
-plt.axvline(x=12)        # Vertikale Linie bei x=12
-plt.axhline(y=20)        # Horizontale Linie bei y=20
-plt.axhspan(18, 22)      # Horizontaler Bereich (Schatten)
-plt.axvspan(10, 14)      # Vertikaler Bereich (Schatten)
-```
-
----
-
-**Teil c) Überhitzungs-Markierungen**
-
-```python
-ueberhitzung_stunden = []
-ueberhitzung_temps = []
-
-for i in range(len(stunden)):
-    if temperaturen[i] > 25:
-        ueberhitzung_stunden.append(stunden[i])
-        ueberhitzung_temps.append(temperaturen[i])
-
-plt.scatter(ueberhitzung_stunden, ueberhitzung_temps, 
-            color='red', s=100, zorder=5, 
-            label='Überhitzung (>25°C)', marker='o', 
-            edgecolors='darkred', linewidth=2)
-```
-
-**Schritt 1: Daten filtern**
-- Wir durchlaufen alle Temperaturen und sammeln nur diejenigen, die > 25°C sind
-- Für jede gefundene Überhitzung speichern wir sowohl die Stunde als auch die Temperatur
-
-**Elegantere Variante mit List Comprehension**:
-```python
-ueberhitzung_stunden = [s for s, t in zip(stunden, temperaturen) if t > 25]
-ueberhitzung_temps = [t for t in temperaturen if t > 25]
-```
-
-**Noch besser mit NumPy** (bei größeren Datenmengen):
-```python
-import numpy as np
-stunden_np = np.array(stunden)
-temps_np = np.array(temperaturen)
-maske = temps_np > 25
-ueberhitzung_stunden = stunden_np[maske]
-ueberhitzung_temps = temps_np[maske]
-```
-
-**Schritt 2: Scatter-Plot für Überhitzungen**
-- `plt.scatter()` statt `plt.plot()`: Für einzelne Punkte ohne Verbindungslinien
-- `s=100`: Marker-Größe (in Punkten²)
-- `zorder=5`: Zeichenreihenfolge – höhere Werte werden "oben" gezeichnet (wichtig, damit die roten Punkte über der orangen Linie liegen)
-- `edgecolors='darkred'`: Rand um die Marker herum
-- `linewidth=2`: Dicke des Marker-Rands
-
----
-
-#### Erweiterte Erklärungen:
-
-**Grid-Anpassung**:
-```python
-plt.grid(True, alpha=0.3)
-```
-- `alpha=0.3`: Transparenz der Gitterlinien (0 = unsichtbar, 1 = vollständig deckend)
-- Leichte Gitterlinien verbessern die Ablesbarkeit, ohne vom Plot abzulenken
-
-**X-Achsen-Ticks anpassen**:
-```python
-plt.xticks(range(0, 25, 3))
-```
-- Zeigt nur Stunden 0, 3, 6, 9, 12, 15, 18, 21, 24 auf der X-Achse
-- Verhindert Überladung der Achse bei vielen Datenpunkten
-
-**Y-Achsen-Bereich**:
-```python
-plt.ylim(15, 30)
-```
-- Setzt den sichtbaren Y-Achsen-Bereich von 15°C bis 30°C
-- Fokussiert auf den relevanten Temperaturbereich
-- Ohne `ylim()` würde Matplotlib automatisch den Bereich wählen
-
----
-
-#### Erwartete Ausgabe:
-
-Ein Plot mit:
-- **Orange Linie mit Punkten**: Zeigt den Temperaturverlauf über 24 Stunden
-- **Rote gestrichelte Linie**: Markiert die Soll-Temperatur bei 20°C
-- **Rote Markierungen**: Heben die Stunden hervor, in denen Überhitzung auftrat (ca. Stunde 10-13: 27-29°C)
-
-Das Gitter ermöglicht präzises Ablesen der Werte.
-
----
-
-#### Häufige Fehler:
-
-> [!WARNING]
-> **Fehler 1: Leere Scatter-Listen**
-> Wenn keine Temperaturen > 25°C sind, bleiben die Listen leer:
-> ```python
-> ueberhitzung_stunden = []  # Leer!
-> plt.scatter([], [], ...)   # Funktioniert, zeichnet aber nichts
-> ```
-> **Lösung**: Vor dem Scatter prüfen:
-> ```python
-> if ueberhitzung_stunden:
->     plt.scatter(...)
-> ```
-
-> [!WARNING]
-> **Fehler 2: zorder nicht gesetzt**
-> Ohne `zorder` können die roten Punkte hinter der orangen Linie verschwinden:
-> ```python
-> # Ohne zorder: Rote Punkte evtl. verdeckt
-> plt.plot(...)      # zorder=2 (Standard für plot)
-> plt.scatter(...)   # zorder=2 (Standard für scatter)
-> 
-> # Mit zorder: Rote Punkte garantiert sichtbar
-> plt.scatter(..., zorder=5)
-> ```
-
-> [!WARNING]
-> **Fehler 3: List Comprehension mit unterschiedlichen Längen**
-> ```python
-> # FALSCH: Beide Listen müssen gleich lang sein!
-> ueberhitzung_stunden = [s for s, t in zip(stunden, temperaturen) if t > 25]
-> ueberhitzung_temps = [t for t in temperaturen if t > 25]  # ✓ Korrekt
-> 
-> # FALSCH wäre:
-> ueberhitzung_temps = [t for s, t in zip(stunden, temperaturen)]  # Alle Temps!
-> ```
-
----
-
-#### Erweiterungsmöglichkeiten:
-
-**1. Farbverlauf für Temperaturzonen**:
-```python
-# Kühle Zone (< 20°C): Blau
-# Normale Zone (20-25°C): Grün
-# Heiße Zone (> 25°C): Rot
-
-for i in range(len(stunden) - 1):
-    if temperaturen[i] < 20:
-        farbe = 'blue'
-    elif temperaturen[i] <= 25:
-        farbe = 'green'
-    else:
-        farbe = 'red'
-    plt.plot(stunden[i:i+2], temperaturen[i:i+2], color=farbe, linewidth=3)
-```
-
-**2. Min/Max-Temperaturen annotieren**:
-```python
-min_temp = min(temperaturen)
-max_temp = max(temperaturen)
-min_stunde = temperaturen.index(min_temp)
-max_stunde = temperaturen.index(max_temp)
-
-plt.annotate(f'Min: {min_temp}°C', 
-             xy=(min_stunde, min_temp), 
-             xytext=(min_stunde+2, min_temp-2),
-             arrowprops=dict(arrowstyle='->', color='blue'))
-
-plt.annotate(f'Max: {max_temp}°C', 
-             xy=(max_stunde, max_temp), 
-             xytext=(max_stunde+2, max_temp+1),
-             arrowprops=dict(arrowstyle='->', color='red'))
-```
-
-**3. Speichern als Bild**:
-```python
-plt.savefig('temperaturverlauf.png', dpi=300, bbox_inches='tight')
-```
-
----
-
-### Lösung P3: CPU-Frequenzen im Vergleich (Mittel)
-
-**Aufgabenstellung**: Visualisierung der historischen Entwicklung von Intel- und AMD-Prozessoren mit Marker-Skalierung nach Anzahl der Kerne.
-
-#### Vollständige Lösung:
+### Lösung P3: Produktionsqualität im Vergleich (Mittel)
 
 ```python
 import matplotlib.pyplot as plt
 
-# Gegeben Daten
-jahre = [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023]
-intel_mhz = [16, 33, 150, 1400, 3800, 3600, 4000, 5300, 6000]
-amd_mhz = [12, 40, 133, 1000, 2600, 3200, 4700, 4900, 5700]
-kerne = [1, 1, 1, 1, 2, 4, 8, 16, 24]
+# Daten
+quartale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+linie_a_ausschuss_prozent = [8.5, 7.2, 6.1, 5.5, 4.8, 4.2, 3.5, 2.9, 2.1]
+linie_b_ausschuss_prozent = [9.2, 8.5, 7.8, 7.0, 6.5, 6.0, 5.2, 4.5, 3.8]
+produktionsvolumen_tsd = [10, 12, 15, 18, 22, 25, 30, 35, 42]
 
-# Skaliere Marker-Größen
-marker_groessen = [k * 20 for k in kerne]
+# Scatter-Plots mit Volumen-Skalierung
+plt.scatter(quartale, linie_a_ausschuss_prozent, s=produktionsvolumen_tsd, 
+            color='blue', marker='o', alpha=0.6, label='Linie A', edgecolors='darkblue', linewidth=1.5)
+plt.scatter(quartale, linie_b_ausschuss_prozent, s=produktionsvolumen_tsd, 
+            color='red', marker='s', alpha=0.6, label='Linie B', edgecolors='darkred', linewidth=1.5)
 
-# Teil a) Scatter Plot für Intel und AMD
-plt.scatter(jahre, intel_mhz, s=marker_groessen, color='blue', 
-            marker='o', alpha=0.6, label='Intel', edgecolors='darkblue', linewidth=1.5)
-plt.scatter(jahre, amd_mhz, s=marker_groessen, color='red', 
-            marker='s', alpha=0.6, label='AMD', edgecolors='darkred', linewidth=1.5)
+# Verbindungslinien
+plt.plot(quartale, linie_a_ausschuss_prozent, 'b--', linewidth=1.5, alpha=0.5)
+plt.plot(quartale, linie_b_ausschuss_prozent, 'r:', linewidth=1.5, alpha=0.5)
 
-# Teil b) Größen-Annotation
-plt.text(2018, 1000, "Größe ∝ Kerne", fontsize=10, 
-         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+# Ziel-Ausschussquote
+plt.axhline(y=3, color='green', linestyle='-.', linewidth=2, label='Ziel-Ausschussquote (3%)')
 
-# Teil c) Verbindungslinien
-plt.plot(jahre, intel_mhz, color='blue', linestyle='--', 
-         linewidth=1.5, alpha=0.5)
-plt.plot(jahre, amd_mhz, color='red', linestyle=':', 
-         linewidth=1.5, alpha=0.5)
+# Annotation
+plt.text(7, 8, "Größe ∝ Produktionsvolumen", fontsize=10, bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
-# Teil d) Logarithmische Y-Achse
-plt.yscale('log')
-
-# Achsenbeschriftungen und Titel
-plt.xlabel('Jahr')
-plt.ylabel('Taktfrequenz (MHz)')
-plt.title('CPU-Taktfrequenzen: Intel vs. AMD (1985-2023)')
-
-# Legende und Gitter
-plt.legend(loc='lower right')
-plt.grid(True, which='both', alpha=0.3)
-
-# X-Achsen-Bereich optimieren
-plt.xlim(1983, 2025)
-
+plt.xlabel('Quartal')
+plt.ylabel('Ausschussquote (%)')
+plt.title('Qualitätsentwicklung: Linie A vs. Linie B')
+plt.legend(loc='upper right')
+plt.grid(True, alpha=0.3)
 plt.show()
 ```
 
 ---
 
-#### Erklärung der Lösung:
-
-**Teil a) Scatter Plots erstellen**
+### Lösung P4: FEM-Spannungsanalyse mit Fehlerbalken (Mittel-Schwer)
 
 ```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Daten
+lasten_kn = [5, 10, 15, 20, 25, 30, 35, 40]
+spannung_mittel_mpa = [48, 95, 142, 189, 235, 282, 328, 375]
+spannung_std_mpa = [3, 5, 7, 9, 12, 15, 18, 22]
+
+# Fehlerbalken-Plot
+plt.errorbar(lasten_kn, spannung_mittel_mpa, yerr=spannung_std_mpa, 
+             fmt='o-', color='darkblue', ecolor='blue', capsize=5, capthick=2,
+             linewidth=2, markersize=8, label='Simulation ± σ', zorder=3)
+
+# Unsicherheitsbereich
+obere_grenze = [m + s for m, s in zip(spannung_mittel_mpa, spannung_std_mpa)]
+untere_grenze = [m - s for m, s in zip(spannung_mittel_mpa, spannung_std_mpa)]
+plt.fill_between(lasten_kn, untere_grenze, obere_grenze, 
+                 alpha=0.2, color='blue', label='±1σ Bereich', zorder=1)
+
+# Streckgrenze markieren
+plt.axhline(y=300, color='red', linestyle='--', linewidth=2, label='Streckgrenze (300 MPa)')
+
+# Plastischer Bereich
+kritisch_start = 25  # Approximation: bei 25 kN wird Streckgrenze erreicht
+plt.axvspan(kritisch_start, 40, color='red', alpha=0.1, label='Plastische Verformung', zorder=0)
+
+# Trendlinie
+koeffizienten = np.polyfit(lasten_kn, spannung_mittel_mpa, deg=1)
+trendlinie = np.polyval(koeffizienten, lasten_kn)
+plt.plot(lasten_kn, trendlinie, 'k--', linewidth=2, 
+         label=f'Trendlinie (y = {koeffizienten[0]:.1f}x + {koeffizienten[1]:.1f})', zorder=2)
+
+plt.xlabel('Last (kN)', fontsize=12)
+plt.ylabel('Spannung (MPa)', fontsize=12)
+plt.title('FEM-Spannungsanalyse mit Messunsicherheit', fontsize=14, fontweight='bold')
+plt.legend(loc='upper left', fontsize=9)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+### Lösung P5: Lager-Vibrations-Performance-Analyse (Schwer)
+
+```python
+import matplotlib.pyplot as plt
+
+# Konstanten
+BASISVIBRATION = 0.5
+REFERENZ_DREHZAHL = 1000
+ZUSTANDSFAKTOREN = {
+    'Neu': 1.0,
+    'Leicht verschlissen': 1.8,
+    'Stark verschlissen': 3.5,
+    'Beschädigt': 8.0
+}
+
+def berechne_vibrationsamplitude(drehzahl_upm, zustandsfaktor):
+    """Berechnet Vibrationsamplitude basierend auf Drehzahl und Lagerzustand."""
+    return BASISVIBRATION * (drehzahl_upm / REFERENZ_DREHZAHL)**0.7 * zustandsfaktor
+
+# Drehzahlen
+drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]
+
+# Simuliere Lagerzustände
+amplituden = {zustand: [berechne_vibrationsamplitude(d, faktor) for d in drehzahlen]
+              for zustand, faktor in ZUSTANDSFAKTOREN.items()}
+
+# Schadensfaktoren (relativ zu Neu)
+neu_amplituden = amplituden['Neu']
+schadensfaktoren = {zustand: [a / n for a, n in zip(ampl, neu_amplituden)]
+                   for zustand, ampl in amplituden.items() if zustand != 'Neu'}
+
+# Erstelle Figure mit 2 Subplots
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+
+# Plot 1: Vibrationsamplituden
+farben = ['green', 'orange', 'red', 'darkred']
+linienstile = ['-', '--', '-.', ':']
+for (zustand, ampl), farbe, stil in zip(amplituden.items(), farben, linienstile):
+    ax1.plot(drehzahlen, ampl, color=farbe, linestyle=stil, 
+             linewidth=2, marker='o', markersize=6, label=zustand)
+
+ax1.set_xscale('log')
+ax1.set_xlabel('Drehzahl (U/min)', fontsize=12)
+ax1.set_ylabel('Vibrationsamplitude (mm/s)', fontsize=12)
+ax1.set_title('Lager-Vibrations-Analyse: Einfluss von Drehzahl und Lagerzustand', 
+              fontsize=14, fontweight='bold')
+ax1.legend(loc='upper left')
+ax1.grid(True, which='both', alpha=0.3)
+
+# Plot 2: Schadensfaktoren
+for (zustand, faktoren), farbe, stil in zip(schadensfaktoren.items(), farben[1:], linienstile[1:]):
+    ax2.plot(drehzahlen, faktoren, color=farbe, linestyle=stil, 
+             linewidth=2, marker='s', markersize=6, label=zustand)
+
+# Kritische Schwelle
+ax2.axhline(y=5, color='red', linestyle='--', linewidth=2, label='Kritische Schwelle')
+
+ax2.set_xscale('log')
+ax2.set_xlabel('Drehzahl (U/min)', fontsize=12)
+ax2.set_ylabel('Schadensfaktor (relativ zu Neu-Lager)', fontsize=12)
+ax2.set_title('Schadensfaktor vs. Drehzahl', fontsize=14, fontweight='bold')
+ax2.legend(loc='upper left')
+ax2.grid(True, which='both', alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+---
+
 marker_groessen = [k * 20 for k in kerne]
 
 plt.scatter(jahre, intel_mhz, s=marker_groessen, color='blue', 
