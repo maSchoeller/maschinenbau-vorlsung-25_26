@@ -305,79 +305,90 @@ Ein Plot mit blauen Fehlerbalken, blauem Unsicherheitsbereich, roter Streckgrenz
 
 ---
 
-### Aufgabe P5: Lager-Vibrations-Performance-Analyse (Schwer/Komplex)
+### Aufgabe P5: Lager-Vibrations-Datenanalyse (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
-**Vorkenntnisse**: Schleifen, Funktionen, `plt.plot()`, `plt.subplot()`, Performance-Analyse
+**Vorkenntnisse**: CSV-Einlesen, `plt.plot()`, `plt.subplot()`, Daten-Gruppierung, Performance-Analyse
 
-In dieser Aufgabe simulierst du die Vibrationseffekte bei Wälzlagern unter verschiedenen Betriebsbedingungen und visualisierst die Ergebnisse.
+In dieser Aufgabe analysierst du echte Vibrationsmessdaten von Wälzlagern unter verschiedenen Betriebsbedingungen und visualisierst die Ergebnisse.
 
-**Szenario**: Wälzlager erzeugen bei hohen Drehzahlen Vibrationsamplituden, die von der Drehzahl und dem Lagerzustand abhängen. Die Amplitude steigt mit der Drehzahl, aber gesunde Lager zeigen deutlich niedrigere Amplituden als beschädigte.
-
-**Gegeben**:
-- Lagerzustände: Neu (Faktor 1.0), Leicht verschlissen (Faktor 1.8), Stark verschlissen (Faktor 3.5), Beschädigt (Faktor 8.0)
-- Drehzahlbereich: 100 bis 10.000 U/min
-- Basisvibration bei 1000 U/min: 0.5 mm/s
+**Szenario**: Ein Maschinenbau-Ingenieur hat Vibrationsdaten von vier verschiedenen Wälzlagern über einen weiten Drehzahlbereich gemessen. Die Datei `lager_vibrationsdaten.csv` enthält **120 Messpunkte** mit folgenden Spalten:
+- `Drehzahl_UPM`: Drehzahl in U/min
+- `Zustand`: Lagerzustand (Neu, Leicht_verschlissen, Stark_verschlissen, Beschaedigt)
+- `Amplitude_mm_s`: Gemessene Vibrationsamplitude in mm/s
+- `Temperatur_C`: Lagertemperatur in °C
+- `Betriebsstunden`: Betriebsstunden des Lagers
 
 **Aufgaben**:
 
-**Teil a)**: Implementiere eine Funktion `berechne_vibrationsamplitude(drehzahl_upm, zustandsfaktor)`:
-- Formel: `amplitude = basisvibration * (drehzahl / 1000)**0.7 * zustandsfaktor`
-- Der Exponent 0.7 modelliert das nicht-lineare Verhalten bei steigender Drehzahl
-- Rückgabe: Vibrationsamplitude in mm/s
+**Teil a)**: Lade die CSV-Datei und gruppiere die Daten nach Lagerzustand:
+- Verwende `open()` und Dateiverarbeitung oder eine einfache CSV-Parsing-Logik
+- Erstelle für jeden Lagerzustand separate Listen: `drehzahlen_zustand` und `amplituden_zustand`
+- Tipp: Nutze Dictionaries zur Strukturierung: `daten = {'Neu': {'drehzahl': [], 'amplitude': []}, ...}`
 
-**Teil b)**: Simuliere verschiedene Drehzahlen von 100 bis 10.000 U/min (in logarithmischen Schritten):
-```python
-drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]  # U/min
-```
-
-Berechne für jede Drehzahl die Vibrationsamplituden für alle vier Lagerzustände.
-
-**Teil c)**: Erstelle einen Plot mit **logarithmischer X-Achse**:
+**Teil b)**: Erstelle einen Plot mit **logarithmischer X-Achse** (`plt.subplot(2, 1, 1)`):
 - X-Achse: "Drehzahl (U/min)" (logarithmisch: `plt.xscale('log')`)
 - Y-Achse: "Vibrationsamplitude (mm/s)"
 - Vier Linien für die vier Lagerzustände (verschiedene Farben und Linienstile)
-- Titel: "Lager-Vibrations-Analyse: Einfluss von Drehzahl und Lagerzustand"
+  - Neu: Grüne durchgezogene Linie
+  - Leicht_verschlissen: Gelbe gestrichelte Linie
+  - Stark_verschlissen: Orange gepunktete Linie
+  - Beschaedigt: Rote Strich-Punkt-Linie
+- Titel: "Lager-Vibrations-Analyse: Messdaten aus CSV"
 - Legende mit Lagerzuständen
-- Gitterlinien aktiviert (`which='both'` für logarithmische Achse)
+- Gitterlinien aktiviert (`plt.grid(True, which='both', alpha=0.3)`)
 
-**Teil d)**: Erstelle einen zweiten Plot (verwende `plt.subplot(2, 1, 2)`), der den **Schadensfaktor** zeigt:
-- Schadensfaktor = `Amplitude_Zustand / Amplitude_Neu` 
+**Teil c)**: Berechne und visualisiere den **Schadensfaktor** (`plt.subplot(2, 1, 2)`):
+- Schadensfaktor = `Amplitude_Zustand / Amplitude_Neu` (für jede Drehzahl)
+- X-Achse: "Drehzahl (U/min)" (logarithmisch)
 - Y-Achse: "Schadensfaktor (relativ zu Neu-Lager)"
-- Zeige Schadensfaktoren für leicht verschlissen, stark verschlissen und beschädigt
-- Markiere kritische Schwelle: `plt.axhline(y=5, color='red', linestyle='--', label='Kritische Schwelle')`
+- Zeige drei Linien: Leicht verschlissen, Stark verschlissen, Beschädigt
+- Markiere kritische Schwelle: `plt.axhline(y=5, color='red', linestyle='--', linewidth=2, label='Kritische Schwelle')`
+- Titel: "Schadensfaktor-Entwicklung über Drehzahlbereich"
 
-**Bonus-Challenge** (optional):
-Erweitere die Simulation um **Resonanzeffekte**:
-- Bei bestimmten Drehzahlen (z.B. 3000, 6000 U/min) treten Resonanzen auf
-- Modifiziere die Formel um Resonanzpeaks zu berücksichtigen
+**Teil d)**: Ergänze statistische Auswertung:
+- Berechne die **maximale Vibrationsamplitude** für jeden Lagerzustand
+- Berechne die **durchschnittliche Temperatur** für jeden Lagerzustand
+- Gib die Ergebnisse in der Konsole aus
+
+**Hinweise**:
+- Die CSV-Datei enthält Header-Zeile: `Drehzahl_UPM,Zustand,Amplitude_mm_s,Temperatur_C,Betriebsstunden`
+- Nutze `line.strip().split(',')` zum Parsen jeder Zeile
+- Sortiere die Drehzahlen für saubere Plots: `sorted(zip(drehzahlen, amplituden))`
+- Bei logarithmischen Achsen wird das exponentielle Wachstum sichtbar
 
 **Beispiel-Ausgabe**:
-Zwei Plots:
-1. Vibrationsamplitude vs. Drehzahl: Zeigt steigendes Vibrationsniveau, deutliche Unterschiede zwischen Lagerzuständen
-2. Schadensfaktor vs. Drehzahl: Zeigt, wie stark beschädigte Lager von gesunden abweichen
+Zwei Subplots:
+1. Vibrationsamplitude vs. Drehzahl: Zeigt exponentielles Wachstum, deutliche Unterschiede zwischen Lagerzuständen (Neu: 0.18-1.52 mm/s, Beschädigt: 1.44-12.16 mm/s)
+2. Schadensfaktor vs. Drehzahl: Zeigt Verschlechterung (Beschädigt erreicht Faktor 8-10, überschreitet kritische Schwelle)
+
+Konsolenausgabe:
+```
+Max. Amplitude Neu: 1.53 mm/s
+Max. Amplitude Leicht_verschlissen: 2.76 mm/s
+Max. Amplitude Stark_verschlissen: 5.35 mm/s
+Max. Amplitude Beschaedigt: 12.18 mm/s
+Durchschn. Temp. Neu: 58.3°C
+Durchschn. Temp. Beschaedigt: 99.8°C
+```
 
 **Starter-Code**:
 ```python
 import matplotlib.pyplot as plt
 
-# Konstanten
-BASISVIBRATION = 0.5  # mm/s bei 1000 U/min
-REFERENZ_DREHZAHL = 1000
-ZUSTANDSFAKTOREN = {
-    'Neu': 1.0,
-    'Leicht verschlissen': 1.8,
-    'Stark verschlissen': 3.5,
-    'Beschädigt': 8.0
-}
+# Teil a: CSV-Datei einlesen
+datei = 'lager_vibrationsdaten.csv'
+daten = {'Neu': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Leicht_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Stark_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Beschaedigt': {'drehzahl': [], 'amplitude': [], 'temperatur': []}}
 
-def berechne_vibrationsamplitude(drehzahl_upm, zustandsfaktor):
-    """
-    Berechnet Vibrationsamplitude basierend auf Drehzahl und Lagerzustand.
-    """
-    # Dein Code hier
-    pass
+with open(datei, 'r') as f:
+    next(f)  # Header überspringen
+    for line in f:
+        # Dein Code: Zeile parsen und in daten-Dictionary einfügen
+        pass
 
 # Drehzahlen (logarithmisch verteilt)
 drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]

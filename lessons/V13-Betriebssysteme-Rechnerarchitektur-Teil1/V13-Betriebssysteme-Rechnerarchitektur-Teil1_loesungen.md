@@ -1599,165 +1599,102 @@ plt.fill_between(temperaturen,
 
 ---
 
-### Lösung P5: Cache-Performance-Simulation (Schwer/Komplex)
+### Lösung P5: Lager-Vibrations-Datenanalyse (Schwer/Komplex)
 
-**Aufgabenstellung**: Simulation der Cache-Hierarchie-Performance bei verschiedenen Array-Größen mit Visualisierung von Zugriffszeiten und Speedup-Faktoren.
+**Aufgabenstellung**: Analyse von realen Vibrationsmessdaten aus CSV-Datei mit 120 Messpunkten und Visualisierung von Zustand, Schadensfaktor und Statistik.
 
 #### Vollständige Lösung:
 
 ```python
 import matplotlib.pyplot as plt
 
-# Konstanten
-L1_KB = 64
-L2_KB = 512
-L3_KB = 8 * 1024  # 8 MB = 8192 KB
-RAM_ZYKLEN = 100
-L1_ZYKLEN = 4
-L2_ZYKLEN = 12
-L3_ZYKLEN = 40
+# Teil a: CSV-Datei einlesen und Daten gruppieren
+datei = 'lager_vibrationsdaten.csv'
+daten = {
+    'Neu': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+    'Leicht_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+    'Stark_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+    'Beschaedigt': {'drehzahl': [], 'amplitude': [], 'temperatur': []}
+}
 
-def berechne_zugriffszeit(array_groesse_kb, cache_groesse_kb, cache_zyklen, naechster_cache_zyklen):
-    """
-    Berechnet durchschnittliche Zugriffszeit basierend auf Cache-Größe.
-    
-    Args:
-        array_groesse_kb: Größe des Arrays in KB
-        cache_groesse_kb: Größe des Caches in KB
-        cache_zyklen: Zugriffszeit bei Cache Hit
-        naechster_cache_zyklen: Zugriffszeit bei Cache Miss (nächste Ebene)
-    
-    Returns:
-        Durchschnittliche Zugriffszeit in Taktzyklen
-    """
-    if array_groesse_kb <= cache_groesse_kb:
-        # Array passt vollständig in Cache: Alle Zugriffe sind Hits
-        return cache_zyklen
-    else:
-        # Cache Miss Rate berechnen
-        hit_rate = cache_groesse_kb / array_groesse_kb
-        miss_rate = 1 - hit_rate
-        
-        # Durchschnittliche Zugriffszeit: Gewichteter Mittelwert
-        durchschnitt = hit_rate * cache_zyklen + miss_rate * naechster_cache_zyklen
-        return durchschnitt
+with open(datei, 'r') as f:
+    next(f)  # Header überspringen
+    for line in f:
+        teile = line.strip().split(',')
+        drehzahl, zustand, amplitude, temperatur = int(teile[0]), teile[1], float(teile[2]), float(teile[3])
+        daten[zustand]['drehzahl'].append(drehzahl)
+        daten[zustand]['amplitude'].append(amplitude)
+        daten[zustand]['temperatur'].append(temperatur)
 
-# Array-Größen von 1 KB bis 16 MB (logarithmisch)
-array_groessen_kb = [2**i for i in range(0, 15)]  # 1, 2, 4, 8, ..., 16384 KB
+# Daten sortieren für saubere Plots
+for zustand in daten:
+    kombiniert = sorted(zip(daten[zustand]['drehzahl'], daten[zustand]['amplitude'], daten[zustand]['temperatur']))
+    daten[zustand]['drehzahl'] = [k[0] for k in kombiniert]
+    daten[zustand]['amplitude'] = [k[1] for k in kombiniert]
+    daten[zustand]['temperatur'] = [k[2] for k in kombiniert]
 
-# Simuliere verschiedene Cache-Hierarchien
-zugriffszeiten_nur_l1 = []
-zugriffszeiten_l1_l2 = []
-zugriffszeiten_l1_l2_l3 = []
-
-for groesse in array_groessen_kb:
-    # Konfiguration 1: Nur L1-Cache (64 KB)
-    zeit_l1 = berechne_zugriffszeit(groesse, L1_KB, L1_ZYKLEN, RAM_ZYKLEN)
-    zugriffszeiten_nur_l1.append(zeit_l1)
-    
-    # Konfiguration 2: L1 + L2-Cache
-    # Erst L1 prüfen, bei Miss zu L2, bei L2-Miss zu RAM
-    if groesse <= L1_KB:
-        zeit_l1_l2 = L1_ZYKLEN
-    elif groesse <= L2_KB:
-        # L1 Hit-Rate
-        l1_hit_rate = L1_KB / groesse
-        # L2 enthält Rest
-        zeit_l1_l2 = l1_hit_rate * L1_ZYKLEN + (1 - l1_hit_rate) * L2_ZYKLEN
-    else:
-        # L1 und L2 beide zu klein
-        l1_hit_rate = L1_KB / groesse
-        l2_hit_rate = (L2_KB - L1_KB) / groesse  # L2 enthält zusätzlich zu L1
-        ram_rate = 1 - l1_hit_rate - l2_hit_rate
-        zeit_l1_l2 = l1_hit_rate * L1_ZYKLEN + l2_hit_rate * L2_ZYKLEN + ram_rate * RAM_ZYKLEN
-    zugriffszeiten_l1_l2.append(zeit_l1_l2)
-    
-    # Konfiguration 3: L1 + L2 + L3-Cache
-    if groesse <= L1_KB:
-        zeit_l1_l2_l3 = L1_ZYKLEN
-    elif groesse <= L2_KB:
-        l1_hit_rate = L1_KB / groesse
-        zeit_l1_l2_l3 = l1_hit_rate * L1_ZYKLEN + (1 - l1_hit_rate) * L2_ZYKLEN
-    elif groesse <= L3_KB:
-        l1_hit_rate = L1_KB / groesse
-        l2_hit_rate = (L2_KB - L1_KB) / groesse
-        l3_hit_rate = 1 - l1_hit_rate - l2_hit_rate
-        zeit_l1_l2_l3 = l1_hit_rate * L1_ZYKLEN + l2_hit_rate * L2_ZYKLEN + l3_hit_rate * L3_ZYKLEN
-    else:
-        l1_hit_rate = L1_KB / groesse
-        l2_hit_rate = (L2_KB - L1_KB) / groesse
-        l3_hit_rate = (L3_KB - L2_KB) / groesse
-        ram_rate = 1 - l1_hit_rate - l2_hit_rate - l3_hit_rate
-        zeit_l1_l2_l3 = (l1_hit_rate * L1_ZYKLEN + 
-                         l2_hit_rate * L2_ZYKLEN + 
-                         l3_hit_rate * L3_ZYKLEN + 
-                         ram_rate * RAM_ZYKLEN)
-    zugriffszeiten_l1_l2_l3.append(zeit_l1_l2_l3)
-
-# Erstelle Figure mit zwei Subplots (übereinander)
+# Erstelle Figure mit zwei Subplots
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
-# ===== PLOT 1: Zugriffszeiten =====
-ax1.plot(array_groessen_kb, zugriffszeiten_nur_l1, 
-         'r-o', linewidth=2, markersize=6, label='Nur L1 (64 KB)')
-ax1.plot(array_groessen_kb, zugriffszeiten_l1_l2, 
-         'b-s', linewidth=2, markersize=6, label='L1 + L2 (64 KB + 512 KB)')
-ax1.plot(array_groessen_kb, zugriffszeiten_l1_l2_l3, 
-         'g-^', linewidth=2, markersize=6, label='L1 + L2 + L3 (64 KB + 512 KB + 8 MB)')
+# Teil b: Plot 1 - Vibrationsamplituden
+farben = {'Neu': 'green', 'Leicht_verschlissen': 'yellow', 'Stark_verschlissen': 'orange', 'Beschaedigt': 'red'}
+linienstile = {'Neu': '-', 'Leicht_verschlissen': '--', 'Stark_verschlissen': '-.', 'Beschaedigt': ':'}
 
-# Markiere Cache-Größen mit vertikalen Linien
-ax1.axvline(x=L1_KB, color='red', linestyle='--', alpha=0.5, linewidth=1.5, label='L1 Grenze')
-ax1.axvline(x=L2_KB, color='blue', linestyle='--', alpha=0.5, linewidth=1.5, label='L2 Grenze')
-ax1.axvline(x=L3_KB, color='green', linestyle='--', alpha=0.5, linewidth=1.5, label='L3 Grenze')
+for zustand in daten:
+    ax1.plot(daten[zustand]['drehzahl'], daten[zustand]['amplitude'], 
+             color=farben[zustand], linestyle=linienstile[zustand], 
+             linewidth=2, marker='o', markersize=4, label=zustand.replace('_', ' '))
 
-ax1.set_xscale('log', base=2)
-ax1.set_xlabel('Array-Größe (KB)', fontsize=12)
-ax1.set_ylabel('Durchschnittliche Zugriffszeit (Taktzyklen)', fontsize=12)
-ax1.set_title('Cache-Performance: Einfluss der Array-Größe', fontsize=14, fontweight='bold')
-ax1.legend(loc='upper left', fontsize=9)
+ax1.set_xscale('log')
+ax1.set_xlabel('Drehzahl (U/min)', fontsize=12)
+ax1.set_ylabel('Vibrationsamplitude (mm/s)', fontsize=12)
+ax1.set_title('Lager-Vibrations-Analyse: Messdaten aus CSV', fontsize=14, fontweight='bold')
+ax1.legend(loc='upper left')
 ax1.grid(True, which='both', alpha=0.3)
 
-# X-Achsen-Ticks anpassen (Potenzen von 2)
-ax1.set_xticks([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384])
-ax1.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256', '512', 
-                      '1K', '2K', '4K', '8K', '16K'], rotation=45)
+# Teil c: Plot 2 - Schadensfaktor
+neu_drehzahlen = daten['Neu']['drehzahl']
+neu_amplituden = daten['Neu']['amplitude']
 
-# ===== PLOT 2: Speedup =====
-# Speedup = Zeit ohne Cache / Zeit mit Cache
-# "Ohne Cache" = Alle Zugriffe gehen direkt zu RAM (100 Zyklen)
-speedup_nur_l1 = [RAM_ZYKLEN / zeit for zeit in zugriffszeiten_nur_l1]
-speedup_l1_l2 = [RAM_ZYKLEN / zeit for zeit in zugriffszeiten_l1_l2]
-speedup_l1_l2_l3 = [RAM_ZYKLEN / zeit for zeit in zugriffszeiten_l1_l2_l3]
+for zustand in ['Leicht_verschlissen', 'Stark_verschlissen', 'Beschaedigt']:
+    schadensfaktoren = []
+    for i, drehz in enumerate(daten[zustand]['drehzahl']):
+        if drehz in neu_drehzahlen:
+            idx_neu = neu_drehzahlen.index(drehz)
+            faktor = daten[zustand]['amplitude'][i] / neu_amplituden[idx_neu]
+            schadensfaktoren.append(faktor)
+        else:
+            schadensfaktoren.append(None)
+    
+    # Filtere None-Werte
+    drehz_gefiltert = [d for d, f in zip(daten[zustand]['drehzahl'], schadensfaktoren) if f is not None]
+    schaden_gefiltert = [f for f in schadensfaktoren if f is not None]
+    
+    ax2.plot(drehz_gefiltert, schaden_gefiltert, 
+             color=farben[zustand], linestyle=linienstile[zustand], 
+             linewidth=2, marker='s', markersize=4, label=zustand.replace('_', ' '))
 
-ax2.plot(array_groessen_kb, speedup_nur_l1, 
-         'r-o', linewidth=2, markersize=6, label='Nur L1')
-ax2.plot(array_groessen_kb, speedup_l1_l2, 
-         'b-s', linewidth=2, markersize=6, label='L1 + L2')
-ax2.plot(array_groessen_kb, speedup_l1_l2_l3, 
-         'g-^', linewidth=2, markersize=6, label='L1 + L2 + L3')
+# Kritische Schwelle
+ax2.axhline(y=5, color='red', linestyle='--', linewidth=2, label='Kritische Schwelle')
 
-# Horizontale Linie bei Speedup = 1 (kein Vorteil)
-ax2.axhline(y=1, color='black', linestyle='--', linewidth=1, alpha=0.5, label='Keine Beschleunigung')
-
-# Markiere Cache-Größen
-ax2.axvline(x=L1_KB, color='red', linestyle='--', alpha=0.3, linewidth=1.5)
-ax2.axvline(x=L2_KB, color='blue', linestyle='--', alpha=0.3, linewidth=1.5)
-ax2.axvline(x=L3_KB, color='green', linestyle='--', alpha=0.3, linewidth=1.5)
-
-ax2.set_xscale('log', base=2)
-ax2.set_xlabel('Array-Größe (KB)', fontsize=12)
-ax2.set_ylabel('Speedup-Faktor', fontsize=12)
-ax2.set_title('Cache-Speedup im Vergleich zu reinem RAM-Zugriff', fontsize=14, fontweight='bold')
-ax2.legend(loc='upper right', fontsize=9)
+ax2.set_xscale('log')
+ax2.set_xlabel('Drehzahl (U/min)', fontsize=12)
+ax2.set_ylabel('Schadensfaktor (relativ zu Neu-Lager)', fontsize=12)
+ax2.set_title('Schadensfaktor-Entwicklung über Drehzahlbereich', fontsize=14, fontweight='bold')
+ax2.legend(loc='upper left')
 ax2.grid(True, which='both', alpha=0.3)
 
-ax2.set_xticks([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384])
-ax2.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256', '512', 
-                      '1K', '2K', '4K', '8K', '16K'], rotation=45)
-
-# Layout optimieren
 plt.tight_layout()
 plt.show()
+
+# Teil d: Statistische Auswertung
+print("\n=== Statistische Auswertung ===")
+for zustand in daten:
+    max_ampl = max(daten[zustand]['amplitude'])
+    avg_temp = sum(daten[zustand]['temperatur']) / len(daten[zustand]['temperatur'])
+    print(f"Max. Amplitude {zustand.replace('_', ' ')}: {max_ampl:.2f} mm/s")
+    print(f"Durchschn. Temp. {zustand.replace('_', ' ')}: {avg_temp:.1f}°C")
+    print()
 ```
 
 ---
