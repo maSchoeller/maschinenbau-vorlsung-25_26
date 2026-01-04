@@ -120,7 +120,7 @@ Fülle die folgende Tabelle für die **ersten drei** Subnetze aus:
 In einer Produktionshalle wurden über 5 Minuten industrielle Netzwerkpakete aufgezeichnet. Die CSV-Datei enthält folgende Spalten:
 
 ```
-Zeitstempel,Quell_IP,Ziel_IP,Protokoll,Paketgroesse_Bytes,Latenz_ms
+Zeitstempel,Quell_IP,Ziel_IP,Protokoll,Port,Paketgroesse_Bytes,Maschine_ID
 ```
 
 **Aufgabe:**
@@ -128,24 +128,27 @@ Zeitstempel,Quell_IP,Ziel_IP,Protokoll,Paketgroesse_Bytes,Latenz_ms
 Schreibe ein Python-Programm, das die CSV-Datei analysiert und folgende Informationen ausgibt:
 
 **a) Protokoll-Verteilung**
-- Anzahl der Pakete pro Protokoll (Modbus TCP, MQTT, OPC UA)
+- Anzahl der Pakete pro Protokoll (TCP, UDP)
 - Prozentuale Verteilung
 
-**b) Netzwerk-Last**
-- Gesamtes übertragenes Datenvolumen in MB
-- Durchschnittliche Paketgröße pro Protokoll
+**b) Port-Analyse**
+- Identifiziere die Industrieprotokolle anhand der Ports:
+  - Port 502: Modbus TCP
+  - Port 1883: MQTT
+  - Port 44818: OPC UA
+- Zeige Anzahl Pakete pro Industrieprotokoll
 
-**c) Performance-Analyse**
-- Durchschnittliche Latenz pro Protokoll
-- Anzahl der Pakete mit Latenz > 100ms (kritisch für Echtzeitsteuerung)
+**c) Netzwerk-Last**
+- Gesamtes übertragenes Datenvolumen in KB
+- Durchschnittliche Paketgröße
 
 **d) Maschinen-Kommunikation**
-- Top 3 aktivste Maschinen (Quell-IPs mit den meisten gesendeten Paketen)
-- Liste aller Maschinen, die mit dem SCADA-Server (192.168.1.100) kommunizieren
+- Top 3 aktivste Maschinen (nach Maschine_ID mit den meisten gesendeten Paketen)
+- Liste aller Maschinen-IDs, die mit dem SCADA-Server (192.168.10.200) kommunizieren
 
 **Anforderungen:**
 - Nutze `csv.DictReader` für das Einlesen
-- Behandle fehlerhafte oder unvollständige Zeilen
+- Behandle fehlerhafte oder unvollständige Zeilen mit try-except
 - Formatiere Ausgaben übersichtlich mit Einheiten
 
 **Erwartete Ausgabe (Beispiel):**
@@ -153,70 +156,112 @@ Schreibe ein Python-Programm, das die CSV-Datei analysiert und folgende Informat
 === Netzwerk-Paket-Analyse ===
 
 Protokoll-Verteilung:
-  Modbus TCP: 42 Pakete (42.0%)
-  MQTT: 35 Pakete (35.0%)
-  OPC UA: 23 Pakete (23.0%)
+  TCP: 70 Pakete (70.0%)
+  UDP: 30 Pakete (30.0%)
+
+Industrieprotokolle (nach Port):
+  Modbus TCP (502): 50 Pakete
+  MQTT (1883): 30 Pakete
+  OPC UA (44818): 20 Pakete
 
 Netzwerk-Last:
-  Gesamt: 0.15 MB
-  Ø Paketgröße Modbus TCP: 1024 Bytes
-  Ø Paketgröße MQTT: 512 Bytes
-  Ø Paketgröße OPC UA: 2048 Bytes
-
-Performance:
-  Ø Latenz Modbus TCP: 15.3 ms
-  Ø Latenz MQTT: 8.7 ms
-  Ø Latenz OPC UA: 42.1 ms
-  Kritische Pakete (>100ms): 5
+  Gesamt: 15.5 KB
+  Ø Paketgröße: 155 Bytes
 
 Top 3 aktivste Maschinen:
-  1. 192.168.1.10: 18 Pakete
-  2. 192.168.1.11: 15 Pakete
-  3. 192.168.1.12: 12 Pakete
+  1. CNC-01: 18 Pakete
+  2. CNC-02: 15 Pakete
+  3. Robot-01: 12 Pakete
 
-Kommunikation mit SCADA (192.168.1.100):
-  - 192.168.1.10
-  - 192.168.1.11
-  - 192.168.1.13
+Kommunikation mit SCADA (192.168.10.200):
+  Maschinen: CNC-01, CNC-02, Robot-01, Press-01, Sensor-01
 ```
 
 ---
 
-### Aufgabe P2: Modbus-Protokoll-Parser für industrielle Steuerungen ⭐⭐ (Mittel)
+### Aufgabe P2: Maschinenkommunikations-Analyse mit JSON ⭐⭐ (Mittel)
 
 **Datei:** `maschinenkommunikation.json`
 
-Die JSON-Datei enthält aufgezeichnete Modbus-Nachrichten zwischen einer SPS (Speicherprogrammierbare Steuerung) und verschiedenen Maschinen. Jede Nachricht hat folgende Struktur:
+Die JSON-Datei enthält Konfigurationsdaten von Produktionsmaschinen in einer Fertigungshalle. Die Struktur umfasst:
 
 ```json
 {
-  "timestamp": "2024-01-15T08:30:15",
-  "slave_id": 1,
-  "function_code": 3,
-  "register_address": 1000,
-  "value": 2350,
-  "status": "success"
+  "produktionshalle": { "name": "...", "standort": "..." },
+  "maschinen": [
+    {
+      "maschine_id": "CNC-01",
+      "typ": "CNC-Drehmaschine",
+      "ip_adresse": "192.168.10.100",
+      "protokolle": ["Modbus TCP", "OPC UA"],
+      "kommunikation": {
+        "durchschnittliche_latenz_ms": 12,
+        "pakete_pro_sekunde": 45,
+        "fehlerrate_prozent": 0.1
+      }
+    },
+    ...
+  ]
 }
 ```
 
 **Aufgabe:**
 
-Schreibe ein Python-Programm, das die JSON-Datei mit einem **Generator** speicher-effizient verarbeitet und folgende Analysen durchführt:
+Schreibe ein Python-Programm, das die JSON-Datei mit einem **Generator** verarbeitet und folgende Analysen durchführt:
 
 **a) Generator-Funktion implementieren**
 
-Erstelle eine Generator-Funktion `lies_modbus_nachrichten(dateiname)`, die:
-- Die JSON-Datei Eintrag für Eintrag liest (die Datei enthält eine Liste von Dictionaries)
-- Jede Nachricht als Dictionary zurückgibt
-- Nur Nachrichten mit `status == "success"` liefert
+Erstelle eine Generator-Funktion `lies_maschinen(dateiname)`, die:
+- Die JSON-Datei einliest
+- Über die Liste `maschinen` iteriert
+- Jede Maschine als Dictionary zurückgibt (mit `yield`)
 - Bei Fehler eine aussagekräftige Fehlermeldung ausgibt
 
 **b) Kommunikationsstatistik**
 
-Berechne für jeden `slave_id`:
-- Anzahl der erfolgreichen Nachrichten
-- Am häufigsten verwendeter `function_code`
-- Durchschnittlicher Registerwert
+Berechne für jede Maschine:
+- Maschinen-ID und Typ
+- Durchschnittliche Latenz
+- Paketrate (Pakete pro Sekunde)
+
+**c) Protokoll-Analyse**
+
+- Zähle, wie viele Maschinen welches Protokoll unterstützen
+- Zeige die Protokolle mit Anzahl der Maschinen
+
+**d) Performance-Bewertung**
+
+- Identifiziere Maschinen mit Latenz > 15ms (als "langsam")
+- Identifiziere Maschinen mit Fehlerrate > 0.15% (als "fehleranfällig")
+
+**Anforderungen:**
+- Nutze `json.load()` zum Einlesen
+- Verwende `yield` für die Generator-Funktion
+- Behandle FileNotFoundError und json.JSONDecodeError
+- Formatiere Ausgaben übersichtlich
+
+**Erwartete Ausgabe (Beispiel):**
+```
+=== Maschinenkommunikations-Analyse ===
+
+Produktionshalle: Fertigungshalle A (Werk Stuttgart)
+
+Maschinen-Übersicht:
+  CNC-01 (CNC-Drehmaschine): Latenz 12ms, 45 Pakete/s
+  CNC-02 (CNC-Fräsmaschine): Latenz 15ms, 42 Pakete/s
+  Robot-01 (Industrieroboter): Latenz 10ms, 58 Pakete/s
+  ...
+
+Protokoll-Unterstützung:
+  Modbus TCP: 7 Maschinen
+  OPC UA: 6 Maschinen
+  MQTT: 3 Maschinen
+  EtherNet/IP: 2 Maschinen
+
+Performance-Probleme:
+  Langsame Maschinen (>15ms): Grinder-01 (22ms), Lathe-01 (20ms)
+  Fehleranfällige Maschinen (>0.15%): Grinder-01 (0.30%), Lathe-01 (0.25%)
+```
 
 **c) Zeitbasierte Analyse**
 
