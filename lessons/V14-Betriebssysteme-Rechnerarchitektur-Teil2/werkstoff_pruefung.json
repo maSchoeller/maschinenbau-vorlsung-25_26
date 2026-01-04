@@ -1,0 +1,82 @@
+{
+  "pruef_info": {
+    "datum": "2024-03-15",
+    "labor": "Materialtechnik Labor TU Berlin",
+    "norm": "DIN EN ISO 6892-1",
+    "pruefer": "Dr. Schmidt"
+  },
+  "proben": [
+    {
+      "proben_id": "S235-001",
+      "werkstoff": "S235JR",
+      "zugfestigkeit_mpa": 412,
+      "streckgrenze_mpa": 285,
+      "bruchdehnung_prozent": 28.5,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 145
+    },
+    {
+      "proben_id": "S355-001",
+      "werkstoff": "S355J2",
+      "zugfestigkeit_mpa": 548,
+      "streckgrenze_mpa": 378,
+      "bruchdehnung_prozent": 24.2,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 168
+    },
+    {
+      "proben_id": "C45-001",
+      "werkstoff": "C45E",
+      "zugfestigkeit_mpa": 682,
+      "streckgrenze_mpa": 435,
+      "bruchdehnung_prozent": 16.8,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 201
+    },
+    {
+      "proben_id": "42CrMo4-001",
+      "werkstoff": "42CrMo4",
+      "zugfestigkeit_mpa": 1100,
+      "streckgrenze_mpa": 900,
+      "bruchdehnung_prozent": 14.5,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 315
+    },
+    {
+      "proben_id": "X5CrNi18-10-001",
+      "werkstoff": "X5CrNi18-10",
+      "zugfestigkeit_mpa": 580,
+      "streckgrenze_mpa": 240,
+      "bruchdehnung_prozent": 45.3,
+      "elastizitaetsmodul_gpa": 200,
+      "haerte_hv": 185
+    },
+    {
+      "proben_id": "AlMgSi1-001",
+      "werkstoff": "AlMgSi1",
+      "zugfestigkeit_mpa": 310,
+      "streckgrenze_mpa": 270,
+      "bruchdehnung_prozent": 12.1,
+      "elastizitaetsmodul_gpa": 70,
+      "haerte_hv": 95
+    },
+    {
+      "proben_id": "S235-002",
+      "werkstoff": "S235JR",
+      "zugfestigkeit_mpa": 425,
+      "streckgrenze_mpa": 292,
+      "bruchdehnung_prozent": 27.8,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 148
+    },
+    {
+      "proben_id": "C45-002",
+      "werkstoff": "C45E",
+      "zugfestigkeit_mpa": 695,
+      "streckgrenze_mpa": 442,
+      "bruchdehnung_prozent": 15.9,
+      "elastizitaetsmodul_gpa": 210,
+      "haerte_hv": 205
+    }
+  ]
+}
