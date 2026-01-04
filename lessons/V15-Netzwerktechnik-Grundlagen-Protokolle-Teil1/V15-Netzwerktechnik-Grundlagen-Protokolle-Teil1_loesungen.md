@@ -473,14 +473,197 @@ if __name__ == "__main__":
 
 ---
 
+### Lösung P4: Netzwerk-Latenz-Visualisierung
+
+**Lösung** (`latenz_visualisierung.py`):
+
+```python
+import random
+import matplotlib.pyplot as plt
+
+def generiere_latenz_messungen(anzahl, basis_latenz=15, varianz=10):
+    protokolle = ["Modbus TCP", "MQTT", "OPC UA"]
+    for i in range(anzahl):
+        yield {
+            'timestamp': i,
+            'latenz_ms': random.uniform(basis_latenz - varianz, basis_latenz + varianz),
+            'protokoll': random.choice(protokolle)
+        }
+
+# Daten sammeln
+messungen = list(generiere_latenz_messungen(300))
+
+# Nach Protokoll gruppieren
+daten_pro_protokoll = {}
+for protokoll in ["Modbus TCP", "MQTT", "OPC UA"]:
+    daten_pro_protokoll[protokoll] = {
+        'timestamps': [],
+        'latenzen': []
+    }
+
+for messung in messungen:
+    protokoll = messung['protokoll']
+    daten_pro_protokoll[protokoll]['timestamps'].append(messung['timestamp'])
+    daten_pro_protokoll[protokoll]['latenzen'].append(messung['latenz_ms'])
+
+# Visualisierung
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Liniendiagramm
+for protokoll, farbe in zip(["Modbus TCP", "MQTT", "OPC UA"], ['blue', 'green', 'red']):
+    ax1.plot(daten_pro_protokoll[protokoll]['timestamps'], 
+             daten_pro_protokoll[protokoll]['latenzen'], 
+             label=protokoll, color=farbe, alpha=0.6, linewidth=0.8)
+ax1.set_xlabel('Zeit (Sekunden)')
+ax1.set_ylabel('Latenz (ms)')
+ax1.set_title('Latenz-Verlauf über Zeit')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Boxplot
+boxplot_daten = [daten_pro_protokoll[p]['latenzen'] for p in ["Modbus TCP", "MQTT", "OPC UA"]]
+ax2.boxplot(boxplot_daten, labels=["Modbus TCP", "MQTT", "OPC UA"])
+ax2.set_ylabel('Latenz (ms)')
+ax2.set_title('Latenz-Verteilung nach Protokoll')
+ax2.grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.savefig('latenz_analyse.png', dpi=150)
+print("✓ Diagramm gespeichert: latenz_analyse.png")
+
+# Statistik
+print("\n=== Netzwerk-Latenz-Analyse ===\n")
+for protokoll in ["Modbus TCP", "MQTT", "OPC UA"]:
+    latenzen = daten_pro_protokoll[protokoll]['latenzen']
+    avg = sum(latenzen) / len(latenzen)
+    kritisch = sum(1 for l in latenzen if l > 25)
+    print(f"{protokoll}:")
+    print(f"  Ø Latenz: {avg:.1f} ms")
+    print(f"  Min: {min(latenzen):.1f} ms | Max: {max(latenzen):.1f} ms")
+    print(f"  Kritische Messwerte (>25ms): {kritisch}\n")
+```
+
+**Erklärung**: Generator produziert Messwerte on-the-fly. Daten werden nach Protokoll gruppiert (manuell mit Listen). Matplotlib erstellt professionelle Multi-Plot-Visualisierung.
+
+---
+
+### Lösung P5: Produktionsdaten-Simulator
+
+**Lösung** (`produktions_simulator.py`):
+
+```python
+import random
+import matplotlib.pyplot as plt
+
+def simuliere_produktion(maschinen, dauer_sekunden):
+    for sekunde in range(dauer_sekunden):
+        for maschine in maschinen:
+            basis_temp = 75 + (sekunde * 0.2)
+            temp = basis_temp + random.uniform(-5, 5)
+            
+            ausschuss = random.uniform(0, 2)
+            if random.random() < 0.05:
+                ausschuss = random.uniform(5, 8)
+            
+            yield {
+                'maschine_id': maschine,
+                'timestamp': sekunde,
+                'stueckzahl': random.randint(8, 12),
+                'temperatur_c': min(temp, 100),
+                'ausschuss': ausschuss
+            }
+
+# Simulation
+maschinen = ["CNC-01", "Presse-01", "Robot-01"]
+daten = list(simuliere_produktion(maschinen, 60))
+
+# Daten gruppieren
+maschinen_daten = {m: {'timestamps': [], 'stueckzahl': [], 'temperatur': [], 'ausschuss': []} for m in maschinen}
+
+for eintrag in daten:
+    m = eintrag['maschine_id']
+    maschinen_daten[m]['timestamps'].append(eintrag['timestamp'])
+    maschinen_daten[m]['stueckzahl'].append(eintrag['stueckzahl'])
+    maschinen_daten[m]['temperatur'].append(eintrag['temperatur_c'])
+    maschinen_daten[m]['ausschuss'].append(eintrag['ausschuss'])
+
+# Dashboard erstellen
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(14, 10))
+
+# Plot 1: Stückzahl über Zeit
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax1.plot(maschinen_daten[maschine]['timestamps'], 
+             maschinen_daten[maschine]['stueckzahl'],
+             label=maschine, color=farbe, linewidth=1.5)
+ax1.set_xlabel('Zeit (Sekunden)')
+ax1.set_ylabel('Stückzahl pro Sekunde')
+ax1.set_title('Produktionsrate über Zeit')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: Temperatur mit Warnschwelle
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax2.plot(maschinen_daten[maschine]['timestamps'],
+             maschinen_daten[maschine]['temperatur'],
+             label=maschine, color=farbe, linewidth=1.5)
+ax2.axhline(y=90, color='red', linestyle='--', label='Warnschwelle', linewidth=2)
+ax2.set_xlabel('Zeit (Sekunden)')
+ax2.set_ylabel('Temperatur (°C)')
+ax2.set_title('Temperaturverlauf')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Plot 3: Gesamtproduktion
+gesamt_produktion = {m: sum(maschinen_daten[m]['stueckzahl']) for m in maschinen}
+ax3.bar(maschinen, [gesamt_produktion[m] for m in maschinen], color=['blue', 'green', 'red'])
+ax3.set_ylabel('Gesamtproduktion (Stück)')
+ax3.set_title('Gesamtproduktion pro Maschine')
+ax3.grid(True, alpha=0.3, axis='y')
+
+# Plot 4: Ausschussrate
+for maschine, farbe in zip(maschinen, ['blue', 'green', 'red']):
+    ax4.fill_between(maschinen_daten[maschine]['timestamps'],
+                      maschinen_daten[maschine]['ausschuss'],
+                      alpha=0.5, label=maschine, color=farbe)
+ax4.set_xlabel('Zeit (Sekunden)')
+ax4.set_ylabel('Ausschussrate (%)')
+ax4.set_title('Ausschussrate über Zeit')
+ax4.legend()
+ax4.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('produktion_dashboard.png', dpi=150)
+
+# Kennzahlen
+print("=== Produktions-Monitoring (60 Sekunden) ===\n")
+print("Gesamtproduktion:")
+for maschine in maschinen:
+    gesamt = gesamt_produktion[maschine]
+    avg_temp = sum(maschinen_daten[maschine]['temperatur']) / len(maschinen_daten[maschine]['temperatur'])
+    avg_ausschuss = sum(maschinen_daten[maschine]['ausschuss']) / len(maschinen_daten[maschine]['ausschuss'])
+    print(f"  {maschine}: {gesamt} Stück (Ø Temp: {avg_temp:.1f}°C, Ø Ausschuss: {avg_ausschuss:.1f}%)")
+
+print("\n⚠️  Temperatur-Warnungen:")
+for maschine in maschinen:
+    ueberschreitungen = sum(1 for t in maschinen_daten[maschine]['temperatur'] if t > 90)
+    if ueberschreitungen > 0:
+        print(f"  {maschine}: {ueberschreitungen} Überschreitungen (>90°C)")
+
+print("\n✓ Dashboard gespeichert: produktion_dashboard.png")
+```
+
+**Erklärung**: Komplexer Generator simuliert realistische Produktionsdaten mit Trends. Dashboard verwendet 2×2 Subplot-Grid mit verschiedenen Visualisierungstypen (Linien, Balken, Flächen). Praktisches SCADA-Monitoring-System.
+
+---
+
 ## Zusammenfassung
 
-Die refaktorierten Lösungen demonstrieren:
-- **V15 Testdaten-Alignment**: Alle Lösungen verwenden die korrekten Testdateien
-- **Keine unauthorisierten Features**: Kein `collections.defaultdict` oder `Counter`
-- **Manuelle Zählung**: Verwendung von regulären `dict` mit if/else-Prüfungen
-- **Generator-Funktionen**: Einsatz von `yield` für speicher-effiziente Verarbeitung
-- **CSV/JSON/XML**: Standard-Library-Module wie in vorherigen Vorlesungen
+Die refaktorierten V15-Lösungen demonstrieren:
+- **P1-P3**: Datenverarbeitung (CSV/JSON/XML) ohne unauthorized features
+- **P4**: Professionelle Visualisierung mit Matplotlib (Subplots, Boxplot)
+- **P5**: Komplexe Echtzeit-Simulation mit Multi-Plot-Dashboard
+- **Manuelle Gruppierung**: Verwendung von Listen/Dicts statt defaultdict
+- **Praktische Anwendung**: SCADA-Monitoring, Performance-Analyse, Dashboards
     """
     Generator, der nur Zeilen zurückgibt, die mindestens
     'mindestlaenge' Zeichen haben (nach strip()).

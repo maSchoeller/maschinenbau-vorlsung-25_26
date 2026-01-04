@@ -341,15 +341,190 @@ Statistik:
 
 ---
 
-### Aufgabe P4-P6: Erweiterte Aufgaben
+### Aufgabe P4: Netzwerk-Latenz-Visualisierung mit Matplotlib ⭐⭐⭐ (Schwer)
 
-Die Aufgaben P4-P6 wurden entfernt, da die vorgesehenen Testdaten im V15-Ordner nur die drei Dateien `netzwerk_pakete.csv`, `maschinenkommunikation.json` und `opc_ua_daten.xml` umfassen. Die Übungen konzentrieren sich auf die Kernkonzepte:
+**Kontext**: Du möchtest die Netzwerk-Performance in einer Produktionsanlage visualisieren, um Latenzmuster zu erkennen und Optimierungspotenziale zu identifizieren.
 
-- **P1**: CSV-Verarbeitung mit `csv.DictReader`
-- **P2**: JSON-Verarbeitung mit Generatoren
-- **P3**: XML-Verarbeitung mit `xml.etree.ElementTree`
+**Aufgabe:**
 
-Diese drei Aufgaben decken alle wesentlichen Datenformate und Generator-Konzepte ab, die in V15 eingeführt werden.
+Schreibe ein Python-Programm, das **simulierte Latenz-Messungen** generiert und visualisiert:
+
+**a) Daten-Generator erstellen**
+
+Implementiere eine Generator-Funktion `generiere_latenz_messungen(anzahl, basis_latenz=15, varianz=10)`, die:
+- `anzahl` Messwerte erzeugt (mit `yield`)
+- Jeder Messwert ist ein Dictionary mit:
+  - `timestamp`: Fortlaufende Sekunde (0, 1, 2, ...)
+  - `latenz_ms`: Zufällige Latenz zwischen `basis_latenz ± varianz` (nutze `random.uniform()`)
+  - `protokoll`: Zufällig eines von ["Modbus TCP", "MQTT", "OPC UA"]
+
+**b) Daten sammeln und gruppieren**
+
+- Generiere 300 Messwerte
+- Gruppiere die Latenzen nach Protokoll (erstelle 3 Listen)
+
+**c) Visualisierung mit Matplotlib**
+
+Erstelle **zwei Subplots** nebeneinander:
+
+1. **Liniendiagramm** (links):
+   - X-Achse: Zeitstempel (Sekunden)
+   - Y-Achse: Latenz (ms)
+   - Zeige alle drei Protokolle in verschiedenen Farben
+   - Legende, Titel "Latenz-Verlauf über Zeit"
+
+2. **Boxplot** (rechts):
+   - Vergleiche die Latenz-Verteilungen der drei Protokolle
+   - Titel "Latenz-Verteilung nach Protokoll"
+
+**d) Statistik-Ausgabe**
+
+Berechne und zeige für jedes Protokoll:
+- Durchschnittliche Latenz
+- Minimale/Maximale Latenz
+- Anzahl Messwerte > 25ms (kritisch)
+
+**Anforderungen:**
+- Nutze `random` für Zufallszahlen
+- Nutze `matplotlib.pyplot` für Visualisierung
+- Verwende `plt.subplots(1, 2)` für zwei Plots nebeneinander
+- Speichere das Diagramm als `latenz_analyse.png`
+
+**Beispiel-Ausgabe:**
+```
+=== Netzwerk-Latenz-Analyse ===
+
+Modbus TCP:
+  Ø Latenz: 14.8 ms
+  Min: 5.2 ms | Max: 24.9 ms
+  Kritische Messwerte (>25ms): 3
+
+MQTT:
+  Ø Latenz: 15.3 ms
+  Min: 5.5 ms | Max: 25.1 ms
+  Kritische Messwerte (>25ms): 4
+
+OPC UA:
+  Ø Latenz: 15.1 ms
+  Min: 5.0 ms | Max: 24.8 ms
+  Kritische Messwerte (>25ms): 2
+
+✓ Diagramm gespeichert: latenz_analyse.png
+```
+
+**Lernziele**: Generator für Datenproduktion; Matplotlib für professionelle Visualisierungen; Datenanalyse mit mehreren Plots; Praktische Performance-Überwachung.
+
+---
+
+### Aufgabe P5: Produktionsdaten-Simulator mit Live-Monitoring ⭐⭐⭐⭐ (Sehr Schwer)
+
+**Kontext**: Erstelle einen Simulator, der Produktionsdaten in Echtzeit generiert und visualisiert - ähnlich einem SCADA-Dashboard.
+
+**Aufgabe:**
+
+Implementiere einen **Echtzeit-Produktions-Simulator** mit Generator-Pipeline und Matplotlib:
+
+**a) Produktionslinie-Generator**
+
+Erstelle eine Generator-Funktion `simuliere_produktion(maschinen, dauer_sekunden)`, die:
+- Für mehrere Maschinen Produktionsdaten simuliert
+- Jede Sekunde einen Messwert pro Maschine erzeugt (mit `yield`)
+- Messwerte enthalten:
+  - `maschine_id`: Maschinenname
+  - `timestamp`: Aktuelle Sekunde
+  - `stueckzahl`: Zufällig 8-12 Stück/Sekunde
+  - `temperatur_c`: Zufällig 70-95°C (mit Trend: steigt leicht über Zeit)
+  - `ausschuss`: Zufällig 0-2% (gelegentlich Spitzen bis 8%)
+
+**b) Datensammlung und Verarbeitung**
+
+- Definiere 3 Maschinen: `["CNC-01", "Presse-01", "Robot-01"]`
+- Simuliere 60 Sekunden Produktion
+- Sammle alle Daten in einer Liste
+
+**c) Multi-Plot-Dashboard**
+
+Erstelle ein **2×2 Dashboard** mit 4 Subplots:
+
+1. **Oben links**: Stückzahl über Zeit (Linien für alle 3 Maschinen)
+2. **Oben rechts**: Temperatur über Zeit (mit Warnschwelle bei 90°C als horizontale Linie)
+3. **Unten links**: Gesamtproduktion pro Maschine (Balkendiagramm)
+4. **Unten rechts**: Ausschussrate über Zeit (gestapeltes Flächendiagramm mit `plt.fill_between()`)
+
+**d) Produktionskennzahlen**
+
+Berechne und zeige:
+- Gesamtproduktion pro Maschine
+- Durchschnittliche Temperatur pro Maschine
+- Maschinen mit Temperatur-Überschreitungen (>90°C)
+- Durchschnittliche Ausschussrate pro Maschine
+
+**e) Alarm-System (Optional Bonus)**
+
+- Markiere Zeitpunkte mit rotem Punkt, wo Temperatur > 90°C
+- Gib Warnung aus, wenn Ausschussrate > 5%
+
+**Anforderungen:**
+- Nutze `random` für realistische Simulation
+- Nutze `matplotlib.pyplot` mit `plt.subplots(2, 2)`
+- Verwende `plt.tight_layout()` für besseres Layout
+- Speichere Dashboard als `produktion_dashboard.png`
+
+**Beispiel-Code-Struktur:**
+```python
+import random
+import matplotlib.pyplot as plt
+
+def simuliere_produktion(maschinen, dauer_sekunden):
+    for sekunde in range(dauer_sekunden):
+        for maschine in maschinen:
+            # Trend: Temperatur steigt leicht
+            basis_temp = 75 + (sekunde * 0.2)
+            temp = basis_temp + random.uniform(-5, 5)
+            
+            yield {
+                'maschine_id': maschine,
+                'timestamp': sekunde,
+                'stueckzahl': random.randint(8, 12),
+                'temperatur_c': min(temp, 100),  # Max 100°C
+                'ausschuss': random.uniform(0, 2) if random.random() > 0.1 else random.uniform(5, 8)
+            }
+
+# Hauptprogramm
+maschinen = ["CNC-01", "Presse-01", "Robot-01"]
+daten = list(simuliere_produktion(maschinen, 60))
+
+# ... Datenverarbeitung und Plots
+```
+
+**Erwartete Ausgabe:**
+```
+=== Produktions-Monitoring (60 Sekunden) ===
+
+Gesamtproduktion:
+  CNC-01: 598 Stück (Ø Temp: 85.2°C, Ø Ausschuss: 2.1%)
+  Presse-01: 612 Stück (Ø Temp: 84.8°C, Ø Ausschuss: 2.3%)
+  Robot-01: 605 Stück (Ø Temp: 85.5°C, Ø Ausschuss: 1.9%)
+
+⚠️  Temperatur-Warnungen:
+  CNC-01: 3 Überschreitungen (>90°C)
+  Presse-01: 2 Überschreitungen (>90°C)
+
+✓ Dashboard gespeichert: produktion_dashboard.png
+```
+
+**Lernziele**: Komplexe Generator-Pipelines; Multi-Plot-Dashboards; Echtzeit-Datenvisualisierung; Alarm-Systeme; Praktische SCADA-Konzepte.
+
+---
+
+**Ende der Übungsaufgaben V15**
+
+Die 5 Python-Aufgaben decken ab:
+- **P1-P3**: Datenverarbeitung (CSV/JSON/XML) mit Generatoren
+- **P4**: Visualisierung mit Matplotlib (Subplots, Boxplot)
+- **P5**: Komplexe Simulation und Dashboard-Erstellung
+
+Lösungen findest du in der Datei [V15-Netzwerktechnik-Grundlagen-Protokolle-Teil1_loesungen.md](V15-Netzwerktechnik-Grundlagen-Protokolle-Teil1_loesungen.md).
 
 **Bonus (+⭐):** Erweitere die Pipeline um eine Funktion `error_burst_detection(dateiname, zeitfenster_sekunden=60, min_errors=3)`, die Zeiträume mit gehäuften ERROR-Meldungen findet (z.B. 3+ Errors innerhalb von 60 Sekunden).
 
