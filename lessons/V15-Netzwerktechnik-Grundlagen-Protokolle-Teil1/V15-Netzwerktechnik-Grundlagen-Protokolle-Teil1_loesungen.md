@@ -242,16 +242,15 @@ Zwei benachbarte `/27`-Subnetze ergeben zusammen ein `/26`-Subnetz.
 
 ```python
 import csv
-from collections import defaultdict
 
 def analysiere_pakete(dateiname):
-    protokoll_count = defaultdict(int)
-    protokoll_groesse = defaultdict(list)
-    protokoll_latenz = defaultdict(list)
-    quell_ips = defaultdict(int)
-    scada_kommunikation = set()
-    kritische_pakete = 0
+    # Dicts für Zählungen initialisieren
+    protokoll_count = {}
+    port_count = {}
+    maschinen_count = {}
+    scada_maschinen = []
     gesamt_bytes = 0
+    pakete_gesamt = 0
     
     try:
         with open(dateiname, 'r') as f:
@@ -259,57 +258,67 @@ def analysiere_pakete(dateiname):
             for zeile in reader:
                 try:
                     protokoll = zeile['Protokoll']
+                    port = int(zeile['Port'])
                     groesse = int(zeile['Paketgroesse_Bytes'])
-                    latenz = float(zeile['Latenz_ms'])
-                    quell_ip = zeile['Quell_IP']
+                    maschine = zeile['Maschine_ID']
                     ziel_ip = zeile['Ziel_IP']
                     
-                    protokoll_count[protokoll] += 1
-                    protokoll_groesse[protokoll].append(groesse)
-                    protokoll_latenz[protokoll].append(latenz)
-                    quell_ips[quell_ip] += 1
+                    # Protokoll zählen
+                    if protokoll in protokoll_count:
+                        protokoll_count[protokoll] += 1
+                    else:
+                        protokoll_count[protokoll] = 1
+                    
+                    # Port zählen
+                    if port in port_count:
+                        port_count[port] += 1
+                    else:
+                        port_count[port] = 1
+                    
+                    # Maschinen zählen
+                    if maschine in maschinen_count:
+                        maschinen_count[maschine] += 1
+                    else:
+                        maschinen_count[maschine] = 1
+                    
                     gesamt_bytes += groesse
+                    pakete_gesamt += 1
                     
-                    if latenz > 100:
-                        kritische_pakete += 1
-                    
-                    if ziel_ip == '192.168.1.100' or quell_ip == '192.168.1.100':
-                        if quell_ip != '192.168.1.100':
-                            scada_kommunikation.add(quell_ip)
-                        if ziel_ip != '192.168.1.100':
-                            scada_kommunikation.add(ziel_ip)
-                            
+                    # SCADA-Kommunikation
+                    if ziel_ip == '192.168.10.200' and maschine not in scada_maschinen:
+                        scada_maschinen.append(maschine)
+                        
                 except (KeyError, ValueError):
                     continue
         
-        gesamt_pakete = sum(protokoll_count.values())
-        
+        # Ausgabe
         print("=== Netzwerk-Paket-Analyse ===\n")
         print("Protokoll-Verteilung:")
-        for protokoll, count in sorted(protokoll_count.items()):
-            prozent = (count / gesamt_pakete * 100) if gesamt_pakete > 0 else 0
-            print(f"  {protokoll}: {count} Pakete ({prozent:.1f}%)")
+        for prot in sorted(protokoll_count.keys()):
+            count = protokoll_count[prot]
+            prozent = (count / pakete_gesamt * 100) if pakete_gesamt > 0 else 0
+            print(f"  {prot}: {count} Pakete ({prozent:.1f}%)")
+        
+        print("\nIndustrieprotokolle (nach Port):")
+        port_namen = {502: "Modbus TCP", 1883: "MQTT", 44818: "OPC UA"}
+        for port in sorted(port_count.keys()):
+            if port in port_namen:
+                print(f"  {port_namen[port]} ({port}): {port_count[port]} Pakete")
         
         print(f"\nNetzwerk-Last:")
-        print(f"  Gesamt: {gesamt_bytes / (1024*1024):.2f} MB")
-        for protokoll in sorted(protokoll_count.keys()):
-            avg = sum(protokoll_groesse[protokoll]) / len(protokoll_groesse[protokoll])
-            print(f"  Ø Paketgröße {protokoll}: {int(avg)} Bytes")
+        print(f"  Gesamt: {gesamt_bytes / 1024:.1f} KB")
+        print(f"  Ø Paketgröße: {gesamt_bytes // pakete_gesamt if pakete_gesamt > 0 else 0} Bytes")
         
-        print(f"\nPerformance:")
-        for protokoll in sorted(protokoll_count.keys()):
-            avg_latenz = sum(protokoll_latenz[protokoll]) / len(protokoll_latenz[protokoll])
-            print(f"  Ø Latenz {protokoll}: {avg_latenz:.1f} ms")
-        print(f"  Kritische Pakete (>100ms): {kritische_pakete}")
-        
-        top_ips = sorted(quell_ips.items(), key=lambda x: x[1], reverse=True)[:3]
+        # Top 3 Maschinen
+        maschinen_liste = list(maschinen_count.items())
+        maschinen_liste.sort(key=lambda x: x[1], reverse=True)
         print(f"\nTop 3 aktivste Maschinen:")
-        for i, (ip, count) in enumerate(top_ips, 1):
-            print(f"  {i}. {ip}: {count} Pakete")
+        for i in range(min(3, len(maschinen_liste))):
+            maschine, count = maschinen_liste[i]
+            print(f"  {i+1}. {maschine}: {count} Pakete")
         
-        print(f"\nKommunikation mit SCADA (192.168.1.100):")
-        for ip in sorted(scada_kommunikation):
-            print(f"  - {ip}")
+        print(f"\nKommunikation mit SCADA (192.168.10.200):")
+        print(f"  Maschinen: {', '.join(sorted(scada_maschinen))}")
             
     except FileNotFoundError:
         print(f"Fehler: Datei '{dateiname}' nicht gefunden")
@@ -318,118 +327,160 @@ if __name__ == "__main__":
     analysiere_pakete("netzwerk_pakete.csv")
 ```
 
-**Erklärung**: Das Programm verwendet `defaultdict` für effizientes Zählen und Aggregieren.
+**Erklärung**: Verwendet nur reguläre `dict` mit manueller Prüfung, ob Keys existieren. Keine `defaultdict` oder `Counter`.
 
 ---
 
-### Lösung P2: Modbus-Protokoll-Parser (25 lines)
+### Lösung P2: Maschinenkommunikations-Analyse (28 lines)
 
 ```python
 import json
-from collections import defaultdict, Counter
-from datetime import datetime
 
-def lies_modbus_nachrichten(dateiname):
+def lies_maschinen(dateiname):
     try:
         with open(dateiname, 'r') as f:
             daten = json.load(f)
-            for nachricht in daten:
-                if nachricht.get('status') == 'success':
-                    yield nachricht
+            for maschine in daten['maschinen']:
+                yield maschine
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Fehler: {e}")
 
-def analysiere_modbus_kommunikation(dateiname):
-    slave_count = defaultdict(int)
-    slave_functions = defaultdict(list)
-    slave_werte = defaultdict(list)
-    stunden_count = defaultdict(int)
-    
-    for nachricht in lies_modbus_nachrichten(dateiname):
-        slave_count[nachricht['slave_id']] += 1
-        slave_functions[nachricht['slave_id']].append(nachricht['function_code'])
-        slave_werte[nachricht['slave_id']].append(nachricht['value'])
-        stunden_count[datetime.fromisoformat(nachricht['timestamp']).hour] += 1
-    
-    print("=== Modbus-Kommunikationsanalyse ===\n")
-    print("Slave-Statistiken:")
-    for slave_id in sorted(slave_count.keys()):
-        haeufigster_fc = Counter(slave_functions[slave_id]).most_common(1)[0][0]
-        avg_wert = sum(slave_werte[slave_id]) / len(slave_werte[slave_id])
-        print(f"  Slave {slave_id}: {slave_count[slave_id]} Nachrichten, häufigster FC: {haeufigster_fc}, Ø Wert: {int(avg_wert)}")
-    
-    top_stunden = sorted(stunden_count.items(), key=lambda x: x[1], reverse=True)[:3]
-    print(f"\nTop 3 Kommunikationsstunden:")
-    for i, (stunde, count) in enumerate(top_stunden, 1):
-        print(f"  {i}. {stunde:02d}:00-{stunde+1:02d}:00: {count} Nachrichten")
-
-if __name__ == "__main__":
-    analysiere_modbus_kommunikation("maschinenkommunikation.json")
-```
-
----
-
-### Lösung P3: Sensor-Datenanalyse (35 lines)
-
-```python
-import csv
-from collections import defaultdict
-
-def analysiere_sensoren(dateiname):
-    zonen_temperaturen = defaultdict(list)
-    kritische_sensoren = []
-    
+def analysiere_maschinenkommunikation(dateiname):
     try:
         with open(dateiname, 'r') as f:
-            reader = csv.DictReader(f)
-            for zeile in reader:
-                try:
-                    zone = zeile['Zone']
-                    temp = float(zeile['Temperatur_C'])
-                    zonen_temperaturen[zone].append(temp)
-                    
-                    ist_kritisch = zeile['Status'] == 'Warnung' or \
-                                   (zone == 'Presswerk' and (temp < 0 or temp > 300)) or \
-                                   (zone == 'Schweissen' and temp > 2000)
-                    
-                    if ist_kritisch:
-                        kritische_sensoren.append((zeile['Sensor_ID'], zone, temp, zeile['Status']))
-                except (KeyError, ValueError):
-                    continue
+            daten = json.load(f)
+            
+        print("=== Maschinenkommunikations-Analyse ===\n")
+        print(f"Produktionshalle: {daten['produktionshalle']['name']} ({daten['produktionshalle']['standort']})\n")
         
-        print("Durchschnittstemperaturen nach Zone:")
-        for zone in sorted(zonen_temperaturen.keys()):
-            avg_temp = sum(zonen_temperaturen[zone]) / len(zonen_temperaturen[zone])
-            print(f"  {zone}: {avg_temp:.1f}°C")
+        print("Maschinen-Übersicht:")
+        for maschine in lies_maschinen(dateiname):
+            latenz = maschine['kommunikation']['durchschnittliche_latenz_ms']
+            pakete = maschine['kommunikation']['pakete_pro_sekunde']
+            print(f"  {maschine['maschine_id']} ({maschine['typ']}): Latenz {latenz}ms, {pakete} Pakete/s")
         
-        if kritische_sensoren:
-            print(f"\nKritische Sensoren:")
-            for i, (sensor_id, zone, temp, status) in enumerate(sorted(kritische_sensoren, key=lambda x: x[2], reverse=True), 1):
-                print(f"  {i}. {sensor_id} ({zone}): {temp:.1f}°C - Status: {status}")
+        # Protokoll-Zählung
+        protokoll_count = {}
+        langsame = []
+        fehleranfaellig = []
+        
+        for maschine in lies_maschinen(dateiname):
+            for proto in maschine['protokolle']:
+                if proto in protokoll_count:
+                    protokoll_count[proto] += 1
+                else:
+                    protokoll_count[proto] = 1
+            
+            latenz = maschine['kommunikation']['durchschnittliche_latenz_ms']
+            fehlerrate = maschine['kommunikation']['fehlerrate_prozent']
+            
+            if latenz > 15:
+                langsame.append((maschine['maschine_id'], latenz))
+            if fehlerrate > 0.15:
+                fehleranfaellig.append((maschine['maschine_id'], fehlerrate))
+        
+        print("\nProtokoll-Unterstützung:")
+        for proto in sorted(protokoll_count.keys()):
+            print(f"  {proto}: {protokoll_count[proto]} Maschinen")
+        
+        if langsame or fehleranfaellig:
+            print("\nPerformance-Probleme:")
+            if langsame:
+                print(f"  Langsame Maschinen (>15ms): {', '.join([f'{m} ({l}ms)' for m, l in langsame])}")
+            if fehleranfaellig:
+                print(f"  Fehleranfällige Maschinen (>0.15%): {', '.join([f'{m} ({f}%)' for m, f in fehleranfaellig])}")
     
-    except FileNotFoundError:
-        print(f"Fehler: Datei nicht gefunden")
+    except (FileNotFoundError, KeyError) as e:
+        print(f"Fehler: {e}")
 
-# CSV-Schreibfunktion separat (siehe vollständige Lösung)
 if __name__ == "__main__":
-    analysiere_sensoren("sensoren_daten.csv")
+    analysiere_maschinenkommunikation("maschinenkommunikation.json")
 ```
+
+**Erklärung**: Generator-Funktion `lies_maschinen` verwendet `yield`. Manuelle Zählung mit `dict` statt `Counter`.
 
 ---
 
-Die vollständigen Lösungen für P4, P5 und P6 folgen dem gleichen Muster mit Generator-Funktionen, speicher-effizienter Verarbeitung und strukturierter Fehlerbehandlung. Alle Lösungen demonstrieren Industrieautomationsszenarie mit Modbus, OPC UA, SCADA-Logs und Produktionsdaten.
+### Lösung P3: OPC UA-Datenstruktur-Analyse (35 lines)
+
+```python
+import xml.etree.ElementTree as ET
+
+def analysiere_opc_server(dateiname):
+    try:
+        tree = ET.parse(dateiname)
+        root = tree.getroot()
+        
+        print("=== OPC UA-Server-Analyse ===\n")
+        
+        # Server-Info
+        server_info = root.find('server_info')
+        if server_info is not None:
+            print("Server-Info:")
+            name = server_info.find('name')
+            vendor = server_info.find('vendor')
+            endpoint = server_info.find('endpoint')
+            if name is not None:
+                print(f"  Name: {name.text}")
+            if vendor is not None:
+                print(f"  Vendor: {vendor.text}")
+            if endpoint is not None:
+                print(f"  Endpoint: {endpoint.text}")
+        
+        print("\nMaschinen und Variablen:")
+        
+        # Knoten durchgehen
+        nodes = root.findall('.//node')
+        anzahl_knoten = 0
+        anzahl_variablen = 0
+        temp_sensoren = 0
+        
+        for node in nodes:
+            anzahl_knoten += 1
+            browse_name = node.find('browse_name')
+            if browse_name is not None:
+                print(f"  {browse_name.text}:")
+                
+                variables = node.findall('.//variable')
+                for var in variables:
+                    anzahl_variablen += 1
+                    var_name = var.find('browse_name')
+                    var_value = var.find('value')
+                    var_unit = var.find('unit')
+                    
+                    if var_name is not None and var_value is not None:
+                        unit_text = var_unit.text if var_unit is not None else ""
+                        print(f"    - {var_name.text}: {var_value.text} {unit_text}")
+                        
+                        if unit_text == "°C":
+                            temp_sensoren += 1
+                
+                print()  # Leerzeile
+        
+        print("Statistik:")
+        print(f"  Anzahl Knoten: {anzahl_knoten}")
+        print(f"  Anzahl Variablen: {anzahl_variablen}")
+        print(f"  Temperatursensoren (°C): {temp_sensoren}")
+        
+    except (FileNotFoundError, ET.ParseError) as e:
+        print(f"Fehler: {e}")
+
+if __name__ == "__main__":
+    analysiere_opc_server("opc_ua_daten.xml")
+```
+
+**Erklärung**: XML-Parsing mit `ElementTree`. Manuelle Zählung der Knoten und Variablen ohne externe Hilfsbibliotheken.
 
 ---
 
 ## Zusammenfassung
 
-Die refaktorierten Lösungen zeigen:
-- **Industrieautomation**: Netzwerkpakete, Modbus, OPC UA, SCADA, Produktionsdaten
-- **Generatoren** für speicher-effiziente Verarbeitung
-- **CSV/JSON/XML-Verarbeitung** mit Standard-Library
-- **Aggregationen** mit `defaultdict` und `Counter`
-- **Robuste Fehlerbehandlung**
-- **Generator-Pipelines** für modulare Datenverarbeitung
+Die refaktorierten Lösungen demonstrieren:
+- **V15 Testdaten-Alignment**: Alle Lösungen verwenden die korrekten Testdateien
+- **Keine unauthorisierten Features**: Kein `collections.defaultdict` oder `Counter`
+- **Manuelle Zählung**: Verwendung von regulären `dict` mit if/else-Prüfungen
+- **Generator-Funktionen**: Einsatz von `yield` für speicher-effiziente Verarbeitung
+- **CSV/JSON/XML**: Standard-Library-Module wie in vorherigen Vorlesungen
     """
     Generator, der nur Zeilen zurückgibt, die mindestens
     'mindestlaenge' Zeichen haben (nach strip()).
