@@ -95,38 +95,30 @@ c) **Caching und TTL**: Die A-Records haben eine TTL (Time To Live) von 300 Seku
 
 ### Aufgabe P1: Pandas-Grundlagen - Sensordaten einlesen und erkunden (⭐)
 
-**Kontext**: Eine Produktionsanlage hat mehrere Sensoren installiert, die kontinuierlich Betriebsdaten aufzeichnen. Deine Aufgabe ist es, die Sensordaten einzulesen und einen ersten Überblick zu gewinnen.
+**Kontext**: Eine Produktionsanlage hat mehrere Sensoren installiert, die kontinuierlich Betriebsdaten aufzeichnen. Die Sensordaten wurden bereits in einer CSV-Datei gesammelt. Deine Aufgabe ist es, die Daten einzulesen und einen ersten Überblick zu gewinnen.
 
-**Datensatz** (`sensoren_daten.csv`):
-```csv
-Sensor_ID,Maschine,Typ,Wert,Einheit,Timestamp,Status
-S001,CNC-01,Temperatur,85.5,°C,2024-01-15 08:00:00,Normal
-S002,CNC-01,Drehzahl,2500,RPM,2024-01-15 08:00:00,Normal
-S003,Presse-01,Druck,150.2,bar,2024-01-15 08:00:00,Normal
-S004,Presse-01,Temperatur,105.8,°C,2024-01-15 08:00:00,Warnung
-S005,CNC-02,Temperatur,72.3,°C,2024-01-15 08:00:00,Normal
-S006,CNC-02,Drehzahl,3200,RPM,2024-01-15 08:00:00,Normal
-S007,Presse-02,Druck,142.5,bar,2024-01-15 08:00:00,Normal
-S008,Presse-02,Temperatur,98.1,°C,2024-01-15 08:00:00,Normal
+**Datensatz** (`sensoren_daten.csv` - 15 Zeilen verfügbar im Ordner):
+
+Die CSV-Datei enthält folgende Spalten:
+```
+Sensor_ID,Sensor_Name,Typ,Position,Temperatur_C,Vibration_mm_s,Druck_bar,Letztwartung,Status
 ```
 
 **Aufgabenstellung**:
 
-a) Erstelle die CSV-Datei `sensoren_daten.csv` mit dem obigen Inhalt.
+a) Lies die CSV-Datei `sensoren_daten.csv` mit Pandas ein und speichere den DataFrame in der Variable `df`.
 
-b) Lies die CSV-Datei mit Pandas ein und speichere den DataFrame in der Variable `df`.
+b) Zeige die **ersten 3 Zeilen** des DataFrames an.
 
-c) Zeige die **ersten 3 Zeilen** des DataFrames an.
+c) Zeige **detaillierte Informationen** über den DataFrame an (Datentypen, fehlende Werte, Speicherverbrauch).
 
-d) Zeige **detaillierte Informationen** über den DataFrame an (Datentypen, fehlende Werte, Speicherverbrauch).
+d) Berechne **deskriptive Statistiken** für numerische Spalten (Mittelwert, Standardabweichung, Min, Max, Quartile).
 
-e) Berechne **deskriptive Statistiken** für numerische Spalten (Mittelwert, Standardabweichung, Min, Max, Quartile).
+e) Wie viele **Zeilen und Spalten** hat der DataFrame?
 
-f) Wie viele **Zeilen und Spalten** hat der DataFrame?
+f) Welche **Spaltennamen** existieren?
 
-g) Welche **Spaltennamen** existieren?
-
-h) Konvertiere die Spalte `Timestamp` in den Datentyp **datetime**.
+g) Konvertiere die Spalte `Letztwartung` in den Datentyp **datetime**.
 
 **Lernziele**: CSV-Dateien einlesen; DataFrame inspizieren; Basis-Methoden anwenden; Zeitstempel-Konvertierung.
 
@@ -222,28 +214,25 @@ f) **Bonus**: Berechne die durchschnittliche Netto-Zykluszeit pro Maschine mit v
 
 ### Aufgabe P5: Produktionsplanung - Auftragsanalyse-Dashboard (⭐⭐⭐⭐)
 
-**Kontext**: Ein Maschinenbau-Unternehmen fertigt verschiedene Bauteile. Du sollst ein Analyse-Dashboard mit Pandas erstellen, um Produktionseffizienz zu überwachen.
+**Kontext**: Ein Maschinenbau-Unternehmen fertigt verschiedene Bauteile. Die Produktionsdaten wurden bereits in einer CSV-Datei gesammelt. Du sollst ein Analyse-Dashboard mit Pandas erstellen, um Produktionseffizienz zu überwachen.
 
-**Datensatz** (`produktion_auftrage.csv`):
+**Datensatz** (`produktion_auftrage.csv` - verfügbar im Ordner):
+
+Die CSV-Datei enthält folgende Spalten:
+```
+Auftrag_ID,Maschine,Bauteil,Zielmenge,Produziert,Ausschuss,Zykluszeit_s,Datum,Status
+```
+
+Beispiel-Einträge:
 ```csv
-Auftrag_ID,Maschine,Bauteil,Zielm enge,Produziert,Ausschuss,Zykluszeit_s,Datum,Status
-A001,CNC-01,Welle-A,100,98,2,12.5,2024-01-15,Abgeschlossen
-A002,CNC-02,Flansch-B,200,195,5,8.3,2024-01-15,Abgeschlossen
-A003,CNC-01,Welle-A,150,148,2,12.8,2024-01-16,Abgeschlossen
-A004,Presse-01,Gehaeuse-C,80,75,5,25.0,2024-01-16,Verzoegert
-A005,CNC-02,Flansch-B,180,178,2,8.1,2024-01-17,Abgeschlossen
-A006,Presse-02,Gehaeuse-C,100,98,2,24.5,2024-01-17,Abgeschlossen
-A007,CNC-01,Welle-A,120,118,2,12.6,2024-01-18,Abgeschlossen
-A008,Drehbank-01,Bolzen-D,300,285,15,5.2,2024-01-18,Abgeschlossen
-A009,CNC-02,Flansch-B,160,158,2,8.4,2024-01-19,Abgeschlossen
-A010,Presse-01,Gehaeuse-C,90,80,10,26.0,2024-01-19,Verzoegert
-A011,Drehbank-01,Bolzen-D,350,340,10,5.1,2024-01-20,Abgeschlossen
-A012,CNC-01,Welle-A,110,109,1,12.4,2024-01-20,Abgeschlossen
+A0001,CNC-01,Welle-A,100,98,2,12.5,2024-01-15,Abgeschlossen
+A0002,CNC-02,Flansch-B,200,195,5,8.3,2024-01-15,Abgeschlossen
+...
 ```
 
 **Aufgabenstellung**:
 
-a) Erstelle die CSV-Datei und lies sie mit Pandas ein. Konvertiere die Spalte `Datum` in datetime.
+a) Lies die CSV-Datei `produktion_auftrage.csv` mit Pandas ein. Konvertiere die Spalte `Datum` in datetime.
 
 b) Füge folgende neue Spalten hinzu:
    - **`Ausschussrate`**: (Ausschuss / Zielmenge) × 100 in Prozent
