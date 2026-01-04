@@ -48,8 +48,8 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V05: CNC-Drehzahl-Warnung, Hydraulikdruck-Monitor, Materialspannungs-Klassifikation, CNC-Bearbeitungskosten, Werkstoffprüfung-Validator – ✅ Abgeschlossen
 - V06: CNC-Drehzahl-Sequenzen, Zahnrad-Übersetzung, G-Code Analyse, Material-Zugversuch, Fertigungslinie-Simulation – ✅ Abgeschlossen
 - V07: CNC-Werkzeugsuche, Hydraulikdruck-Überwachung, Drehmoment-Tabelle, Prüfprotokoll-Generator, Maschinendaten-Analyse – ✅ Abgeschlossen
-- V08: Sensor-Messwerte, Vibrationsdaten-Analyse, NC-Programm-Validator, Materialprüfungs-Datenbank, CNC-Editor mit Undo/Redo – ✅ Abgeschlossen
-- V09: Messwert-Eingabe (Kalibrierung), Maschinen-Logfile-Analyse, CNC-Konfiguration, Material-Validator, Fertigungszellen-Konfigurations-System – ✅ Abgeschlossen
+- V08: Sensor-Messwerte, Vibrationsdaten-Analyse, NC-Programm-Validator, Materialprüfungs-Datenbank, CNC-Editor mit Undo/Redo – ✅ Abgeschlossen (keine Testdaten nötig)
+- V09: Messwert-Eingabe (Kalibrierung), Maschinen-Logfile-Analyse, CNC-Konfiguration, Material-Validator, Fertigungszellen-Konfigurations-System – ✅ Abgeschlossen (Testdaten: maschine_01.log, fertigungszelle_01.json)
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)
