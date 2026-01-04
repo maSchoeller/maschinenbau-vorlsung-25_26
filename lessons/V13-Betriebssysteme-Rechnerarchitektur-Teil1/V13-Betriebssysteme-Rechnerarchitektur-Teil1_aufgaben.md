@@ -116,24 +116,27 @@ for spalte in range(1000):
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Erste Plots mit Matplotlib (Leicht)
+### Aufgabe P1: CNC-Werkzeugverschleiß Visualisierung (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 15-20 Minuten  
 **Vorkenntnisse**: Matplotlib-Installation, `plt.plot()`, Achsenbeschriftungen
 
-Erstelle ein Python-Programm, das folgende lineare Funktionen im Bereich x = 0 bis x = 10 (in 0.5er-Schritten) visualisiert:
-- `y₁ = 2x + 1`
-- `y₂ = -0.5x + 8`
-- `y₃ = x`
+Erstelle ein Python-Programm, das den Werkzeugverschleiß verschiedener Fräswerkzeuge über die Betriebszeit visualisiert. In der Zerspanung nimmt der Werkzeugverschleiß mit der Standzeit zu.
+
+Gegeben sind drei Werkzeugtypen mit ihren Verschleißmodellen (Verschleiß in mm nach t Minuten):
+- **Hartmetall-Fräser**: `verschleiß = 0.002 * t + 0.05` (langsamer Verschleiß)
+- **HSS-Fräser**: `verschleiß = 0.008 * t + 0.10` (mittlerer Verschleiß)
+- **Schnellstahl**: `verschleiß = 0.015 * t + 0.15` (schneller Verschleiß)
 
 **Anforderungen**:
-1. Alle drei Funktionen sollen im selben Plot dargestellt werden
-2. Verwende unterschiedliche Farben für jede Funktion (rot, blau, grün)
-3. Füge eine Legende hinzu mit den Funktionsgleichungen
-4. Beschrifte die X-Achse mit "x-Wert" und die Y-Achse mit "y-Wert"
-5. Setze den Titel "Lineare Funktionen im Vergleich"
+1. Visualisiere den Verschleiß für Betriebszeiten von 0 bis 100 Minuten (in 5-Minuten-Schritten)
+2. Verwende unterschiedliche Farben: Hartmetall (blau), HSS (grün), Schnellstahl (rot)
+3. Füge eine Legende hinzu mit den Werkzeugbezeichnungen
+4. Beschrifte die X-Achse mit "Betriebszeit (Minuten)" und die Y-Achse mit "Verschleiß (mm)"
+5. Setze den Titel "Werkzeugverschleiß bei Fräsoperationen"
 6. Aktiviere Gitterlinien
+7. Markiere die kritische Verschleißgrenze von 1.0 mm mit einer horizontalen roten gestrichelten Linie
 
 **Beispiel Ein-/Ausgabe**:
 ```
@@ -144,267 +147,267 @@ Erstelle ein Python-Programm, das folgende lineare Funktionen im Bereich x = 0 b
 ```python
 import matplotlib.pyplot as plt
 
-# Erstelle x-Werte von 0 bis 10 in 0.5er-Schritten
-x = [i * 0.5 for i in range(21)]  # 0, 0.5, 1.0, ..., 10.0
+# Erstelle Betriebszeit-Werte von 0 bis 100 Minuten in 5-Minuten-Schritten
+betriebszeit = [i * 5 for i in range(21)]  # 0, 5, 10, ..., 100
 
-# Berechne y-Werte für die drei Funktionen
+# Berechne Verschleiß-Werte für die drei Werkzeugtypen
 # Dein Code hier
 
 # Erstelle den Plot
 # Dein Code hier
+
+# Markiere kritische Verschleißgrenze
+# Dein Code hier
 ```
 
 **Hinweise**:
-- Verwende `range(21)`, da 0 bis 10 in 0.5er-Schritten 21 Werte ergibt (0, 0.5, 1.0, ..., 10.0)
-- List Comprehension ist nützlich für die Berechnung der y-Werte
+- Verwende `range(21)`, da 0 bis 100 in 5er-Schritten 21 Werte ergibt
+- List Comprehension ist nützlich für die Berechnung der Verschleißwerte
+- `plt.axhline(y=1.0, ...)` zeichnet eine horizontale Linie
 
 ---
 
-### Aufgabe P2: Temperaturverlauf visualisieren (Leicht-Mittel)
+### Aufgabe P2: Hydrauliksystem-Überwachung (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 20-25 Minuten  
 **Vorkenntnisse**: `plt.plot()`, Linienstile, Marker
 
-Ein Temperatur-Sensor in einer Fertigungshalle misst die Temperatur stündlich über 24 Stunden. Gegeben sind folgende Messdaten:
+Ein Drucksensor überwacht den Hydraulikdruck einer Pressmaschine während eines 24-Stunden-Produktionszyklus (stündliche Messung). Gegeben sind folgende Messdaten:
 
 ```python
 stunden = list(range(24))  # 0 bis 23 Uhr
-temperaturen = [18, 18, 17, 17, 16, 16, 17, 19, 21, 23, 
-                25, 27, 28, 29, 28, 27, 26, 24, 22, 21, 
-                20, 19, 19, 18]  # °C
+druck_bar = [145, 148, 152, 158, 165, 170, 178, 185, 192, 198, 
+             205, 210, 215, 218, 215, 210, 205, 198, 190, 182, 
+             170, 160, 152, 148]  # bar
 ```
 
 **Aufgaben**:
 
-**Teil a)**: Erstelle einen Linienplot der Temperatur über die Zeit:
+**Teil a)**: Erstelle einen Linienplot des Hydraulikdrucks über die Zeit:
 - X-Achse: "Uhrzeit (Stunde)"
-- Y-Achse: "Temperatur (°C)"
-- Titel: "Temperaturverlauf über 24 Stunden"
+- Y-Achse: "Hydraulikdruck (bar)"
+- Titel: "Hydraulikdruck-Überwachung über 24 Stunden"
 - Verwende eine durchgezogene Linie mit Marker-Punkten (`'o-'`)
-- Farbe: Orange
+- Farbe: Dunkelblau (`'darkblue'`)
 - Gitterlinien aktiviert
 
-**Teil b)**: Füge eine horizontale Linie bei 20°C hinzu, die die **Soll-Temperatur** markiert:
-- Verwende `plt.axhline(y=20, color='red', linestyle='--', label='Soll-Temperatur')`
+**Teil b)**: Füge zwei horizontale Linien hinzu für die zulässigen Druckgrenzen:
+- Minimaler Betriebsdruck: 150 bar (grüne gestrichelte Linie)
+- Maximaler Betriebsdruck: 200 bar (rote gestrichelte Linie)
+- Verwende `plt.axhline()` mit entsprechenden Labels
 - Ergänze die Legende
 
-**Teil c)**: Markiere alle Zeitpunkte, an denen die Temperatur über 25°C liegt, mit roten Scatter-Punkten:
-- Filtere Stunden und Temperaturen, bei denen `temperatur > 25`
-- Verwende `plt.scatter()` für diese Punkte mit Farbe Rot und größerem Marker (`s=100`)
-- Label: "Überhitzung (>25°C)"
+**Teil c)**: Markiere alle Zeitpunkte, an denen der Druck **außerhalb** des zulässigen Bereichs liegt (< 150 bar ODER > 200 bar):
+- Filtere die kritischen Stunden
+- Verwende `plt.scatter()` für diese Punkte mit oranger Farbe und größerem Marker (`s=120`)
+- Label: "Kritischer Druck"
 
 **Beispiel-Ausgabe**:
-Ein Plot mit orangener Linie, roter gestrichelter Soll-Linie und roten Markierungen bei Überhitzungen.
+Ein Plot mit blauer Druckkurve, grünen und roten Grenzlinien, und orangen Markierungen bei kritischen Druckwerten.
 
 **Hinweise**:
-- Verwende List Comprehension oder eine Schleife zum Filtern der Überhitzungs-Punkte
+- Verwende `or`-Operator zum Filtern: `druck < 150 or druck > 200`
 - `plt.axhline()` zeichnet eine horizontale Linie über die gesamte X-Achse
+- `zorder=5` stellt sicher, dass Scatter-Punkte über der Linie liegen
 
 ---
 
-### Aufgabe P3: CPU-Frequenzen im Vergleich (Mittel)
+### Aufgabe P3: Produktionsqualität im Vergleich (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 25-30 Minuten  
 **Vorkenntnisse**: Scatter Plots, Farben, Marker-Größen
 
-Historische Daten über CPU-Taktfrequenzen verschiedener Prozessor-Generationen:
+Historische Daten zur Produktionsqualität verschiedener Fertigungslinien über 9 Quartale:
 
 ```python
-jahre = [1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2023]
-intel_mhz = [16, 33, 150, 1400, 3800, 3600, 4000, 5300, 6000]
-amd_mhz = [12, 40, 133, 1000, 2600, 3200, 4700, 4900, 5700]
-kerne = [1, 1, 1, 1, 2, 4, 8, 16, 24]  # Anzahl CPU-Kerne
+quartale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+linie_a_ausschuss_prozent = [8.5, 7.2, 6.1, 5.5, 4.8, 4.2, 3.5, 2.9, 2.1]
+linie_b_ausschuss_prozent = [9.2, 8.5, 7.8, 7.0, 6.5, 6.0, 5.2, 4.5, 3.8]
+produktionsvolumen_tsd = [10, 12, 15, 18, 22, 25, 30, 35, 42]  # in Tausend Stück
 ```
 
 **Aufgaben**:
 
-**Teil a)**: Erstelle einen Scatter Plot, der die Entwicklung von Intel und AMD CPU-Frequenzen über die Zeit zeigt:
-- X-Achse: "Jahr"
-- Y-Achse: "Taktfrequenz (MHz)"
-- Titel: "CPU-Taktfrequenzen: Intel vs. AMD (1985-2023)"
-- Intel: Blaue Kreise
-- AMD: Rote Quadrate (`marker='s'`)
+**Teil a)**: Erstelle einen Scatter Plot für beide Fertigungslinien:
+- X-Achse: "Quartal"
+- Y-Achse: "Ausschussquote (%)"
+- Titel: "Qualitätsentwicklung: Linie A vs. Linie B"
+- Linie A: Blaue Kreise
+- Linie B: Rote Quadrate (`marker='s'`)
 - Beide mit Label für Legende
 
-**Teil b)**: Skaliere die **Marker-Größe** proportional zur Anzahl der CPU-Kerne:
-- Verwende `s=kerne * 20` für die Marker-Größe bei beiden Scatter-Plots
-- Füge eine Anmerkung hinzu: `plt.text(2018, 1000, "Größe ∝ Kerne", fontsize=10)`
+**Teil b)**: Skaliere die **Marker-Größe** proportional zum Produktionsvolumen:
+- Verwende `s=produktionsvolumen_tsd` für beide Scatter-Plots
+- Füge eine Anmerkung hinzu: `plt.text(7, 8, "Größe ∝ Produktionsvolumen", fontsize=10)`
 
-**Teil c)**: Verbinde die Intel-Datenpunkte mit einer gestrichelten Linie und die AMD-Datenpunkte mit einer gepunkteten Linie:
-- Verwende zusätzlich `plt.plot()` mit `linestyle='--'` (Intel) und `linestyle=':'` (AMD)
-- Wichtig: Verwende dieselben Farben wie bei den Scatter-Punkten
+**Teil c)**: Verbinde die Datenpunkte mit Linien:
+- Linie A: Gestrichelte blaue Linie (`linestyle='--'`)
+- Linie B: Gepunktete rote Linie (`linestyle=':'`)
+- Verwende dieselben Farben wie bei den Scatter-Punkten
 
-**Teil d)**: Setze die Y-Achse auf logarithmische Skalierung:
-- `plt.yscale('log')`
-- Dies zeigt das exponentielle Wachstum deutlicher
+**Teil d)**: Markiere die Zielausschussquote von 3% mit einer horizontalen grünen Linie:
+- `plt.axhline(y=3, color='green', linestyle='-.', label='Ziel-Ausschussquote (3%)')`
 
 **Hinweise**:
-- Scatter-Plots und Linienplots können im selben Plot kombiniert werden
-- Logarithmische Skala eignet sich für Daten mit großem Wertebereich
-- `plt.text(x, y, text)` fügt Text an Position (x, y) ein
+- Scatter-Plots und Linienplots können kombiniert werden
+- Kleinere Marker-Größen am Anfang zeigen geringeres Produktionsvolumen
 
 ---
 
-### Aufgabe P4: Messdaten-Analyse mit Fehlerbalken (Mittel-Schwer)
+### Aufgabe P4: FEM-Spannungsanalyse mit Fehlerbalken (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 35-40 Minuten  
-**Vorkenntnisse**: `plt.plot()`, `plt.scatter()`, `plt.fill_between()`, statistische Konzepte
+**Vorkenntnisse**: `plt.plot()`, `plt.scatter()`, `plt.errorbar()`, `plt.fill_between()`
 
-Ein Ingenieur misst die Zugfestigkeit eines Materials bei verschiedenen Temperaturen. Jede Messung wurde 5-mal wiederholt, um die Streuung zu erfassen:
+Ein Konstrukteur führt FEM-Simulationen (Finite-Elemente-Methode) durch, um die Zugspannung in einem Bauteil bei verschiedenen Lasten zu analysieren. Jede Simulation wurde 5-mal mit leicht variierten Parametern wiederholt:
 
 ```python
-temperaturen = [20, 40, 60, 80, 100, 120, 140, 160]  # °C
-zugfestigkeit_mittel = [450, 445, 438, 428, 415, 398, 375, 348]  # MPa
-zugfestigkeit_std = [12, 15, 18, 22, 25, 30, 35, 40]  # MPa (Standardabweichung)
+lasten_kn = [5, 10, 15, 20, 25, 30, 35, 40]  # kN
+spannung_mittel_mpa = [48, 95, 142, 189, 235, 282, 328, 375]  # MPa
+spannung_std_mpa = [3, 5, 7, 9, 12, 15, 18, 22]  # MPa (Standardabweichung)
 ```
 
 **Aufgaben**:
 
 **Teil a)**: Erstelle einen Plot mit Fehlerbalken:
-- X-Achse: "Temperatur (°C)"
-- Y-Achse: "Zugfestigkeit (MPa)"
-- Titel: "Temperaturabhängigkeit der Zugfestigkeit"
-- Verwende `plt.errorbar(x, y, yerr=std, fmt='o-', capsize=5, label='Messdaten ± Std')`
+- X-Achse: "Last (kN)"
+- Y-Achse: "Spannung (MPa)"
+- Titel: "FEM-Spannungsanalyse mit Messunsicherheit"
+- Verwende `plt.errorbar(x, y, yerr=std, fmt='o-', capsize=5, label='Simulation ± σ')`
 - Farbe: Dunkelblau
 - Gitterlinien aktiviert
 
 **Teil b)**: Füge einen **Unsicherheitsbereich** (Confidence Band) hinzu:
 - Verwende `plt.fill_between()` um den Bereich Mittelwert ± Standardabweichung zu schattieren
-- Berechne obere Grenze: `[mittel + std for mittel, std in zip(zugfestigkeit_mittel, zugfestigkeit_std)]`
-- Berechne untere Grenze: `[mittel - std for mittel, std in zip(zugfestigkeit_mittel, zugfestigkeit_std)]`
-- `plt.fill_between(temperaturen, untere_grenze, obere_grenze, alpha=0.2, color='blue', label='±1σ Bereich')`
+- Berechne obere Grenze: `[mittel + std for mittel, std in zip(spannung_mittel_mpa, spannung_std_mpa)]`
+- Berechne untere Grenze: `[mittel - std for mittel, std in zip(spannung_mittel_mpa, spannung_std_mpa)]`
+- `plt.fill_between(lasten_kn, untere_grenze, obere_grenze, alpha=0.2, color='blue', label='±1σ Bereich')`
 
-**Teil c)**: Markiere kritische Bereiche:
-- Wenn Zugfestigkeit < 380 MPa: Material gilt als **kritisch**
-- Finde alle Temperaturen, bei denen Zugfestigkeit < 380 MPa
-- Zeichne diese Bereiche mit roter Hintergrund-Schattierung: `plt.axvspan(temp_start, temp_end, color='red', alpha=0.15, label='Kritischer Bereich')`
+**Teil c)**: Markiere die **Streckgrenze** des Materials (σ_y = 300 MPa):
+- Zeichne eine horizontale rote gestrichelte Linie: `plt.axhline(y=300, color='red', linestyle='--', linewidth=2, label='Streckgrenze (300 MPa)')`
+- Markiere den Bereich ab dem die Streckgrenze überschritten wird mit roter Schattierung: `plt.axvspan(x_min, x_max, color='red', alpha=0.1, label='Plastische Verformung')`
 
 **Teil d)**: Füge eine Trendlinie hinzu:
-- Verwende `numpy.polyfit()` für eine lineare Regression: `koeffizienten = np.polyfit(temperaturen, zugfestigkeit_mittel, deg=1)`
-- Berechne Trendlinie: `trendlinie = [koeffizienten[0] * t + koeffizienten[1] for t in temperaturen]`
-- Zeichne Trendlinie mit gestrichelter schwarzer Linie: `plt.plot(temperaturen, trendlinie, 'k--', label='Trendlinie')`
+- Verwende `numpy.polyfit()` für eine lineare Regression
+- Berechne: `koeffizienten = np.polyfit(lasten_kn, spannung_mittel_mpa, deg=1)`
+- Zeichne Trendlinie: `plt.plot(lasten_kn, trendlinie, 'k--', label='Trendlinie')`
 
 **Beispiel-Ausgabe**:
-Ein Plot mit blauen Datenpunkten mit Fehlerbalken, blauem Unsicherheitsbereich, roter kritischer Zone ab ca. 120°C, und schwarzer Trendlinie.
+Ein Plot mit blauen Fehlerbalken, blauem Unsicherheitsbereich, roter Streckgrenze und schwarzer Trendlinie.
 
 **Hinweise**:
-- `plt.errorbar()` ist speziell für Messdaten mit Unsicherheiten
-- `plt.fill_between()` schattiert den Bereich zwischen zwei Kurven
-- `plt.axvspan(xmin, xmax, ...)` schattiert einen vertikalen Bereich
-- NumPy wird hier verwendet (Installation: `pip install numpy`)
-- `np.polyfit(x, y, deg)` berechnet Polynom-Koeffizienten (deg=1 für linear)
+- Die Streckgrenze wird zwischen 25-30 kN überschritten
+- Lineare Regression zeigt perfekten Zusammenhang (Hookesche Gesetz: σ = E·ε)
+- `np.polyfit()` benötigt `import numpy as np`
 
 ---
 
-### Aufgabe P5: Cache-Performance-Simulation (Schwer/Komplex)
+### Aufgabe P5: Lager-Vibrations-Datenanalyse (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
-**Vorkenntnisse**: Schleifen, Funktionen, `plt.plot()`, `plt.subplot()`, Performance-Analyse
+**Vorkenntnisse**: CSV-Einlesen, `plt.plot()`, `plt.subplot()`, Daten-Gruppierung, Performance-Analyse
 
-In dieser Aufgabe simulierst du die Auswirkungen von Cache-Größen auf die Programm-Performance und visualisierst die Ergebnisse.
+In dieser Aufgabe analysierst du echte Vibrationsmessdaten von Wälzlagern unter verschiedenen Betriebsbedingungen und visualisierst die Ergebnisse.
 
-**Szenario**: Ein Programm durchläuft ein Array und greift sequenziell auf Elemente zu. Die Performance hängt davon ab, ob Daten im Cache liegen (Cache Hit) oder aus dem RAM geladen werden müssen (Cache Miss).
-
-**Gegeben**:
-- L1-Cache: 64 KB, Zugriffszeit: 4 Taktzyklen
-- L2-Cache: 512 KB, Zugriffszeit: 12 Taktzyklen
-- L3-Cache: 8 MB, Zugriffszeit: 40 Taktzyklen
-- RAM: Zugriffszeit: 100 Taktzyklen
-- Jedes Array-Element: 8 Bytes (Float)
+**Szenario**: Ein Maschinenbau-Ingenieur hat Vibrationsdaten von vier verschiedenen Wälzlagern über einen weiten Drehzahlbereich gemessen. Die Datei `lager_vibrationsdaten.csv` enthält **120 Messpunkte** mit folgenden Spalten:
+- `Drehzahl_UPM`: Drehzahl in U/min
+- `Zustand`: Lagerzustand (Neu, Leicht_verschlissen, Stark_verschlissen, Beschaedigt)
+- `Amplitude_mm_s`: Gemessene Vibrationsamplitude in mm/s
+- `Temperatur_C`: Lagertemperatur in °C
+- `Betriebsstunden`: Betriebsstunden des Lagers
 
 **Aufgaben**:
 
-**Teil a)**: Implementiere eine Funktion `berechne_zugriffszeit(array_groesse_kb, cache_groesse_kb, cache_zyklen)`, die die **durchschnittliche Zugriffszeit** berechnet:
-- Wenn `array_groesse_kb <= cache_groesse_kb`: Alle Daten im Cache → Zugriffszeit = `cache_zyklen`
-- Sonst: Cache Miss Rate = `1 - (cache_groesse_kb / array_groesse_kb)`
-- Durchschnittliche Zeit = `(1 - miss_rate) * cache_zyklen + miss_rate * ram_zyklen`
+**Teil a)**: Lade die CSV-Datei und gruppiere die Daten nach Lagerzustand:
+- Verwende `open()` und Dateiverarbeitung oder eine einfache CSV-Parsing-Logik
+- Erstelle für jeden Lagerzustand separate Listen: `drehzahlen_zustand` und `amplituden_zustand`
+- Tipp: Nutze Dictionaries zur Strukturierung: `daten = {'Neu': {'drehzahl': [], 'amplitude': []}, ...}`
 
-**Teil b)**: Simuliere verschiedene Array-Größen von 1 KB bis 16 MB (verwende logarithmische Schritte):
-```python
-array_groessen_kb = [2**i for i in range(0, 15)]  # 1, 2, 4, 8, ..., 16384 KB
-```
+**Teil b)**: Erstelle einen Plot mit **logarithmischer X-Achse** (`plt.subplot(2, 1, 1)`):
+- X-Achse: "Drehzahl (U/min)" (logarithmisch: `plt.xscale('log')`)
+- Y-Achse: "Vibrationsamplitude (mm/s)"
+- Vier Linien für die vier Lagerzustände (verschiedene Farben und Linienstile)
+  - Neu: Grüne durchgezogene Linie
+  - Leicht_verschlissen: Gelbe gestrichelte Linie
+  - Stark_verschlissen: Orange gepunktete Linie
+  - Beschaedigt: Rote Strich-Punkt-Linie
+- Titel: "Lager-Vibrations-Analyse: Messdaten aus CSV"
+- Legende mit Lagerzuständen
+- Gitterlinien aktiviert (`plt.grid(True, which='both', alpha=0.3)`)
 
-Berechne für jede Array-Größe die durchschnittliche Zugriffszeit für:
-- Nur L1-Cache (64 KB)
-- L1 + L2-Cache (kombiniert: Erst L1, dann L2, dann RAM)
-- L1 + L2 + L3-Cache (kombiniert: Erst L1, dann L2, dann L3, dann RAM)
+**Teil c)**: Berechne und visualisiere den **Schadensfaktor** (`plt.subplot(2, 1, 2)`):
+- Schadensfaktor = `Amplitude_Zustand / Amplitude_Neu` (für jede Drehzahl)
+- X-Achse: "Drehzahl (U/min)" (logarithmisch)
+- Y-Achse: "Schadensfaktor (relativ zu Neu-Lager)"
+- Zeige drei Linien: Leicht verschlissen, Stark verschlissen, Beschädigt
+- Markiere kritische Schwelle: `plt.axhline(y=5, color='red', linestyle='--', linewidth=2, label='Kritische Schwelle')`
+- Titel: "Schadensfaktor-Entwicklung über Drehzahlbereich"
 
-**Teil c)**: Erstelle einen Plot mit **logarithmischer X-Achse**:
-- X-Achse: "Array-Größe (KB)" (logarithmisch: `plt.xscale('log')`)
-- Y-Achse: "Durchschnittliche Zugriffszeit (Taktzyklen)"
-- Drei Linien für die drei Cache-Konfigurationen
-- Titel: "Cache-Performance: Einfluss der Array-Größe"
-- Legende mit Cache-Hierarchien
-- Gitterlinien aktiviert
+**Teil d)**: Ergänze statistische Auswertung:
+- Berechne die **maximale Vibrationsamplitude** für jeden Lagerzustand
+- Berechne die **durchschnittliche Temperatur** für jeden Lagerzustand
+- Gib die Ergebnisse in der Konsole aus
 
-**Teil d)**: Erstelle einen zweiten Plot (verwende `plt.subplot(2, 1, 2)`), der die **Speedup** zeigt:
-- Speedup = `Zugriffszeit_ohne_Cache / Zugriffszeit_mit_Cache`
-- "Ohne Cache" bedeutet: Alle Zugriffe gehen direkt zum RAM (100 Taktzyklen)
-- Y-Achse: "Speedup-Faktor"
-- Zeige Speedup für L1, L1+L2, L1+L2+L3
-
-**Bonus-Challenge** (optional):
-Erweitere die Simulation um **Cache Line Effects**:
-- Cache Lines sind typisch 64 Bytes (8 Float-Werte)
-- Bei sequenziellem Zugriff wird eine ganze Cache Line geladen → Spatial Locality
-- Modifiziere die Simulation, um diesen Effekt zu berücksichtigen
+**Hinweise**:
+- Die CSV-Datei enthält Header-Zeile: `Drehzahl_UPM,Zustand,Amplitude_mm_s,Temperatur_C,Betriebsstunden`
+- Nutze `line.strip().split(',')` zum Parsen jeder Zeile
+- Sortiere die Drehzahlen für saubere Plots: `sorted(zip(drehzahlen, amplituden))`
+- Bei logarithmischen Achsen wird das exponentielle Wachstum sichtbar
 
 **Beispiel-Ausgabe**:
-Zwei Plots:
-1. Zugriffszeit vs. Array-Größe: Stufenförmige Kurven, die bei Cache-Größen "springen"
-2. Speedup vs. Array-Größe: Zeigt, wie dramatisch Cache die Performance verbessert
+Zwei Subplots:
+1. Vibrationsamplitude vs. Drehzahl: Zeigt exponentielles Wachstum, deutliche Unterschiede zwischen Lagerzuständen (Neu: 0.18-1.52 mm/s, Beschädigt: 1.44-12.16 mm/s)
+2. Schadensfaktor vs. Drehzahl: Zeigt Verschlechterung (Beschädigt erreicht Faktor 8-10, überschreitet kritische Schwelle)
+
+Konsolenausgabe:
+```
+Max. Amplitude Neu: 1.53 mm/s
+Max. Amplitude Leicht_verschlissen: 2.76 mm/s
+Max. Amplitude Stark_verschlissen: 5.35 mm/s
+Max. Amplitude Beschaedigt: 12.18 mm/s
+Durchschn. Temp. Neu: 58.3°C
+Durchschn. Temp. Beschaedigt: 99.8°C
+```
 
 **Starter-Code**:
 ```python
 import matplotlib.pyplot as plt
 
-# Konstanten
-L1_KB = 64
-L2_KB = 512
-L3_KB = 8 * 1024  # 8 MB
-RAM_ZYKLEN = 100
-L1_ZYKLEN = 4
-L2_ZYKLEN = 12
-L3_ZYKLEN = 40
+# Teil a: CSV-Datei einlesen
+datei = 'lager_vibrationsdaten.csv'
+daten = {'Neu': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Leicht_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Stark_verschlissen': {'drehzahl': [], 'amplitude': [], 'temperatur': []},
+         'Beschaedigt': {'drehzahl': [], 'amplitude': [], 'temperatur': []}}
 
-def berechne_zugriffszeit(array_groesse_kb, cache_groesse_kb, cache_zyklen, naechster_cache_zyklen):
-    """
-    Berechnet durchschnittliche Zugriffszeit basierend auf Cache-Größe.
-    
-    Args:
-        array_groesse_kb: Größe des Arrays in KB
-        cache_groesse_kb: Größe des Caches in KB
-        cache_zyklen: Zugriffszeit bei Cache Hit
-        naechster_cache_zyklen: Zugriffszeit bei Cache Miss (nächste Ebene)
-    
-    Returns:
-        Durchschnittliche Zugriffszeit in Taktzyklen
-    """
-    # Dein Code hier
-    pass
+with open(datei, 'r') as f:
+    next(f)  # Header überspringen
+    for line in f:
+        # Dein Code: Zeile parsen und in daten-Dictionary einfügen
+        pass
 
-# Array-Größen von 1 KB bis 16 MB (logarithmisch)
-array_groessen_kb = [2**i for i in range(0, 15)]
+# Drehzahlen (logarithmisch verteilt)
+drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]
 
-# Simuliere verschiedene Cache-Hierarchien
+# Simuliere verschiedene Lagerzustände
 # Dein Code hier
 
-# Plot 1: Zugriffszeiten
+# Plot 1: Vibrationsamplituden
 # Dein Code hier
 
-# Plot 2: Speedup
+# Plot 2: Schadensfaktoren
 # Dein Code hier
 ```
 
 **Hinweise**:
 - Verwende `plt.subplot(2, 1, 1)` und `plt.subplot(2, 1, 2)` für zwei übereinander angeordnete Plots
 - Logarithmische X-Achse: `plt.xscale('log')`
-- Bei Cache-Hierarchien: Erst L1 prüfen, dann L2, dann L3, dann RAM
-- Die Kurven sollten "Stufen" zeigen: Bei kleinen Arrays ist alles schnell, bei größeren Arrays wird es stufenweise langsamer
+- Bei logarithmischen Achsen: `plt.grid(True, which='both', alpha=0.3)`
+- Dictionary-Iteration: `for zustand, faktor in ZUSTANDSFAKTOREN.items()`
 
 ---
 

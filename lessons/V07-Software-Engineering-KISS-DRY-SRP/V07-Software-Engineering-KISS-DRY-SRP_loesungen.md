@@ -636,280 +636,305 @@ Ansatz 1 ist am einfachsten und reicht für die meisten Fälle. Ansatz 3 ist etw
 
 ## Teil B: Python-Aufgaben - Lösungen
 
-### Lösung P1: Primzahlen-Finder mit break
+### Lösung P1: CNC-Werkzeugwechsel-Sequenz optimieren
 
 **Vollständiger Code**:
 ```python
-# Primzahlen-Finder mit break und else-Klausel
+# Werkzeugsuche im CNC-Magazin
+magazin = [101, 205, 310, 405, 210, 115, 320]
+gesuchte_id = int(input("Gesuchte Werkzeug-ID: "))
 
-# Eingabe
-obergrenze = int(input("Obergrenze eingeben: "))
+print("─" * 37)
+print(f"Suche Werkzeug {gesuchte_id}...")
 
-print(f"Primzahlen bis {obergrenze}:")
-
-# Für jede Zahl ab 2 bis zur Obergrenze
-for zahl in range(2, obergrenze + 1):
-    # Prüfe, ob die Zahl eine Primzahl ist
-    # Teste alle möglichen Teiler von 2 bis zahl-1
-    for teiler in range(2, zahl):
-        if zahl % teiler == 0:
-            # Teiler gefunden -> keine Primzahl
-            break  # Innere Schleife abbrechen
-    else:
-        # else wird nur ausgeführt, wenn break NICHT aufgerufen wurde
-        # Das bedeutet: Kein Teiler gefunden -> Primzahl
-        print(zahl, end=" ")
-
-print()  # Zeilenumbruch am Ende
+for position, werkzeug_id in enumerate(magazin, start=1):
+    status = "✅ GEFUNDEN!" if werkzeug_id == gesuchte_id else "❌"
+    print(f"Position {position}: {werkzeug_id} {status}")
+    
+    if werkzeug_id == gesuchte_id:
+        print("─" * 37)
+        print(f"Werkzeug {gesuchte_id} gefunden auf Position {position}")
+        print(f"Suchaufwand: {position} Positionen geprüft")
+        break
+else:
+    print(f"❌ Werkzeug {gesuchte_id} nicht im Magazin!")
+    print("Empfehlung: Werkzeug nachladen oder Programm anpassen.")
 ```
 
 **Erklärung**:
 
-Das Programm verwendet zwei verschachtelte Schleifen. Die äußere Schleife iteriert über alle Zahlen von 2 bis zur Obergrenze. Für jede Zahl wird in der inneren Schleife geprüft, ob ein Teiler existiert.
+Die `break`-Anweisung beendet die Suche sofort nach Fund. Die `else`-Klausel der Schleife wird nur ausgeführt, wenn kein `break` erfolgte. `enumerate(start=1)` liefert Position und Werkzeug-ID gleichzeitig.
 
-Die innere Schleife testet alle Zahlen von 2 bis `zahl - 1` als potenzielle Teiler. Sobald ein Teiler gefunden wird (Rest der Division ist 0), wird `break` aufgerufen, um die Prüfung abzubrechen. Die `else`-Klausel der Schleife wird nur ausgeführt, wenn die Schleife vollständig durchlaufen wurde, ohne dass `break` aufgerufen wurde. Das bedeutet, dass kein Teiler gefunden wurde, also ist die Zahl eine Primzahl.
+**Häufige Fehler**:
+- **Fehler**: Schleife läuft weiter nach Fund
+  - **Warum ineffizient**: Verschwendet Zeit bei großen Magazinen
+  - **Richtig**: `break` sofort nach Fund
 
-**Optimierte Version** (mit Quadratwurzel-Optimierung):
+---
+
+### Lösung P2: Hydraulikdruck-Überwachung mit Eingabevalidierung
+
+**Vollständiger Code**:
+```python
+# Hydraulikdruck-Überwachung
+print("═" * 35)
+print("  Hydraulikdruck-Überwachung")
+print("═" * 35)
+print("Normbereich: 50-180 bar")
+print("Warnung: 180-250 bar")
+print("Alarm: <50 bar oder >250 bar\n")
+
+gueltige_messungen = 0
+
+while True:
+    eingabe = input("Messung eingeben (oder 'STOP'): ")
+    
+    if eingabe.upper() == "STOP":
+        break
+    
+    # Validierung
+    try:
+        druck = float(eingabe)
+        if druck < 0:
+            print("⚠️  Fehler: Negativer Wert nicht möglich! Sensor defekt.\n")
+            continue
+        if druck > 300:
+            print("⚠️  Fehler: Unrealistischer Wert! Sensor prüfen.\n")
+            continue
+    except ValueError:
+        print("⚠️  Fehler: Ungültiger Wert! Sensor prüfen.\n")
+        continue
+    
+    # Gültige Messung
+    gueltige_messungen += 1
+    
+    # Bewertung
+    if druck < 50:
+        print(f"🔴 ALARM! Unterdruck: {druck} bar")
+        print("SYSTEM WIRD ABGESCHALTET!")
+        break
+    elif druck >= 250:
+        print(f"🔴 ALARM! Überdruck: {druck} bar")
+        print("SYSTEM WIRD ABGESCHALTET!")
+        break
+    elif druck >= 180:
+        print(f"🟡 WARNUNG - Druck: {druck} bar (Erhöht)\n")
+    else:
+        print(f"🟢 OK - Druck: {druck} bar (Normal)\n")
+
+print("─" * 35)
+print("Überwachung beendet.")
+print(f"Gültige Messungen: {gueltige_messungen}")
+```
+
+**Erklärung**:
+
+`continue` überspringt ungültige Messungen ohne sie zu zählen. `break` beendet bei kritischen Alarmen. `try-except` fängt Konvertierungsfehler robust ab.
+
+---
+
+### Lösung P3: Drehmoment-Tabelle für Schraubverbindungen
+
+**Vollständiger Code**:
 ```python
 import math
 
-obergrenze = int(input("Obergrenze eingeben: "))
+# Gewinde-Größen
+gewinde = ["M3", "M4", "M5", "M6", "M8", "M10"]
 
-print(f"Primzahlen bis {obergrenze}:")
+# Festigkeitsklassen mit Zugfestigkeit
+festigkeitsklassen = {
+    "4.6": 400,
+    "8.8": 800,
+    "10.9": 1000
+}
 
-for zahl in range(2, obergrenze + 1):
-    # Optimierung: Nur bis zur Quadratwurzel testen
-    grenze = int(math.sqrt(zahl)) + 1
-    
-    for teiler in range(2, grenze):
-        if zahl % teiler == 0:
-            break
-    else:
-        print(zahl, end=" ")
+print("═" * 47)
+print("  Anziehdrehmoment-Tabelle (trocken, verzinkt)")
+print("═" * 47)
 
+# Kopfzeile
+print(f"{'Gewinde':<8}|", end="")
+for klasse in festigkeitsklassen.keys():
+    print(f"{klasse:>9} [Nm] |", end="")
 print()
-```
+print("─" * 8 + "|" + "─" * 11 + "|" + "─" * 11 + "|" + "─" * 11 + "|")
 
-**Warum diese Optimierung funktioniert:**
-
-Wenn eine Zahl n einen Teiler größer als √n hat, dann muss sie auch einen Teiler kleiner als √n haben. Beispiel: 36 = 6 × 6. Wenn wir also bis √n testen und keinen Teiler finden, können wir sicher sein, dass n eine Primzahl ist. Dies reduziert die Anzahl der Tests dramatisch: Für n=100 müssen wir nur bis 10 testen statt bis 99.
-
-**Schritt-für-Schritt Durchlauf** (für Obergrenze = 10):
-
-1. zahl = 2: Innere Schleife läuft von 2 bis 1 (leer) → else ausgeführt → 2 ausgegeben
-2. zahl = 3: Teste teiler=2: 3 % 2 = 1 (kein Teiler) → else ausgeführt → 3 ausgegeben
-3. zahl = 4: Teste teiler=2: 4 % 2 = 0 (Teiler!) → break → else übersprungen
-4. zahl = 5: Teste teiler=2,3,4: Keine Teiler → else ausgeführt → 5 ausgegeben
-5. zahl = 6: Teste teiler=2: 6 % 2 = 0 (Teiler!) → break → else übersprungen
-6. zahl = 7: Teste teiler=2,3,4,5,6: Keine Teiler → else ausgeführt → 7 ausgegeben
-7. zahl = 8: Teste teiler=2: 8 % 2 = 0 (Teiler!) → break → else übersprungen
-8. zahl = 9: Teste teiler=2: 9 % 2 = 1, teiler=3: 9 % 3 = 0 (Teiler!) → break → else übersprungen
-9. zahl = 10: Teste teiler=2: 10 % 2 = 0 (Teiler!) → break → else übersprungen
-
-Ausgabe: `2 3 5 7`
-
-**Häufige Fehler**:
-- **Fehler**: Schleife beginnt bei 1 statt bei 2
-  - **Warum falsch**: 1 ist per Definition keine Primzahl
-  - **Richtig**: `for zahl in range(2, obergrenze + 1)`
-
-- **Fehler**: `else` mit `if` verwechseln
-  ```python
-  # Falsch:
-  for teiler in range(2, zahl):
-      if zahl % teiler == 0:
-          break
-  if kein_teiler_gefunden:  # Wie setze ich dieses Flag?
-      print(zahl)
-  ```
-  - **Warum falsch**: Erfordert zusätzliches Boolean-Flag
-  - **Richtig**: `else`-Klausel verwenden
-
-- **Fehler**: Bereich der inneren Schleife falsch
-  ```python
-  # Falsch:
-  for teiler in range(2, zahl + 1):  # Testet auch zahl selbst
-  ```
-  - **Warum falsch**: Jede Zahl ist durch sich selbst teilbar, daher würde immer ein Teiler gefunden
-  - **Richtig**: `range(2, zahl)` (exklusiv zahl)
-
----
-
-### Lösung P2: Zahlenrate-Spiel mit continue
-
-**Vollständiger Code**:
-```python
-import random
-
-# Computer wählt Zufallszahl
-geheimzahl = random.randint(1, 100)
-
-print("Ich habe mir eine Zahl zwischen 1 und 100 ausgedacht.")
-
-versuche = 0
-
-while True:
-    # Eingabe anfordern
-    eingabe = input("Dein Tipp: ")
-    versuche += 1
+# Datenzeilen
+for g in gewinde:
+    d = int(g[1:])  # Durchmesser aus "M6" → 6
+    print(f"{g:<8}|", end="")
     
-    # Validierung: Ist es eine Zahl?
-    if not eingabe.strip().isdigit() or eingabe.strip().startswith('-'):
-        print("Das ist keine gültige Zahl! Versuche es nochmal.")
-        continue  # Nächste Iteration ohne Versuchszähler zu erhöhen
-    
-    tipp = int(eingabe)
-    
-    # Validierung: Ist die Zahl im Bereich?
-    if not (1 <= tipp <= 100):
-        print("Die Zahl muss zwischen 1 und 100 liegen!")
-        continue  # Nächste Iteration
-    
-    # Vergleich mit Geheimzahl
-    if tipp < geheimzahl:
-        print("Zu niedrig!")
-    elif tipp > geheimzahl:
-        print("Zu hoch!")
-    else:
-        # Richtig geraten!
-        print(f"Richtig! Du hast die Zahl in {versuche} Versuchen erraten.")
-        break  # Spiel beenden
+    for r_m in festigkeitsklassen.values():
+        # Vereinfachte Berechnung
+        a_s = 0.8 * math.pi * (d**2) / 4  # Spannungsquerschnitt
+        f_v = 0.7 * a_s * r_m  # Vorspannkraft
+        m_a = 0.2 * d * f_v / 1000  # Drehmoment in Nm
+        
+        print(f"{m_a:10.1f} |", end="")
+    print()
 ```
 
 **Erklärung**:
 
-Das Programm verwendet eine `while True`-Schleife, um kontinuierlich Eingaben zu erfragen. Diese Endlosschleife wird nur durch `break` bei korrekter Eingabe beendet.
-
-Die Validierungslogik nutzt `continue`, um ungültige Eingaben zu überspringen, ohne den Vergleich mit der Geheimzahl durchzuführen. Dies ist ein typisches Anwendungsbeispiel für `continue`: Frühe Validierung und Überspringen des restlichen Schleifenkörpers bei ungültigen Daten.
-
-**Schritt-für-Schritt Erklärung der Validierung**:
-
-1. **Erste Validierung**: `if not eingabe.strip().isdigit() or eingabe.strip().startswith('-'):`
-   - `eingabe.strip()` entfernt führende/nachfolgende Leerzeichen
-   - `.isdigit()` prüft, ob alle Zeichen Ziffern sind
-   - `startswith('-')` prüft auf negative Zahlen (die `.isdigit()` passieren würden, aber Minuszeichen hat)
-   - Bei Fehler: Fehlermeldung und `continue` (überspringt Rest der Iteration)
-
-2. **Konvertierung**: `tipp = int(eingabe)`
-   - Erst nach erfolgreicher Validierung wird konvertiert
-
-3. **Zweite Validierung**: `if not (1 <= tipp <= 100):`
-   - Prüft, ob Zahl im gültigen Bereich liegt
-   - Verwendet Python's chained comparison für Eleganz
-   - Bei Fehler: Fehlermeldung und `continue`
-
-4. **Vergleich**: Nur wenn beide Validierungen erfolgreich waren, wird die Zahl mit der Geheimzahl verglichen
-
-**Verbesserte Version** (mit Versuchslimit und besserer Validierung):
-```python
-import random
-
-geheimzahl = random.randint(1, 100)
-max_versuche = 7
-versuche = 0
-
-print("Ich habe mir eine Zahl zwischen 1 und 100 ausgedacht.")
-print(f"Du hast {max_versuche} Versuche.")
-
-while versuche < max_versuche:
-    eingabe = input(f"Versuch {versuche + 1}/{max_versuche}: ")
-    
-    # Validierung
-    eingabe = eingabe.strip()
-    
-    if not eingabe:
-        print("Keine Eingabe! Bitte gib eine Zahl ein.")
-        continue
-    
-    # Prüfe auf negative Zahlen
-    if eingabe.startswith('-'):
-        print("Negative Zahlen sind nicht erlaubt!")
-        continue
-    
-    # Prüfe auf Nicht-Zahlen
-    if not eingabe.isdigit():
-        print("Das ist keine gültige Zahl!")
-        continue
-    
-    tipp = int(eingabe)
-    versuche += 1  # Nur gültige Versuche zählen
-    
-    # Bereichsprüfung
-    if not (1 <= tipp <= 100):
-        print("Die Zahl muss zwischen 1 und 100 liegen!")
-        # Versuch wurde bereits gezählt
-        continue
-    
-    # Vergleich
-    if tipp < geheimzahl:
-        print("Zu niedrig!")
-    elif tipp > geheimzahl:
-        print("Zu hoch!")
-    else:
-        print(f"Richtig! Du hast die Zahl in {versuche} Versuchen erraten.")
-        break
-else:
-    # else-Klausel der while-Schleife: Wird ausgeführt, wenn break NICHT aufgerufen wurde
-    print(f"\nSchade! Du hast alle {max_versuche} Versuche aufgebraucht.")
-    print(f"Die richtige Zahl war {geheimzahl}.")
-```
-
-**Häufige Fehler**:
-- **Fehler**: Versuchszähler an falscher Stelle inkrementieren
-  ```python
-  # Falsch:
-  versuche += 1
-  eingabe = input("Tipp: ")
-  if not eingabe.isdigit():
-      continue  # Versuch wurde bereits gezählt!
-  ```
-  - **Warum falsch**: Ungültige Eingaben zählen als Versuche
-  - **Richtig**: Inkrementiere erst nach erfolgreicher Validierung
-
-- **Fehler**: Negative Zahlen nicht abfangen
-  ```python
-  # Problematisch:
-  if eingabe.isdigit():
-      tipp = int(eingabe)
-  # "-5" passiert isdigit() nicht, aber was ist mit dem Minuszeichen?
-  ```
-  - **Lösung**: Explizit auf führendes Minuszeichen prüfen
-
-- **Fehler**: Endlos-Schleife ohne Abbruch
-  ```python
-  # Gefährlich:
-  while True:
-      # ... Validierung ...
-      # Vergessen: break bei richtigem Tipp!
-  ```
-  - **Lösung**: Immer Abbruchbedingung einbauen
+Verschachtelte Schleifen: äußere für Gewinde, innere für Festigkeitsklassen. Durchmesser wird aus String extrahiert. Formatierung mit f-Strings für Tabellenausrichtung.
 
 ---
 
-### Lösung P3: Multiplikationstabelle mit verschachtelten Schleifen
+### Lösung P4: Prüfprotokoll-Generator für Qualitätskontrolle
 
 **Vollständiger Code**:
 ```python
-# Multiplikationstabelle mit Formatierung
+import random
 
-groesse = int(input("Größe der Tabelle: "))
+# Prüfmerkmale für Wellenzapfen
+pruefmerkmale = [
+    {"name": "Durchmesser Ø20h7", "soll": 20.00, "tol": 0.021, "einheit": "mm"},
+    {"name": "Länge gesamt", "soll": 150.0, "tol": 0.5, "einheit": "mm"},
+    {"name": "Rauheit Ra", "soll": 1.6, "tol": 0.4, "einheit": "µm"},
+    {"name": "Rundlauf", "soll": 0.0, "tol": 0.02, "einheit": "mm"},
+    {"name": "Härte HRC", "soll": 58, "tol": 3, "einheit": "HRC"}
+]
 
-# Berechne maximale Zahl (für Spaltenbreite)
-max_zahl = groesse * groesse
-spaltenbreite = len(str(max_zahl)) + 1
+print("═" * 63)
+print("  PRÜFPROTOKOLL - Qualitätskontrolle")
+print("═" * 63)
+print("Bauteil: Wellenzapfen WZ-2024-001")
+print("Datum: 2026-01-04")
+print("Prüfer: QK-42\n")
+print("─" * 63)
+print(f"{'Prüfmerkmal':<20} | {'Soll':>7} | {'Ist':>7} | {'Tol.':>6} | Status")
+print("─" * 63)
 
-# Kopfzeile
-# Erste Spalte (Zeilen-Header) leer lassen
-print(" " * (spaltenbreite + 1), end="| ")
+nio_count = 0
 
-# Spalten-Überschriften
-for spalte in range(1, groesse + 1):
-    print(f"{spalte:>{spaltenbreite}}", end=" ")
-print()
+for merkmal in pruefmerkmale:
+    # Generiere realistische Istwerte (90% i.O., 10% n.i.O.)
+    if random.random() < 0.9:
+        # Innerhalb Toleranz
+        abw = random.uniform(-merkmal["tol"] * 0.8, merkmal["tol"] * 0.8)
+    else:
+        # Außerhalb Toleranz
+        abw = random.uniform(merkmal["tol"] * 1.1, merkmal["tol"] * 2)
+        if random.random() < 0.5:
+            abw = -abw
+    
+    ist = merkmal["soll"] + abw
+    
+    # Bewertung
+    if abs(ist - merkmal["soll"]) <= merkmal["tol"]:
+        status = "✅ i.O."
+    else:
+        status = "❌ n.i.O."
+        nio_count += 1
+    
+    # Ausgabe
+    tol_str = f"±{merkmal['tol']}"
+    print(f"{merkmal['name']:<20} | {merkmal['soll']:7.3f} | {ist:7.3f} | {tol_str:>6} | {status}")
 
-# Trennlinie
-trennlinie_laenge = (spaltenbreite + 1) + (groesse * (spaltenbreite + 1))
-print("-" * (spaltenbreite + 1) + "+" + "-" * (groesse * (spaltenbreite + 1)))
+print("─" * 63)
+if nio_count == 0:
+    print("\nGESAMT-BEWERTUNG: ✅ BAUTEIL FREIGEGEBEN")
+else:
+    print(f"\nGESAMT-BEWERTUNG: ❌ BAUTEIL GESPERRT")
+    print(f"Grund: {nio_count} von {len(pruefmerkmale)} Prüfmerkmalen außerhalb Toleranz")
+    print("Maßnahme: Nacharbeit oder Ausschuss")
+```
+
+**Erklärung**:
+
+List Comprehensions und Dictionary-Verarbeitung für strukturierte Daten. Zufallswerte mit realistischer Verteilung (90% gut, 10% schlecht). Formatierung mit festen Spaltenbreiten.
+
+---
+
+### Lösung P5: Maschinendaten-Analyse-Tool
+
+**Vollständiger Code**:
+```python
+# Maschinendaten-Analyse
+print("═" * 47)
+print("  MASCHINENDATEN-ANALYSE")
+print("═" * 47)
+print("Log-Zeilen eingeben (END zum Beenden):\n")
+
+log_zeilen = []
+while True:
+    zeile = input("> ")
+    if zeile.upper() == "END":
+        break
+    if zeile.strip():
+        log_zeilen.append(zeile)
+
+# Statistik-Variablen
+maschinen = set()
+events = {}
+alarme = []
+drehzahlen = []
+werkzeuge = set()
+
+# Log-Zeilen parsen
+for zeile in log_zeilen:
+    teile = zeile.split("|")
+    if len(teile) >= 3:
+        maschine = teile[1].strip()
+        event_typ = teile[2].strip()
+        
+        maschinen.add(maschine)
+        events[event_typ] = events.get(event_typ, 0) + 1
+        
+        # Alarme
+        if event_typ == "ALARM" and len(teile) >= 4:
+            alarme.append((maschine, teile[3].strip()))
+        
+        # Drehzahlen
+        if "RPM=" in zeile:
+            rpm_str = zeile.split("RPM=")[1].split()[0]
+            try:
+                drehzahlen.append(int(rpm_str))
+            except:
+                pass
+        
+        # Werkzeuge
+        if "TOOL=" in zeile:
+            tool_str = zeile.split("TOOL=")[1].split()[0]
+            werkzeuge.add(tool_str)
+
+# Ausgabe
+print("\n" + "═" * 47)
+print("\n--- GRUNDSTATISTIKEN ---")
+print(f"Log-Einträge:              {len(log_zeilen)}")
+print(f"Erfasste Maschinen:         {len(maschinen)}")
+print(f"Event-Typen:                {len(events)}")
+
+print("\n--- EVENT-ANALYSE ---")
+for event, count in sorted(events.items()):
+    print(f"{event:<20} {count}")
+
+if alarme:
+    print("\n--- ALARM-DETAILS ---")
+    print(f"Gesamt-Alarme:              {len(alarme)}")
+    alarm_dict = {}
+    for maschine, code in alarme:
+        alarm_dict[maschine] = alarm_dict.get(maschine, 0) + 1
+    print("Maschinen mit Alarmen:     ", ", ".join([f"{m} ({c}×)" for m, c in alarm_dict.items()]))
+
+if drehzahlen:
+    print("\n--- DREHZAHL-STATISTIK ---")
+    print(f"Min. Drehzahl:             {min(drehzahlen)} RPM")
+    print(f"Max. Drehzahl:             {max(drehzahlen)} RPM")
+    print(f"Ø Drehzahl:                {sum(drehzahlen)//len(drehzahlen)} RPM")
+    hoch = [d for d in drehzahlen if d > 8000]
+    print(f"Hochgeschw.-Events:         {len(hoch)} (RPM > 8000)")
+
+if werkzeuge:
+    print("\n--- WERKZEUG-ANALYSE ---")
+    print(f"Verwendete Werkzeuge:      {', '.join(sorted(werkzeuge))}")
+print("═" * 47)
+```
+
+**Erklärung**:
+
+Dictionary für Häufigkeitszählung, Sets für eindeutige Elemente. String-Parsing mit `split()`. List Comprehensions für Filterung. Robustes Parsing mit `try-except` für fehlerhafte Daten.
 
 # Tabellenzeilen
 for zeile in range(1, groesse + 1):

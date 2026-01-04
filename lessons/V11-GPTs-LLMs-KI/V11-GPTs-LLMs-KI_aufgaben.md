@@ -126,194 +126,230 @@ Nenne für jeden Hochrisiko-Fall spezifische Schutzmaßnahmen.
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Keyword-Only Arguments und flexible Parameter (Leicht)
+### Aufgabe P1: CNC-Maschinen-Log-Formatter mit Keyword-Only Arguments (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 15 Minuten  
-**Vorkenntnisse**: Funktionen (V10), Keyword Arguments, Keyword-Only Arguments (V11)
+**Vorkenntnisse**: Funktionen (V10), Keyword Arguments, Keyword-Only Arguments (V11)  
+**Maschinenbau-Kontext**: Maschinendaten-Logging für Produktionsüberwachung und Wartung
 
-Implementiere eine Funktion zur Formatierung von Log-Nachrichten mit verschiedenen Stufen und Optionen.
+Implementiere eine Funktion zur Formatierung von CNC-Maschinen-Logs mit Prioritätsstufen und Kontext-Informationen.
+
+> [!NOTE]
+> **Maschinen-Logging**: In der Fertigung werden alle Maschinenereignisse protokolliert:
+> - **OPERATING**: Normalbetrieb (Drehzahl, Vorschub, Werkzeugwechsel)
+> - **WARNING**: Abweichungen (Vibration erhöht, Temperatur hoch)
+> - **ALARM**: Kritische Zustände (Werkzeugbruch, Achsfehler)
+> - **ERROR**: Maschinenstillstand erforderlich
+> 
+> Logs werden für Predictive Maintenance, Qualitätssicherung und Fehleranalyse verwendet.
 
 **Aufgabenstellung**:
 
-Erstelle eine Funktion `log_nachricht`, die:
-- Einen verpflichtenden Parameter `nachricht` (String) akzeptiert
+Erstelle eine Funktion `cnc_log_eintrag`, die:
+- Einen verpflichtenden Parameter `ereignis` (String) akzeptiert
 - Folgende Keyword-Only Parameter hat:
-  - `level` (String): Log-Level mit Default `"INFO"` (mögliche Werte: `"DEBUG"`, `"INFO"`, `"WARNING"`, `"ERROR"`)
-  - `timestamp` (bool): Ob ein Zeitstempel angehängt wird (Default: `True`)
-  - `prefix` (String): Optionaler Präfix (Default: `""`)
-- Eine formatierte Log-Nachricht zurückgibt
+  - `prioritaet` (String): Log-Priorität mit Default `"OPERATING"` (mögliche Werte: `"OPERATING"`, `"WARNING"`, `"ALARM"`, `"ERROR"`)
+  - `zeitstempel` (bool): Ob ein Zeitstempel angefügt wird (Default: `True`)
+  - `maschine_id` (String): Optionale Maschinen-ID (Default: `""`)
+  - `achse` (String): Optionale Achsen-Info (Default: `""`)
+- Einen formatierten CNC-Log-Eintrag zurückgibt
 
 **Format der Ausgabe**:
 ```
-[LEVEL] [Zeitstempel] Präfix: Nachricht
+[PRIORITÄT] [Zeitstempel] [Maschine-ID] [Achse]: Ereignis
 ```
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-log_nachricht("Server gestartet")
-# "[INFO] [2026-01-02 15:30:45] Server gestartet"
+cnc_log_eintrag("Spindeldrehzahl 3000 U/min erreicht")
+# "[OPERATING] [2026-01-04 10:45:23] Spindeldrehzahl 3000 U/min erreicht"
 
-log_nachricht("Debug-Info", level="DEBUG", timestamp=False, prefix="[Modul-X]")
-# "[DEBUG] [Modul-X]: Debug-Info"
+cnc_log_eintrag("Vibration erhöht", prioritaet="WARNING", zeitstempel=False, maschine_id="CNC-01", achse="Z")
+# "[WARNING] [CNC-01] [Z-Achse]: Vibration erhöht"
 
-log_nachricht("Kritischer Fehler", level="ERROR", prefix="[Database]")
-# "[ERROR] [2026-01-02 15:31:10] [Database]: Kritischer Fehler"
+cnc_log_eintrag("Werkzeugbruch erkannt", prioritaet="ALARM", maschine_id="CNC-03")
+# "[ALARM] [2026-01-04 10:46:15] [CNC-03]: Werkzeugbruch erkannt"
 ```
 
 **Starter-Code**:
 ```python
 from datetime import datetime
 
-def log_nachricht(nachricht, *, level="INFO", timestamp=True, prefix=""):
+def cnc_log_eintrag(ereignis, *, prioritaet="OPERATING", zeitstempel=True, maschine_id="", achse=""):
     """
-    Formatiert eine Log-Nachricht mit Level, Zeitstempel und Präfix.
+    Formatiert einen CNC-Maschinen-Log-Eintrag mit Priorität und Kontext.
     
     Args:
-        nachricht (str): Die Log-Nachricht
-        level (str): Log-Level (DEBUG, INFO, WARNING, ERROR)
-        timestamp (bool): Ob Zeitstempel hinzugefügt werden soll
-        prefix (str): Optionaler Präfix für die Nachricht
+        ereignis (str): Beschreibung des Maschinenereignisses
+        prioritaet (str): Prioritätsstufe (OPERATING, WARNING, ALARM, ERROR)
+        zeitstempel (bool): Ob Zeitstempel hinzugefügt werden soll
+        maschine_id (str): Optionale Maschinen-Identifikation
+        achse (str): Optionale Achsen-Information (X, Y, Z, A, B, C)
     
     Returns:
-        str: Formatierte Log-Nachricht
+        str: Formatierter CNC-Log-Eintrag
     """
     # Dein Code hier
     pass
 
 # Tests
-print(log_nachricht("Server gestartet"))
-print(log_nachricht("Debug-Info", level="DEBUG", timestamp=False, prefix="[Modul-X]"))
-print(log_nachricht("Kritischer Fehler", level="ERROR", prefix="[Database]"))
+print(cnc_log_eintrag("Spindeldrehzahl 3000 U/min erreicht"))
+print(cnc_log_eintrag("Vibration erhöht", prioritaet="WARNING", zeitstempel=False, maschine_id="CNC-01", achse="Z"))
+print(cnc_log_eintrag("Werkzeugbruch erkannt", prioritaet="ALARM", maschine_id="CNC-03"))
 ```
 
 ---
 
-### Aufgabe P2: `*args` und `**kwargs` kombinieren (Leicht-Mittel)
+### Aufgabe P2: Messwert-Statistik für Sensor-Arrays mit `*args` und `**kwargs` (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 20 Minuten  
-**Vorkenntnisse**: `*args`, `**kwargs`, String-Formatierung (V02, V11)
+**Vorkenntnisse**: `*args`, `**kwargs`, String-Formatierung (V02, V11)  
+**Maschinenbau-Kontext**: Sensor-Datenauswertung für Qualitätskontrolle und Prozessüberwachung
 
-Erstelle eine flexible Funktion zur Berechnung statistischer Kennzahlen.
+Erstelle eine flexible Funktion zur Berechnung statistischer Kennzahlen für Sensor-Messwerte.
+
+> [!NOTE]
+> **Sensor-Statistik**: In der Produktion werden Sensordaten kontinuierlich erfasst:
+> - **Temperatur-Sensoren**: Überwachung von Werkzeug- und Werkstücktemperatur
+> - **Vibrations-Sensoren**: Erkennung von Lagerschäden und Unwuchten
+> - **Kraft-Sensoren**: Prozessüberwachung bei Umformung und Zerspanung
+> 
+> Statistische Auswertung ermöglicht Prozessoptimierung und Früherkennung von Abweichungen.
 
 **Aufgabenstellung**:
 
-Implementiere eine Funktion `statistik`, die:
-- Eine beliebige Anzahl numerischer Werte über `*args` akzeptiert
+Implementiere eine Funktion `sensor_statistik`, die:
+- Eine beliebige Anzahl numerischer Messwerte über `*args` akzeptiert
 - Über `**kwargs` verschiedene Optionen steuert:
   - `mittelwert` (bool, Default: `True`): Berechne arithmetisches Mittel
   - `median` (bool, Default: `False`): Berechne Median
   - `minimum` (bool, Default: `False`): Finde Minimum
   - `maximum` (bool, Default: `False`): Finde Maximum
   - `runden` (int, Default: `2`): Anzahl Dezimalstellen
+  - `einheit` (str, Default: `""`): Optionale Einheit für Ausgabe
 - Ein Dictionary mit den berechneten Kennzahlen zurückgibt
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-statistik(10, 20, 30, 40, 50)
-# {'mittelwert': 30.0}
+# Temperatur-Messwerte in °C
+sensor_statistik(45.2, 46.8, 44.9, 47.1, 45.5, einheit="°C")
+# {'mittelwert': '45.90°C'}
 
-statistik(10, 20, 30, 40, 50, median=True, maximum=True, runden=1)
-# {'mittelwert': 30.0, 'median': 30.0, 'maximum': 50.0}
+# Vibrations-Messwerte in mm/s mit Median und Maximum
+sensor_statistik(2.1, 3.5, 2.8, 4.2, 3.1, median=True, maximum=True, runden=1, einheit="mm/s")
+# {'mittelwert': '3.1mm/s', 'median': '3.1mm/s', 'maximum': '4.2mm/s'}
 
-statistik(15, 23, 8, 42, 19, mittelwert=False, minimum=True, maximum=True, runden=0)
-# {'minimum': 8.0, 'maximum': 42.0}
+# Kraft-Messwerte in kN ohne Mittelwert
+sensor_statistik(12.5, 15.3, 11.8, 14.9, 13.2, mittelwert=False, minimum=True, maximum=True, runden=0, einheit="kN")
+# {'minimum': '12kN', 'maximum': '15kN'}
 ```
 
 **Starter-Code**:
 ```python
-def statistik(*werte, mittelwert=True, median=False, minimum=False, maximum=False, runden=2):
+def sensor_statistik(*messwerte, mittelwert=True, median=False, minimum=False, maximum=False, runden=2, einheit=""):
     """
-    Berechnet statistische Kennzahlen für eine Menge von Werten.
+    Berechnet statistische Kennzahlen für Sensor-Messwerte.
     
     Args:
-        *werte: Variable Anzahl numerischer Werte
-        mittelwert (bool): Berechne Mittelwert
+        *messwerte: Variable Anzahl numerischer Messwerte
+        mittelwert (bool): Berechne arithmetisches Mittel
         median (bool): Berechne Median
         minimum (bool): Finde Minimum
         maximum (bool): Finde Maximum
         runden (int): Anzahl Dezimalstellen
+        einheit (str): Optionale Einheit (z.B. "°C", "mm/s", "kN")
     
     Returns:
-        dict: Dictionary mit berechneten Kennzahlen
+        dict: Dictionary mit berechneten Kennzahlen inkl. Einheit
     """
     # Dein Code hier
     pass
 
 # Tests
-print(statistik(10, 20, 30, 40, 50))
-print(statistik(10, 20, 30, 40, 50, median=True, maximum=True, runden=1))
-print(statistik(15, 23, 8, 42, 19, mittelwert=False, minimum=True, maximum=True, runden=0))
+print(sensor_statistik(45.2, 46.8, 44.9, 47.1, 45.5, einheit="°C"))
+print(sensor_statistik(2.1, 3.5, 2.8, 4.2, 3.1, median=True, maximum=True, runden=1, einheit="mm/s"))
+print(sensor_statistik(12.5, 15.3, 11.8, 14.9, 13.2, mittelwert=False, minimum=True, maximum=True, runden=0, einheit="kN"))
 ```
 
 **Hinweise**:
 - Für Median: Sortiere die Werte, bei ungerader Länge nimm das mittlere Element, bei gerader Länge den Durchschnitt der beiden mittleren
 - Nutze `round()` zum Runden der Ergebnisse
+- Formatiere Ausgabe mit Einheit: `f"{wert}{einheit}"`
 
 ---
 
-### Aufgabe P3: Lambda-Funktionen und `map`/`filter` (Mittel)
+### Aufgabe P3: Lambda-Funktionen für Werkstoff-Datenbankfilterung (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 25 Minuten  
-**Vorkenntnisse**: Lambda-Funktionen, `map()`, `filter()`, List Comprehensions (V07, V11)
+**Vorkenntnisse**: Lambda-Funktionen, `map()`, `filter()`, List Comprehensions (V07, V11)  
+**Maschinenbau-Kontext**: Werkstoffdatenbank-Filterung für Bauteilauswahl
 
-Verarbeite Textdaten mit Lambda-Funktionen und funktionaler Programmierung.
+Verarbeite Werkstoff-Bezeichnungen mit Lambda-Funktionen und funktionaler Programmierung.
+
+> [!NOTE]
+> **Werkstoff-Bezeichnungen**: In der Konstruktion werden Werkstoffe nach DIN/EN-Normen benannt:
+> - **Stahl**: z.B. "S235JR", "C45E", "X5CrNi18-10"
+> - **Aluminium**: z.B. "AlMgSi1_T6", "AlCu4Mg1"
+> - **Kupfer**: z.B. "CuZn37_2.0321"
+> 
+> Filterung ermöglicht schnelle Werkstoffauswahl nach Kriterien wie Festigkeit, Korrosionsbeständigkeit, Schweißbarkeit.
 
 **Aufgabenstellung**:
 
-Gegeben ist eine Liste von Benutzernamen:
+Gegeben ist eine Liste von Werkstoff-Bezeichnungen:
 ```python
-benutzernamen = ["alice_123", "Bob", "charlie_admin", "DIANA_99", "eve", "Frank_USER"]
+werkstoffe = ["S235JR", "c45e", "AlMgSi1_T6", "X5CRNI18-10", "AlCu4Mg1", "s355j2", "CuZn37_2.0321"]
 ```
 
 Implementiere folgende Transformationen mit Lambda-Funktionen und `map()`/`filter()`:
 
-a) **Normalisierung**: Alle Benutzernamen in Kleinbuchstaben konvertieren
+a) **Normalisierung**: Alle Bezeichnungen in Großbuchstaben konvertieren
 
-b) **Filtern**: Nur Benutzernamen mit Unterstrichen (`_`) behalten
+b) **Filtern**: Nur Stahl-Werkstoffe behalten (beginnen mit "S", "C" oder "X")
 
-c) **Bereinigung**: Unterstriche und Zahlen entfernen (z.B. `"alice_123"` → `"alice"`)
+c) **Bereinigung**: Bindestriche entfernen und Unterstriche durch Leerzeichen ersetzen
 
-d) **Validierung**: Nur Benutzernamen mit mindestens 4 Buchstaben (nach Bereinigung) behalten
+d) **Validierung**: Nur Werkstoffe mit mindestens 4 Zeichen (nach Bereinigung) behalten
 
-e) **Sortierung**: Nach Länge sortieren (kürzeste zuerst)
+e) **Sortierung**: Alphabetisch sortieren
 
 f) **Bonus**: Implementiere dieselben Operationen als **eine** List Comprehension
 
 **Beispiel Ein-/Ausgabe**:
 ```python
 # Nach allen Transformationen:
-["alice", "charlie"]  # oder ["charlie", "alice"] je nach Reihenfolge bei gleicher Länge
+["C45E", "S235JR", "S355J2", "X5CRNI1810"]
 ```
 
 **Starter-Code**:
 ```python
-benutzernamen = ["alice_123", "Bob", "charlie_admin", "DIANA_99", "eve", "Frank_USER"]
+werkstoffe = ["S235JR", "c45e", "AlMgSi1_T6", "X5CRNI18-10", "AlCu4Mg1", "s355j2", "CuZn37_2.0321"]
 
 # a) Normalisierung
-normalisiert = list(map(lambda x: ..., benutzernamen))
+normalisiert = list(map(lambda x: ..., werkstoffe))
 print(f"Normalisiert: {normalisiert}")
 
-# b) Filtern nach Unterstrichen
-mit_underscore = list(filter(lambda x: ..., normalisiert))
-print(f"Mit Unterstrich: {mit_underscore}")
+# b) Filtern nach Stahl (S, C, X am Anfang)
+stahl = list(filter(lambda x: ..., normalisiert))
+print(f"Nur Stahl: {stahl}")
 
 # c) Bereinigung
-def bereinige(name):
-    """Entfernt Unterstriche und Zahlen."""
+def bereinige(bezeichnung):
+    """Entfernt Bindestriche und ersetzt Unterstriche."""
     # Dein Code hier
     pass
 
-bereinigt = list(map(bereinige, mit_underscore))
+bereinigt = list(map(bereinige, stahl))
 print(f"Bereinigt: {bereinigt}")
 
-# d) Validierung (mind. 4 Buchstaben)
+# d) Validierung (mind. 4 Zeichen)
 validiert = list(filter(lambda x: ..., bereinigt))
 print(f"Validiert: {validiert}")
 
-# e) Sortierung nach Länge
+# e) Sortierung alphabetisch
 sortiert = sorted(validiert, key=lambda x: ...)
 print(f"Sortiert: {sortiert}")
 
@@ -322,32 +358,262 @@ ergebnis = [...]
 print(f"List Comprehension: {ergebnis}")
 ```
 
+**Hinweise**:
+- Stahl-Werkstoffe beginnen mit S (Baustahl), C (Kohlenstoffstahl) oder X (hochlegiert)
+- `.replace()` für Bereinigung
+- Verwende `x[0]` oder `x.startswith()` für Präfix-Check
+
 ---
 
-### Aufgabe P4: API-Wrapper mit Docstrings und Type Hints (Mittel-Schwer)
+### Aufgabe P4: CAD-Dokumentations-Generator mit Template-System (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 35-40 Minuten  
-**Vorkenntnisse**: Alle Funktionskonzepte (V10-V11), Docstrings, Type Hints, Fehlerbehandlung (V09)
+**Vorkenntnisse**: Alle Funktionskonzepte (V10-V11), Docstrings, Type Hints, Fehlerbehandlung (V09), File I/O  
+**Maschinenbau-Kontext**: Automatische Generierung von CAD-Bauteil-Dokumentationen mit Template-Dateien
 
-Implementiere einen erweiterten API-Wrapper für LLM-Aufrufe mit umfassender Dokumentation und Fehlerbehandlung.
+Implementiere einen Template-basierten Dokumentations-Generator für CAD-Bauteile mit Validierung und Datei-Verarbeitung.
+
+> [!NOTE]
+> **Template-basierte Dokumentation**: In der Konstruktion werden standardisierte Dokumente mit Platzhaltern verwendet:
+> - **Technische Zeichnungen**: Titel-Block mit Platzhaltern für Bauteil-Daten
+> - **Fertigungsanweisungen**: Template für NC-Programm-Header
+> - **Prüfprotokolle**: Standardisierte Formulare mit variablen Messwerten
+> - **Wartungsanleitungen**: Wiederverwendbare Service-Dokumente
+> 
+> Template-Systeme gewährleisten Konsistenz und reduzieren Fehler bei der Dokumentation.
 
 **Aufgabenstellung**:
 
 Erstelle ein Modul mit folgenden Funktionen:
 
-**Teil 1**: Funktion `validiere_prompt(prompt, *, min_laenge=10, max_laenge=5000)`
+**Teil 1**: Funktion `validiere_bauteil_daten(bauteil_daten, pflichtfelder)`
 
-Diese Funktion soll Prompts validieren und folgendes prüfen:
-- Prompt ist nicht leer nach `strip()`
-- Prompt-Länge liegt zwischen `min_laenge` und `max_laenge`
+Diese Funktion soll Bauteil-Daten validieren:
+- `bauteil_daten`: Dictionary mit Bauteil-Informationen
+- `pflichtfelder`: Liste von erforderlichen Dictionary-Keys
+- Prüft, ob alle Pflichtfelder vorhanden sind
+- Prüft, ob Werte nicht leer sind (nach `strip()`)
 - Wirft `ValueError` mit aussagekräftiger Fehlermeldung bei Verletzung
 
-**Teil 2**: Funktion `llm_textgenerierung(prompt, **einstellungen)`
+**Teil 2**: Funktion `lade_template(template_datei)`
 
 Diese Funktion soll:
-- `prompt` validieren (nutze `validiere_prompt`)
-- Standard-Einstellungen definieren für:
+- Template-Datei aus dem Dateisystem laden
+- Template als String zurückgeben
+- Bei Fehler (Datei nicht gefunden) aussagekräftige Fehlermeldung
+
+**Teil 3**: Funktion `generiere_dokumentation(template_datei, bauteil_daten, dokumentations_typ="technisch")`
+
+Diese Funktion soll:
+- Template aus Datei laden
+- Bauteil-Daten validieren (Pflichtfelder abhängig von `dokumentations_typ`)
+- Platzhalter im Template ersetzen (Format: `{PLATZHALTER}`)
+- Dokumentations-Typ validieren (nur "technisch", "wartung", "fertigung" erlaubt)
+- Ausgefüllte Dokumentation als String zurückgeben
+
+**Teil 4**: Funktion `batch_dokumentation(template_datei, bauteile_liste, dokumentations_typ="technisch")`
+
+Diese Funktion soll:
+- Liste von Bauteil-Daten verarbeiten
+- Für jedes Bauteil `generiere_dokumentation` aufrufen
+- Fehlerhafte Eingaben überspringen (mit Fehler-Dictionary), statt Batch abzubrechen
+- Liste von Ergebnis-Dictionaries zurückgeben
+
+**Anforderungen**:
+- Vollständige Docstrings (Google Style) für alle Funktionen
+- Type Hints für alle Parameter und Rückgabewerte
+- `try-except`-Fehlerbehandlung
+- Validierung mit aussagekräftigen Fehlermeldungen
+
+**Beispiel Template-Datei** (`cad_template_technisch.txt`):
+```
+=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+
+Bezeichnung: {BEZEICHNUNG}
+Bauteil-Nummer: {NUMMER}
+Material: {MATERIAL}
+Abmessungen: {ABMESSUNGEN}
+
+Beschreibung:
+{BESCHREIBUNG}
+
+Bearbeiter: {BEARBEITER}
+Datum: {DATUM}
+Status: {STATUS}
+
+======================================
+```
+
+**Beispiel Ein-/Ausgabe**:
+```python
+# Einzelne Dokumentation
+bauteil = {
+    "BEZEICHNUNG": "Welle",
+    "NUMMER": "WE-001",
+    "MATERIAL": "C45E",
+    "ABMESSUNGEN": "Ø50mm x 200mm",
+    "BESCHREIBUNG": "Antriebswelle mit Passfedernut DIN 6885",
+    "BEARBEITER": "Max Mustermann",
+    "DATUM": "04.01.2026",
+    "STATUS": "Freigegeben"
+}
+
+doku = generiere_dokumentation("cad_template_technisch.txt", bauteil)
+print(doku)
+# === TECHNISCHE BAUTEIL-DOKUMENTATION ===
+# Bezeichnung: Welle
+# ...
+
+# Batch-Dokumentation
+bauteile = [
+    {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", ...},
+    {"BEZEICHNUNG": "Gehäuse"},  # Unvollständig
+    {"BEZEICHNUNG": "Zahnrad", "NUMMER": "ZR-015", ...}
+]
+ergebnisse = batch_dokumentation("cad_template_technisch.txt", bauteile)
+# [
+#   {"status": "success", "dokumentation": "..."},
+#   {"status": "error", "fehler": "Pflichtfeld NUMMER fehlt"},
+#   {"status": "success", "dokumentation": "..."}
+# ]
+```
+
+**Starter-Code**:
+```python
+from typing import Optional
+
+def validiere_bauteil_daten(bauteil_daten: dict, pflichtfelder: list[str]) -> None:
+    """
+    Validiert Bauteil-Daten auf Vollständigkeit.
+    
+    Args:
+        bauteil_daten: Dictionary mit Bauteil-Informationen
+        pflichtfelder: Liste erforderlicher Dictionary-Keys
+    
+    Raises:
+        ValueError: Bei fehlenden oder leeren Pflichtfeldern
+    
+    Examples:
+        >>> daten = {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001"}
+        >>> validiere_bauteil_daten(daten, ["BEZEICHNUNG", "NUMMER"])  # OK
+        >>> validiere_bauteil_daten(daten, ["BEZEICHNUNG", "MATERIAL"])  # ValueError
+    """
+    # Dein Code hier
+    pass
+
+
+def lade_template(template_datei: str) -> str:
+    """
+    Lädt Template-Datei aus dem Dateisystem.
+    
+    Args:
+        template_datei: Pfad zur Template-Datei
+    
+    Returns:
+        Template-Inhalt als String
+    
+    Raises:
+        FileNotFoundError: Wenn Datei nicht existiert
+    
+    Examples:
+        >>> template = lade_template("cad_template_technisch.txt")
+        >>> "BEZEICHNUNG" in template
+        True
+    """
+    # Dein Code hier
+    pass
+
+
+def generiere_dokumentation(template_datei: str, bauteil_daten: dict, dokumentations_typ: str = "technisch") -> str:
+    """
+    Generiert CAD-Dokumentation aus Template und Bauteil-Daten.
+    
+    Args:
+        template_datei: Pfad zur Template-Datei
+        bauteil_daten: Dictionary mit Bauteil-Informationen
+        dokumentations_typ: Typ der Dokumentation ("technisch", "wartung", "fertigung")
+    
+    Returns:
+        Ausgefüllte Dokumentation als String
+    
+    Raises:
+        ValueError: Bei ungültigen Daten oder Typ
+        FileNotFoundError: Bei fehlender Template-Datei
+    
+    Examples:
+        >>> daten = {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", ...}
+        >>> doku = generiere_dokumentation("template.txt", daten)
+        >>> "Welle" in doku
+        True
+    """
+    # Dein Code hier
+    pass
+
+
+def batch_dokumentation(template_datei: str, bauteile_liste: list[dict], dokumentations_typ: str = "technisch") -> list[dict]:
+    """
+    Verarbeitet mehrere Bauteile als Batch.
+    
+    Args:
+        template_datei: Pfad zur Template-Datei
+        bauteile_liste: Liste von Bauteil-Daten-Dictionaries
+        dokumentations_typ: Typ der Dokumentation
+    
+    Returns:
+        Liste von Ergebnis-Dictionaries mit status und dokumentation/fehler
+    
+    Examples:
+        >>> bauteile = [{"BEZEICHNUNG": "Welle", ...}, {"BEZEICHNUNG": "Gehäuse", ...}]
+        >>> ergebnisse = batch_dokumentation("template.txt", bauteile)
+        >>> len(ergebnisse) == 2
+        True
+    """
+    # Dein Code hier
+    pass
+
+
+# Tests
+if __name__ == "__main__":
+    # Test 1: Template erstellen (für Demo)
+    template_inhalt = """=== TECHNISCHE BAUTEIL-DOKUMENTATION ===
+Bezeichnung: {BEZEICHNUNG}
+Nummer: {NUMMER}
+Material: {MATERIAL}
+Bearbeiter: {BEARBEITER}
+==================================="""
+    
+    with open("cad_template_technisch.txt", "w", encoding="utf-8") as f:
+        f.write(template_inhalt)
+    
+    # Test 2: Einzelne Dokumentation
+    print("Test 1: Einzelne Dokumentation")
+    bauteil = {
+        "BEZEICHNUNG": "Welle",
+        "NUMMER": "WE-001",
+        "MATERIAL": "C45E",
+        "BEARBEITER": "Max Mustermann"
+    }
+    doku = generiere_dokumentation("cad_template_technisch.txt", bauteil)
+    print(doku)
+    
+    # Test 3: Batch-Dokumentation
+    print("\nTest 2: Batch-Dokumentation")
+    bauteile = [
+        {"BEZEICHNUNG": "Welle", "NUMMER": "WE-001", "MATERIAL": "C45E", "BEARBEITER": "MM"},
+        {"BEZEICHNUNG": "Gehäuse"},  # Unvollständig
+        {"BEZEICHNUNG": "Zahnrad", "NUMMER": "ZR-015", "MATERIAL": "16MnCr5", "BEARBEITER": "JS"}
+    ]
+    ergebnisse = batch_dokumentation("cad_template_technisch.txt", bauteile)
+    for idx, erg in enumerate(ergebnisse):
+        print(f"Ergebnis {idx + 1}: {erg.get('status')}")
+```
+
+**Hinweise**:
+- Nutze `str.format(**bauteil_daten)` oder `str.replace()` für Platzhalter-Ersetzung
+- Pflichtfelder für "technisch": BEZEICHNUNG, NUMMER, MATERIAL, BEARBEITER
+- `try-except` in Batch-Funktion: Fange `ValueError` und `FileNotFoundError` ab
+- Template-Format mit geschweiften Klammern: `{PLATZHALTER}`
   - `modell`: `"gpt-3.5-turbo"`
   - `temperatur`: `0.7`
   - `max_tokens`: `500`
@@ -493,195 +759,259 @@ if __name__ == "__main__":
         print(f"Ergebnis {idx + 1}: {erg.get('status', 'unknown')}")
 ```
 
-**Hinweise**:
-- Validierung ist entscheidend für robuste APIs
-- `try-except` in Batch-Funktion: Fange `ValueError` ab und erzeuge Fehler-Dictionary
-- Type Hints: Nutze `list[dict]` (Python 3.9+) oder `List[Dict[str, Any]]` (mit `from typing import List, Dict, Any`)
-
 ---
 
-### Aufgabe P5: LLM Conversation Manager (Schwer/Komplex)
+### Aufgabe P5: Wartungsprotokoll-Manager für Maschinenwartung (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
-**Vorkenntnisse**: Alle Konzepte aus V01-V11, insbesondere Funktionen, Fehlerbehandlung, Datenstrukturen
+**Vorkenntnisse**: Alle Konzepte aus V01-V11, insbesondere Funktionen, Fehlerbehandlung, Datenstrukturen  
+**Maschinenbau-Kontext**: Digitales Wartungsprotokoll-System für systematische Instandhaltung
 
-Implementiere einen vollständigen Konversations-Manager für LLM-Chat-Dialoge mit Persistenz.
+Implementiere einen vollständigen Manager für Maschinenwartungs-Protokolle mit Persistenz und Statistiken.
+
+> [!NOTE]
+> **Digitale Wartungsprotokolle**: Moderne Instandhaltung nutzt digitale Systeme für:
+> - **Protokollierung**: Erfassung aller Wartungsmaßnahmen mit Zeitstempel
+> - **Fehleranalyse**: Systematische Diagnose basierend auf Symptombeschreibungen
+> - **Wissensmanagement**: Historische Daten für Predictive Maintenance
+> - **Dokumentation**: Nachweisführung für ISO 9001, Maschinensicherheit
+> 
+> Systematische Protokollierung reduziert Ausfallzeiten und verbessert Anlagenverfügbarkeit.
 
 **Aufgabenstellung**:
 
-Erstelle ein System zur Verwaltung von Chat-Konversationen mit folgenden Komponenten:
+Erstelle ein System zur Verwaltung von Wartungsprotokollen mit folgenden Komponenten:
 
-**Klasse `Nachricht`** (nutze eine einfache Klasse oder Dictionary):
-- Attribute: `rolle` (str: "user", "assistant", "system"), `inhalt` (str), `zeitstempel` (datetime)
+**Protokoll-Eintrag** (nutze Dictionary):
+- Attribute: `typ` (str: "inspektion", "reparatur", "diagnose"), `beschreibung` (str), `zeitstempel` (datetime), `techniker` (str)
 
-**Funktion `erstelle_konversation(system_prompt, **optionen)`**:
-- Initialisiert eine neue Konversation
-- `system_prompt`: Optionaler System-Prompt
-- `**optionen`: Konversations-Einstellungen (z.B. `max_laenge`, `modell`)
-- Gibt Konversations-Dictionary zurück
+**Funktion `erstelle_wartungsprotokoll(maschine_id, standort, **optionen)`**:
+- Initialisiert neues Wartungsprotokoll für Maschine
+- `maschine_id`: Eindeutige Maschinen-Identifikation
+- `standort`: Standort der Maschine (z.B. "Halle A, Station 3")
+- `**optionen`: Zusätzliche Informationen (z.B. hersteller, modell, baujahr)
+- Gibt Protokoll-Dictionary zurück mit Statistik-Tracking
 
-**Funktion `fuege_nachricht_hinzu(konversation, rolle, inhalt)`**:
-- Fügt Nachricht zur Konversation hinzu
-- Validiert `rolle` (nur "user", "assistant", "system" erlaubt)
-- Aktualisiert Statistiken (Nachrichtenanzahl, durchschnittliche Länge)
+**Funktion `fuege_eintrag_hinzu(protokoll, typ, beschreibung, techniker)`**:
+- Fügt Wartungseintrag zum Protokoll hinzu
+- Validiert `typ` (nur "inspektion", "reparatur", "diagnose" erlaubt)
+- Aktualisiert Statistiken automatisch
+- Fügt aktuellen Zeitstempel hinzu
 
-**Funktion `generiere_antwort(konversation, user_nachricht, **llm_einstellungen)`**:
-- Fügt User-Nachricht hinzu
-- Simuliert LLM-Antwort (in realer Anwendung: API-Call)
-- Fügt Assistant-Antwort hinzu
-- Gibt Assistant-Antwort zurück
+**Funktion `erstelle_diagnose(protokoll, symptombeschreibung, techniker, massnahmen)`**:
+- Fügt Diagnose-Eintrag mit strukturierten Daten hinzu
+- `symptombeschreibung`: Beschreibung des Problems
+- `massnahmen`: Liste von durchgeführten/empfohlenen Maßnahmen
+- Generiert automatisch Diagnose-Text aus Symptomen und Maßnahmen
 
-**Funktion `speichere_konversation(konversation, dateiname)`**:
-- Speichert Konversation als JSON-Datei
-- Nutze `json.dump()` mit `indent=4`
+**Funktion `speichere_protokoll(protokoll, dateiname)`**:
+- Speichert Wartungsprotokoll als JSON-Datei
+- Nutzt pretty-printing (indent=4) für Lesbarkeit
 
-**Funktion `lade_konversation(dateiname)`**:
-- Lädt Konversation aus JSON-Datei
-- Fehlerbehandlung für nicht-existierende Dateien
+**Funktion `lade_protokoll(dateiname)`**:
+- Lädt Wartungsprotokoll aus JSON-Datei
+- Behandelt FileNotFoundError mit aussagekräftiger Meldung
 
-**Funktion `konversations_statistik(konversation)`**:
-- Berechnet Statistiken:
-  - Anzahl Nachrichten (gesamt, pro Rolle)
-  - Durchschnittliche Nachrichtenlänge
-  - Gesamte Token-Schätzung (ca. 1 Token pro 4 Zeichen)
-
-**Bonus-Challenge**:
-Implementiere eine Funktion `bereinige_konversation(konversation, *, max_nachrichten=None, nur_rolle=None)`, die:
-- Die Konversation auf max. `max_nachrichten` beschränkt (älteste entfernen)
-- Optional nur Nachrichten einer bestimmten Rolle behält
+**Funktion `protokoll_statistik(protokoll)`**:
+- Berechnet erweiterte Statistiken:
+  - Anzahl Einträge pro Typ
+  - Durchschnittliche Beschreibungslänge
+  - Zeitspanne zwischen erstem und letztem Eintrag
+  - Liste der beteiligten Techniker
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-# Neue Konversation erstellen
-conv = erstelle_konversation(
-    system_prompt="Du bist ein hilfreicher KI-Assistent für Python-Programmierung",
-    modell="gpt-4",
-    max_laenge=500
+# Neues Wartungsprotokoll
+protokoll = erstelle_wartungsprotokoll(
+    maschine_id="CNC-DMU-85",
+    standort="Halle A, Station 3",
+    hersteller="DMG Mori",
+    modell="DMU 85 monoBLOCK",
+    baujahr=2020
 )
 
-# Konversation führen
-antwort1 = generiere_antwort(conv, "Was sind Lambda-Funktionen?", temperatur=0.5)
-print(f"Assistent: {antwort1}")
+# Einträge hinzufügen
+fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager geprüft, kein Verschleiß erkennbar", "Max Mustermann")
+fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ausgetauscht, Leckage behoben", "Anna Schmidt")
 
-antwort2 = generiere_antwort(conv, "Zeige mir ein Beispiel")
-print(f"Assistent: {antwort2}")
+# Diagnose erstellen
+diagnose = erstelle_diagnose(
+    protokoll,
+    symptombeschreibung="Erhöhte Vibration bei 3000 U/min in Z-Achse, sporadische Positionsfehler",
+    techniker="Max Mustermann",
+    massnahmen=[
+        "Spindellager auf Verschleiß geprüft",
+        "Führungen auf Spiel geprüft",
+        "Empfehlung: Spindel-Überholung innerhalb 3 Monate"
+    ]
+)
+print(f"Diagnose: {diagnose}")
 
 # Statistiken
-stats = konversations_statistik(conv)
-print(f"Nachrichten: {stats['anzahl_nachrichten']}")
-print(f"Token-Schätzung: {stats['geschaetzte_tokens']}")
+stats = protokoll_statistik(protokoll)
+print(f"Einträge gesamt: {stats['anzahl_eintraege']}")
+print(f"Inspektionen: {stats['anzahl_inspektion']}, Reparaturen: {stats['anzahl_reparatur']}")
+print(f"Techniker: {stats['techniker']}")
 
-# Speichern
-speichere_konversation(conv, "konversation_001.json")
+# Persistenz
+speichere_protokoll(protokoll, "wartung_CNC-DMU-85_2026-01.json")
 
-# Laden
-geladene_conv = lade_konversation("konversation_001.json")
-print(f"Konversation geladen mit {len(geladene_conv['nachrichten'])} Nachrichten")
+# Später laden
+geladenes_protokoll = lade_protokoll("wartung_CNC-DMU-85_2026-01.json")
 ```
 
-**Starter-Code** (Struktur):
+**Starter-Code**:
 ```python
 from datetime import datetime
 from typing import Optional
 import json
 
-def erstelle_konversation(system_prompt: Optional[str] = None, **optionen) -> dict:
+def erstelle_wartungsprotokoll(maschine_id: str, standort: str, **optionen) -> dict:
     """
-    Initialisiert eine neue Konversation.
+    Initialisiert ein neues Wartungsprotokoll.
     
     Args:
-        system_prompt: Optionaler System-Prompt für Kontext
-        **optionen: Zusätzliche Optionen (modell, max_laenge, etc.)
+        maschine_id: Eindeutige Maschinen-ID
+        standort: Standort der Maschine
+        **optionen: Zusätzliche Maschinen-Informationen
     
     Returns:
-        Konversations-Dictionary mit Metadaten und Nachrichtenliste
+        Protokoll-Dictionary mit Struktur für Einträge und Statistiken
+    
+    Examples:
+        >>> protokoll = erstelle_wartungsprotokoll("CNC-001", "Halle A", hersteller="DMG")
+        >>> protokoll["maschine_id"]
+        'CNC-001'
     """
-    konversation = {
-        "id": datetime.now().strftime("%Y%m%d_%H%M%S"),
-        "erstellt_am": datetime.now().isoformat(),
-        "optionen": optionen,
-        "nachrichten": [],
-        "statistiken": {
-            "anzahl_nachrichten": 0,
-            "anzahl_user": 0,
-            "anzahl_assistant": 0
-        }
-    }
+    # Dein Code hier
+    pass
+
+def fuege_eintrag_hinzu(protokoll: dict, typ: str, beschreibung: str, techniker: str) -> None:
+    """
+    Fügt Wartungseintrag hinzu und aktualisiert Statistiken.
     
-    if system_prompt:
-        fuege_nachricht_hinzu(konversation, "system", system_prompt)
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        typ: Typ des Eintrags ("inspektion", "reparatur", "diagnose")
+        beschreibung: Beschreibung der Wartungsmaßnahme
+        techniker: Name des Technikers
     
-    return konversation
-
-
-def fuege_nachricht_hinzu(konversation: dict, rolle: str, inhalt: str) -> None:
-    """Fügt eine Nachricht zur Konversation hinzu."""
+    Raises:
+        ValueError: Bei ungültigem Typ
+    
+    Examples:
+        >>> fuege_eintrag_hinzu(protokoll, "inspektion", "Lager geprüft", "M. Mustermann")
+    """
     # Dein Code hier
     pass
 
-
-def generiere_antwort(konversation: dict, user_nachricht: str, **llm_einstellungen) -> str:
-    """Generiert eine LLM-Antwort (simuliert) und fügt sie hinzu."""
+def erstelle_diagnose(protokoll: dict, symptombeschreibung: str, techniker: str, massnahmen: list[str]) -> str:
+    """
+    Erstellt strukturierten Diagnose-Eintrag.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        symptombeschreibung: Beschreibung des Problems
+        techniker: Name des Technikers
+        massnahmen: Liste durchgeführter/empfohlener Maßnahmen
+    
+    Returns:
+        Formatierte Diagnose-Zusammenfassung
+    
+    Examples:
+        >>> diagnose = erstelle_diagnose(protokoll, "Vibration", "MM", ["Lager prüfen"])
+        >>> "Vibration" in diagnose
+        True
+    """
     # Dein Code hier
     pass
 
-
-def speichere_konversation(konversation: dict, dateiname: str) -> None:
-    """Speichert Konversation als JSON-Datei."""
+def speichere_protokoll(protokoll: dict, dateiname: str) -> None:
+    """
+    Speichert Protokoll als JSON-Datei.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+        dateiname: Ziel-Dateiname
+    
+    Examples:
+        >>> speichere_protokoll(protokoll, "wartung_001.json")
+    """
     # Dein Code hier
     pass
 
-
-def lade_konversation(dateiname: str) -> dict:
-    """Lädt Konversation aus JSON-Datei."""
+def lade_protokoll(dateiname: str) -> dict:
+    """
+    Lädt Protokoll aus JSON-Datei.
+    
+    Args:
+        dateiname: Quell-Dateiname
+    
+    Returns:
+        Wartungsprotokoll-Dictionary
+    
+    Raises:
+        FileNotFoundError: Wenn Datei nicht existiert
+    
+    Examples:
+        >>> protokoll = lade_protokoll("wartung_001.json")
+    """
     # Dein Code hier
     pass
 
-
-def konversations_statistik(konversation: dict) -> dict:
-    """Berechnet Statistiken zur Konversation."""
+def protokoll_statistik(protokoll: dict) -> dict:
+    """
+    Berechnet erweiterte Protokoll-Statistiken.
+    
+    Args:
+        protokoll: Wartungsprotokoll-Dictionary
+    
+    Returns:
+        Dictionary mit Statistiken (Anzahlen, durchschn. Länge, Techniker-Liste, etc.)
+    
+    Examples:
+        >>> stats = protokoll_statistik(protokoll)
+        >>> stats["anzahl_eintraege"]
+        5
+    """
     # Dein Code hier
     pass
-
-
-# Bonus
-def bereinige_konversation(
-    konversation: dict,
-    *,
-    max_nachrichten: Optional[int] = None,
-    nur_rolle: Optional[str] = None
-) -> dict:
-    """Bereinigt Konversation nach Kriterien."""
-    # Dein Code hier (optional)
-    pass
-
 
 # Tests
 if __name__ == "__main__":
-    # Test-Konversation
-    conv = erstelle_konversation(
-        system_prompt="Du bist ein Python-Experte",
-        modell="gpt-4"
+    protokoll = erstelle_wartungsprotokoll(
+        maschine_id="CNC-DMU-85",
+        standort="Halle A, Station 3",
+        hersteller="DMG Mori",
+        baujahr=2020
     )
     
-    antwort1 = generiere_antwort(conv, "Erkläre *args", temperatur=0.3)
-    print(f"Antwort 1: {antwort1[:100]}...")
+    fuege_eintrag_hinzu(protokoll, "inspektion", "Spindellager OK", "Max Mustermann")
+    fuege_eintrag_hinzu(protokoll, "reparatur", "Kühlmittelpumpe ersetzt", "Anna Schmidt")
     
-    antwort2 = generiere_antwort(conv, "Und **kwargs?", temperatur=0.3)
-    print(f"Antwort 2: {antwort2[:100]}...")
+    diagnose = erstelle_diagnose(
+        protokoll,
+        "Erhöhte Vibration bei 3000 U/min in Z-Achse",
+        "Max Mustermann",
+        ["Spindellager geprüft", "Führungen geprüft", "Empfehlung: Spindel-Überholung"]
+    )
+    print(f"Diagnose:\n{diagnose}\n")
     
-    stats = konversations_statistik(conv)
-    print(f"\nStatistiken: {stats}")
+    stats = protokoll_statistik(protokoll)
+    print(f"Statistiken: {stats}")
     
-    speichere_konversation(conv, "test_konversation.json")
-    geladene_conv = lade_konversation("test_konversation.json")
-    print(f"\nGeladen: {len(geladene_conv['nachrichten'])} Nachrichten")
+    speichere_protokoll(protokoll, "test_wartung.json")
+    print("\nProtokoll gespeichert als test_wartung.json")
 ```
 
 **Hinweise**:
-- Nutze `datetime.now().isoformat()` für Zeitstempel in JSON-kompatiblem Format
-- Für simulierte Antworten: Einfache Templates oder kurze generische Antworten
-- Fehlerbehandlung: `FileNotFoundError` beim Laden, `ValueError` bei ungültiger Rolle
-- Token-Schätzung: `anzahl_zeichen / 4` (grobe Heuristik)
+- Zeitstempel mit `datetime.now().isoformat()`
+- Diagnose-Format: "SYMPTOM: [text] | MASSNAHMEN: 1. ... 2. ... 3. ..."
+- Validierung: `ValueError` bei ungültigem Typ
+- Statistik: Nutze `set()` für einzigartige Techniker-Liste
+- JSON mit `indent=4` für Lesbarkeit
+
+---
+
 

@@ -96,221 +96,254 @@ Zeichne für jeden Schritt den Zustand des Arrays sowie die Positionen von Front
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Listen-Grundlagen (Leicht)
+### Aufgabe P1: Sensor-Messwerte-Erfassung (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 10-15 Minuten  
-**Vorkenntnisse**: Listen erstellen, indexieren, `.append()`, `.insert()`, `.remove()`
+**Vorkenntnisse**: Listen erstellen, indexieren, `.append()`, `.insert()`, `.remove()`  
+**Maschinenbau-Kontext**: Erfassung und Verwaltung von Sensor-Messwerten in Echtzeit
 
-Schreibe ein Python-Programm, das:
-1. Eine leere Liste `einkaufsliste` erstellt
-2. Die Benutzer-Eingabe in einer Schleife einliest und zur Liste hinzufügt, bis "fertig" eingegeben wird
-3. Nach jeder Eingabe die aktuelle Liste ausgibt
-4. Am Ende die Anzahl der Artikel anzeigt
-5. Prüft, ob "Milch" auf der Liste steht und eine entsprechende Nachricht ausgibt
+Schreibe ein Python-Programm zur **kontinuierlichen Erfassung von Temperatursensor-Daten** an einer Produktionsmaschine.
+
+> [!NOTE]
+> **Sensor-Datenerfassung**: In Produktionsanlagen erfassen Temperatursensoren kontinuierlich Betriebstemperaturen. Kritische Überwachung ist notwendig für:
+> - Motortemperaturen (60-90°C normal, >100°C kritisch)
+> - Lagertemperaturen (40-70°C normal)
+> - Kühlmitteltemperaturen (15-25°C optimal)
+
+**Aufgabe**:
+Das Programm soll:
+1. Eine leere Liste `temperaturen` erstellen
+2. Benutzer-Eingaben (Temperaturwerte in °C) in einer Schleife einlesen und zur Liste hinzufügen
+3. Eingabe "STOP" beendet die Erfassung
+4. Nach jeder Eingabe die aktuelle Messwert-Liste ausgibt
+5. Am Ende die Anzahl der Messwerte anzeigt
+6. Prüft, ob kritische Temperaturen (>100°C) erfasst wurden und eine Warnung ausgibt
 
 **Beispiel Ein-/Ausgabe**:
 ```
-Artikel eingeben (oder 'fertig' zum Beenden): Brot
-Einkaufsliste: ['Brot']
-Artikel eingeben (oder 'fertig' zum Beenden): Milch
-Einkaufsliste: ['Brot', 'Milch']
-Artikel eingeben (oder 'fertig' zum Beenden): Käse
-Einkaufsliste: ['Brot', 'Milch', 'Käse']
-Artikel eingeben (oder 'fertig' zum Beenden): fertig
+Temperatur eingeben (oder 'STOP'): 85.5
+Messwerte: [85.5]
+Temperatur eingeben (oder 'STOP'): 92.3
+Messwerte: [85.5, 92.3]
+Temperatur eingeben (oder 'STOP'): 78.1
+Messwerte: [85.5, 92.3, 78.1]
+Temperatur eingeben (oder 'STOP'): 105.2
+Messwerte: [85.5, 92.3, 78.1, 105.2]
+Temperatur eingeben (oder 'STOP'): STOP
 
-Gesamtanzahl: 3 Artikel
-Milch ist auf der Liste!
+═══════════════════════════════════
+Erfassung beendet.
+Gesamtanzahl: 4 Messwerte
+⚠️  WARNUNG: Kritische Temperatur erfasst! (>100°C)
+Maßnahme: Kühlung prüfen, Maschine ggf. abschalten
 ```
 
 **Hinweise**:
 - Verwende eine `while`-Schleife für die Eingabe
-- Nutze den `in`-Operator für die Milch-Prüfung
+- Konvertiere Eingabe mit `float()` zu Dezimalzahl
+- Nutze `any([t > 100 for t in temperaturen])` oder Schleife für kritische Temperatur-Prüfung
 
 ---
 
-### Aufgabe P2: Listen sortieren und filtern (Leicht-Mittel)
+### Aufgabe P2: Vibrationsdaten-Analyse für Predictive Maintenance (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 15-20 Minuten  
-**Vorkenntnisse**: Listen, Schleifen, `.sort()`, `sorted()`, List Comprehensions
+**Vorkenntnisse**: Listen, Schleifen, `.sort()`, `sorted()`, List Comprehensions  
+**Maschinenbau-Kontext**: Schwingungsanalyse zur Früherkennung von Lagerschäden
 
-Gegeben ist eine Liste von Messwerten (Temperaturen in °C):
+Gegeben ist eine Liste von **Vibrations-Messwerten** (Beschleunigung in m/s²) eines Lagers:
 ```python
-temperaturen = [22.5, 18.3, 25.1, 19.8, 23.7, 17.2, 26.4, 21.9, 20.5, 24.3]
+vibrationen = [2.5, 8.3, 5.1, 9.8, 3.7, 7.2, 12.4, 4.9, 6.5, 10.3]
 ```
 
+> [!NOTE]
+> **Vibrations-Monitoring**: Lager und Wellen erzeugen charakteristische Schwingungen. Erhöhte Vibrationen deuten auf Verschleiß, Unwucht oder Lagerschäden hin:
+> - Normal: < 7 m/s²
+> - Erhöht: 7-10 m/s²
+> - Kritisch: > 10 m/s²
+
+**Aufgabe**:
 Schreibe ein Programm, das:
-1. Die höchste und niedrigste Temperatur findet und ausgibt
-2. Die Durchschnittstemperatur berechnet und ausgibt
-3. Alle Temperaturen über 23°C in einer neuen Liste `warm` speichert (verwende List Comprehension)
-4. Alle Temperaturen unter 20°C in einer neuen Liste `kuehl` speichert (verwende List Comprehension)
-5. Beide Listen sortiert ausgibt (Original bleibt unverändert)
-6. Die ursprüngliche Liste sortiert (in-place) und ausgibt
+1. Die höchste und niedrigste Vibration findet und ausgibt
+2. Die durchschnittliche Vibration berechnet und ausgibt
+3. Alle kritischen Werte (>10 m/s²) in einer neuen Liste `kritisch` speichert (verwende List Comprehension)
+4. Alle normalen Werte (<7 m/s²) in einer neuen Liste `normal` speichert (verwende List Comprehension)
+5. Alle erhöhten Werte (7-10 m/s²) in einer Liste `erhoeht` speichert
+6. Alle drei Listen sortiert ausgibt
+7. Die ursprüngliche Liste sortiert (in-place) und ausgibt
 
 **Erwartete Ausgabe (ungefähr)**:
 ```
-Höchste Temperatur: 26.4°C
-Niedrigste Temperatur: 17.2°C
-Durchschnitt: 22.0°C
+═══════════════════════════════════
+  Vibrations-Analyse - Lager #42
+═══════════════════════════════════
+Max. Vibration: 12.4 m/s²
+Min. Vibration: 2.5 m/s²
+Durchschnitt: 7.1 m/s²
 
-Warme Tage (>23°C): [23.7, 24.3, 25.1, 26.4]
-Kühle Tage (<20°C): [17.2, 18.3, 19.8]
+⚠️  Kritische Werte (>10 m/s²): [10.3, 12.4]
+🟡 Erhöhte Werte (7-10 m/s²): [7.2, 8.3, 9.8]
+✅ Normale Werte (<7 m/s²): [2.5, 3.7, 4.9, 5.1, 6.5]
 
-Originalliste sortiert: [17.2, 18.3, 19.8, 20.5, 21.9, 22.5, 23.7, 24.3, 25.1, 26.4]
+BEWERTUNG: ❌ LAGER KRITISCH
+Empfehlung: Wartung einplanen, Lager austauschen
 ```
 
 **Hinweise**:
 - `max()` und `min()` für Extremwerte
 - `sum()` und `len()` für Durchschnitt
 - List Comprehensions mit Bedingung: `[x for x in liste if bedingung]`
+- Für erhöhte Werte: `[x for x in liste if 7 <= x <= 10]`
 - `sorted()` für neue sortierte Liste, `.sort()` für in-place Sortierung
 
 ---
 
-### Aufgabe P3: Stack-Implementierung für Klammerprüfung (Mittel)
+### Aufgabe P3: NC-Programm-Validator mit Stack (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 25-30 Minuten  
-**Vorkenntnisse**: Listen als Stack, `.append()`, `.pop()`, Schleifen, Verzweigungen
+**Vorkenntnisse**: Listen als Stack, `.append()`, `.pop()`, Schleifen, Verzweigungen  
+**Maschinenbau-Kontext**: Validierung von CNC-Programm-Strukturen (Schleifen, Unterprogramme)
 
-Implementiere die Klammer-Prüfung aus Theorie-Aufgabe T2 in Python.
+Implementiere einen **NC-Programm-Validator**, der die Struktur von CNC-Programmen prüft.
 
-Schreibe eine Funktion `klammern_gueltig(ausdruck)`, die:
-- Einen String mit Klammern als Parameter erhält
-- `True` zurückgibt, wenn alle Klammern korrekt sind
-- `False` zurückgibt, wenn Klammern falsch verschachtelt, nicht geschlossen oder in falscher Reihenfolge sind
+> [!NOTE]
+> **CNC-Programmstruktur**: CNC-Programme (G-Code) verwenden strukturierte Blöcke:
+> - Schleifen: `L10` ... `L11` (Loop Start/End)
+> - Unterprogramme: `P100` ... `P101` (Program Call/Return)
+> - Bedingungen: `IF` ... `ENDIF`
+> - Korrekte Verschachtelung ist essentiell für fehlerfreie Ausführung
+
+**Aufgabe**:
+Schreibe eine Funktion `nc_struktur_gueltig(programm)`, die:
+- Einen String mit NC-Struktur-Befehlen als Parameter erhält
+- `True` zurückgibt, wenn alle Blöcke korrekt verschachtelt sind
+- `False` zurückgibt, wenn Blöcke falsch verschachtelt, nicht geschlossen oder in falscher Reihenfolge sind
 - Eine Python-Liste als Stack verwendet
+
+**Struktur-Befehle**:
+- Öffnende Befehle: `L10` (Loop), `P100` (Program), `IF` (Condition)
+- Schließende Befehle: `L11` (End Loop), `P101` (End Program), `ENDIF` (End Condition)
 
 **Algorithmus**:
 1. Erstelle einen leeren Stack (Liste)
-2. Durchlaufe jeden Charakter im String
-3. Bei öffnender Klammer `(`, `[`, `{`: Push auf Stack
-4. Bei schließender Klammer `)`, `]`, `}`:
-   - Wenn Stack leer: Return `False` (keine passende öffnende Klammer)
-   - Pop vom Stack und prüfe, ob die Klammertypen zusammenpassen
+2. Durchlaufe jeden Befehl im Programm
+3. Bei öffnendem Befehl: Push auf Stack
+4. Bei schließendem Befehl:
+   - Wenn Stack leer: Return `False`
+   - Pop vom Stack und prüfe, ob die Befehlstypen zusammenpassen
    - Wenn nicht: Return `False`
-5. Am Ende: Stack muss leer sein (alle Klammern geschlossen)
+5. Am Ende: Stack muss leer sein (alle Blöcke geschlossen)
 
 **Testfälle**:
 ```python
-print(klammern_gueltig("()"))           # True
-print(klammern_gueltig("()[]{}"))       # True
-print(klammern_gueltig("{[()]}"))       # True
-print(klammern_gueltig("([{}])"))       # True
-print(klammern_gueltig("([)]"))         # False (falsche Reihenfolge)
-print(klammern_gueltig("{[(])}"))       # False (falsche Verschachtelung)
-print(klammern_gueltig("((())"))        # False (nicht alle geschlossen)
-print(klammern_gueltig(")"))            # False (nur schließende Klammer)
-print(klammern_gueltig(""))             # True (leerer String ist gültig)
+print(nc_struktur_gueltig(["L10", "L11"]))                    # True
+print(nc_struktur_gueltig(["L10", "P100", "P101", "L11"]))    # True
+print(nc_struktur_gueltig(["IF", "L10", "L11", "ENDIF"]))     # True
+print(nc_struktur_gueltig(["L10", "IF", "ENDIF", "L11"]))     # True
+print(nc_struktur_gueltig(["L10", "P100", "L11", "P101"]))    # False (falsche Reihenfolge)
+print(nc_struktur_gueltig(["L10", "IF", "L11", "ENDIF"]))     # False (falsche Verschachtelung)
+print(nc_struktur_gueltig(["L10", "L10", "L11"]))             # False (nicht alle geschlossen)
+print(nc_struktur_gueltig(["L11"]))                           # False (nur schließend)
+print(nc_struktur_gueltig([]))                                # True (leer ist gültig)
 ```
 
 **Hinweise**:
-- Definiere ein Dictionary für passende Klammerpaare: `paare = {')': '(', ']': '[', '}': '{'}`
-- Prüfe, ob ein Zeichen eine öffnende Klammer ist: `zeichen in '([{'`
-- Prüfe, ob ein Zeichen eine schließende Klammer ist: `zeichen in ')]}'`
+- Definiere Dictionary für passende Paare: `paare = {'L11': 'L10', 'P101': 'P100', 'ENDIF': 'IF'}`
+- Prüfe auf öffnende Befehle: `befehl in ['L10', 'P100', 'IF']`
+- Prüfe auf schließende Befehle: `befehl in ['L11', 'P101', 'ENDIF']`
 - Verwende `.append()` für Push und `.pop()` für Pop
-
-**Starter-Code**:
-```python
-def klammern_gueltig(ausdruck):
-    """
-    Prüft, ob Klammern in einem Ausdruck korrekt verschachtelt sind.
-    
-    Args:
-        ausdruck: String mit Klammern
-    
-    Returns:
-        True, wenn gültig, sonst False
-    """
-    stack = []
-    paare = {')': '(', ']': '[', '}': '{'}
-    
-    # Dein Code hier
-    
-    return len(stack) == 0  # Stack muss am Ende leer sein
-```
 
 ---
 
-### Aufgabe P4: Listen-Manipulation und Slicing (Mittel-Schwer)
+### Aufgabe P4: Materialprüfungs-Datenbank (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 30-40 Minuten  
-**Vorkenntnisse**: Slicing, List Comprehensions, `zip()`, Unpacking
+**Vorkenntnisse**: Slicing, List Comprehensions, `zip()`, Unpacking  
+**Maschinenbau-Kontext**: Verwaltung und Analyse von Materialprüfungs-Daten
 
-Schreibe ein Programm zur Verwaltung von Schüler-Noten.
+Schreibe ein Programm zur Verwaltung von **Zugversuchs-Ergebnissen** verschiedener Materialproben.
 
 **Teilaufgabe a)**: Erstelle drei Listen:
 ```python
-namen = ["Alice", "Bob", "Charlie", "Diana", "Eve"]
-noten_mathe = [1.7, 2.3, 1.0, 2.7, 1.3]
-noten_physik = [2.0, 1.7, 1.3, 3.0, 2.3]
+proben_ids = ["S235-001", "AlMg3-002", "X5CrNi-003", "S235-004", "AlMg3-005"]
+zugfestigkeit = [360, 250, 520, 370, 245]  # in MPa
+streckgrenze = [235, 180, 210, 240, 175]   # in MPa
 ```
 
 **Teilaufgabe b)**: Implementiere folgende Funktionen:
 
-1. `durchschnitt(noten)`: Berechnet den Durchschnitt einer Notenliste
+1. `durchschnitt(werte)`: Berechnet den Durchschnitt einer Werteliste
    
-2. `beste_drei(namen, noten)`: Gibt die Namen der drei besten Schüler zurück (niedrigste Noten)
-   - **Hinweis**: Verwende `zip()`, `sorted()` mit `key`-Parameter, und Slicing
+2. `beste_drei(proben, werte)`: Gibt die IDs der drei besten Proben zurück (höchste Werte)
+   - **Hinweis**: Verwende `zip()`, `sorted()` mit `key`-Parameter (absteigend!), und Slicing
    
-3. `notenverteilung(noten)`: Zählt, wie viele Noten in jedem Bereich liegen:
-   - Sehr gut: 1.0 - 1.5
-   - Gut: 1.6 - 2.5
-   - Befriedigend: 2.6 - 3.5
-   - Ausreichend: 3.6 - 4.0
-   - Gibt Dictionary zurück: `{'Sehr gut': 2, 'Gut': 3, ...}`
+3. `materialklassifikation(zugfestigkeiten)`: Zählt Materialien in Festigkeitsklassen:
+   - Niedrig: < 300 MPa
+   - Mittel: 300-450 MPa
+   - Hoch: 450-600 MPa
+   - Sehr hoch: > 600 MPa
+   - Gibt Dictionary zurück: `{'Niedrig': 2, 'Mittel': 2, ...}`
 
-4. `kombiniere_noten(noten1, noten2)`: Berechnet für jeden Schüler den Durchschnitt aus beiden Fächern
+4. `verhaeltnis_berechnen(zugfest, streck)`: Berechnet für jede Probe das Verhältnis Zugfestigkeit/Streckgrenze
    - **Hinweis**: Verwende `zip()` und List Comprehension
 
 **Teilaufgabe c)**: Verwende die Funktionen und gib aus:
 ```
-Durchschnitt Mathe: 1.8
-Durchschnitt Physik: 2.06
+═══════════════════════════════════
+  Materialprüfungs-Datenbank
+═══════════════════════════════════
+Ø Zugfestigkeit: 349.0 MPa
+Ø Streckgrenze: 208.0 MPa
 
-Beste 3 in Mathe: ['Charlie', 'Eve', 'Alice']
-Beste 3 in Physik: ['Charlie', 'Bob', 'Alice']
+Top 3 Zugfestigkeit: ['X5CrNi-003', 'S235-004', 'S235-001']
+Top 3 Streckgrenze: ['S235-004', 'S235-001', 'X5CrNi-003']
 
-Notenverteilung Mathe:
-  Sehr gut: 3
-  Gut: 2
-  Befriedigend: 0
-  Ausreichend: 0
+Festigkeitsklassifikation:
+  Niedrig: 2
+  Mittel: 2
+  Hoch: 1
+  Sehr hoch: 0
 
-Kombinierte Durchschnittsnoten:
-  Alice: 1.85
-  Bob: 2.0
-  Charlie: 1.15
-  Diana: 2.85
-  Eve: 1.8
+Verhältnis Rm/Re (Verfestigungspotential):
+  S235-001: 1.53
+  AlMg3-002: 1.39
+  X5CrNi-003: 2.48
+  S235-004: 1.54
+  AlMg3-005: 1.40
 ```
 
 **Hinweise**:
-- Bei `beste_drei()`: `sorted(zip(namen, noten), key=lambda x: x[1])[:3]`
-- Bei `notenverteilung()`: Nutze Bedingungen und zähle mit Zähler-Variablen oder `sum()`
+- Bei `beste_drei()`: `sorted(zip(proben, werte), key=lambda x: x[1], reverse=True)[:3]`
+- Bei `materialklassifikation()`: Nutze Bedingungen und zähle mit Dictionary
 - `round(wert, 2)` für Rundung auf 2 Dezimalstellen
 
 ---
 
-### Aufgabe P5: Undo/Redo-System mit Stack (Schwer/Komplex)
+### Aufgabe P5: CNC-Programm-Editor mit Undo/Redo (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 45-60 Minuten  
-**Vorkenntnisse**: Listen als Stack, Klassen (Vorschau auf spätere Vorlesungen, hier vereinfacht mit Funktionen)
+**Vorkenntnisse**: Listen als Stack, Funktionen, String-Manipulation  
+**Maschinenbau-Kontext**: Vereinfachter NC-Code-Editor mit Historie-Verwaltung
 
-Implementiere ein vereinfachtes **Undo/Redo-System** für einen Text-Editor mit zwei Stacks.
+Implementiere ein vereinfachtes **Undo/Redo-System** für einen NC-Code-Editor mit zwei Stacks.
+
+> [!NOTE]
+> **NC-Code-Editor**: Professionelle CNC-Steuerungen bieten Undo/Redo für Programmänderungen. Dies verhindert Fehler beim Editieren von teuren Bearbeitungsprogrammen. Jede Zeile entspricht einem NC-Befehl (z.B. `G01 X100 Y50 F500`).
 
 **Anforderungen**:
 
-1. Das System verwaltet eine Textzeile (String)
+1. Das System verwaltet eine NC-Code-Zeile (String)
 2. Unterstützte Operationen:
-   - `einfuegen(text)`: Fügt Text am Ende hinzu
-   - `loeschen(anzahl)`: Löscht die letzten `anzahl` Zeichen
+   - `befehl_hinzufuegen(code)`: Fügt NC-Befehl am Ende hinzu
+   - `zeichen_loeschen(anzahl)`: Löscht die letzten `anzahl` Zeichen
    - `undo()`: Macht die letzte Operation rückgängig
    - `redo()`: Stellt die letzte rückgängig gemachte Operation wieder her
-   - `anzeigen()`: Zeigt den aktuellen Text
+   - `anzeigen()`: Zeigt den aktuellen NC-Code
 
 3. Verwende zwei Stacks:
    - `undo_stack`: Speichert alle Zustände (Historie)
@@ -322,7 +355,7 @@ Erstelle folgende Funktionen (verwende globale Listen für die Stacks):
 
 ```python
 # Globale Variablen
-text = ""
+nc_code = ""
 undo_stack = []
 redo_stack = []
 
@@ -330,11 +363,11 @@ def speichere_zustand():
     """Speichert den aktuellen Zustand im Undo-Stack."""
     # Implementierung
 
-def einfuegen(neuer_text):
-    """Fügt Text hinzu."""
+def befehl_hinzufuegen(code):
+    """Fügt NC-Befehl hinzu."""
     # Implementierung
 
-def loeschen(anzahl):
+def zeichen_loeschen(anzahl):
     """Löscht die letzten 'anzahl' Zeichen."""
     # Implementierung
 
@@ -347,29 +380,59 @@ def redo():
     # Implementierung
 
 def anzeigen():
-    """Zeigt den aktuellen Text."""
+    """Zeigt den aktuellen NC-Code."""
     # Implementierung
 ```
 
 **Testprogramm**:
 ```python
-einfuegen("Hallo")
-anzeigen()  # "Hallo"
+befehl_hinzufuegen("G01 X100")
+anzeigen()  # "G01 X100"
 
-einfuegen(" Welt")
-anzeigen()  # "Hallo Welt"
+befehl_hinzufuegen(" Y50")
+anzeigen()  # "G01 X100 Y50"
 
-loeschen(5)
-anzeigen()  # "Hallo"
-
-undo()
-anzeigen()  # "Hallo Welt"
+zeichen_loeschen(4)
+anzeigen()  # "G01 X100"
 
 undo()
-anzeigen()  # "Hallo"
+anzeigen()  # "G01 X100 Y50"
+
+undo()
+anzeigen()  # "G01 X100"
 
 redo()
-anzeigen()  # "Hallo Welt"
+anzeigen()  # "G01 X100 Y50"
+
+befehl_hinzufuegen(" F500")
+anzeigen()  # "G01 X100 Y50 F500"
+
+undo()
+anzeigen()  # "G01 X100 Y50"
+```
+
+**Algorithmus-Logik**:
+
+- **Vor jeder Änderung**: Speichere aktuellen Zustand in `undo_stack`, leere `redo_stack` (neue Änderung macht Redo ungültig)
+- **Bei Undo**: 
+  1. Speichere aktuellen Zustand in `redo_stack`
+  2. Pop vom `undo_stack` und stelle diesen Zustand wieder her
+- **Bei Redo**:
+  1. Speichere aktuellen Zustand in `undo_stack`
+  2. Pop vom `redo_stack` und stelle diesen Zustand wieder her
+
+**Hinweise**:
+- Prüfe bei Undo/Redo, ob die jeweiligen Stacks leer sind
+- Bei `zeichen_loeschen()`: Prüfe, ob genug Zeichen vorhanden sind
+- Der `redo_stack` wird bei neuen Änderungen geleert: `redo_stack.clear()`
+
+**Bonus-Challenge** (optional):
+Erweitere das System um:
+1. `anzeige_historie()`: Zeigt alle Zustände im Undo-Stack
+2. Beschränke die Undo-Historie auf maximal 10 Einträge (FIFO: älteste wird entfernt)
+3. Füge eine `befehl_ersetzen(alt, neu)`-Funktion hinzu, die alle Vorkommen von `alt` durch `neu` ersetzt
+
+---
 
 einfuegen("!")
 anzeigen()  # "Hallo Welt!"

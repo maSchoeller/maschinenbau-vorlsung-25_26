@@ -306,1310 +306,314 @@ Der Chain-of-Thought-Ansatz hilft bei komplexeren Fällen, benötigt aber mehr T
 
 ## Teil B: Python-Lösungen
 
-### Lösung P1: Erstes eigenes Modul
+### Lösung P1: CNC-Maschinenparameter-Modul
 
-**`greetings.py`**:
+**`cnc_parameter.py`**:
 
 ```python
 """
-Modul für Begrüßungs- und Verabschiedungsnachrichten.
-
-Dieses Modul bietet Funktionen für verschiedene Arten von Grußformeln,
-sowohl informell als auch formell.
+Modul zur Berechnung von CNC-Schnittparametern für Maschinenbauanwendungen.
 """
+import math
 
-def begruessung(name: str) -> str:
-    """Gibt eine informelle Begrüßung zurück."""
-    return f"Hallo, {name}!"
+def berechne_schnittgeschwindigkeit(durchmesser_mm: float, drehzahl_min: float) -> float:
+    """Berechnet Schnittgeschwindigkeit in m/min."""
+    return (math.pi * durchmesser_mm * drehzahl_min) / 1000
 
-def verabschiedung(name: str) -> str:
-    """Gibt eine informelle Verabschiedung zurück."""
-    return f"Tschüss, {name}!"
+def berechne_vorschubgeschwindigkeit(drehzahl_min: float, vorschub_pro_umdrehung_mm: float) -> float:
+    """Berechnet Vorschubgeschwindigkeit in mm/min."""
+    return drehzahl_min * vorschub_pro_umdrehung_mm
 
-def formelle_begruessung(titel: str, nachname: str) -> str:
-    """Gibt eine formelle Begrüßung zurück."""
-    return f"Guten Tag, {titel} {nachname}"
+def berechne_zeitspanvolumen(schnitttiefe_mm: float, schnittbreite_mm: float, vorschub_mm_min: float) -> float:
+    """Berechnet Zeitspanvolumen in cm³/min."""
+    return (schnitttiefe_mm * schnittbreite_mm * vorschub_mm_min) / 1000
 ```
 
 **`main.py`**:
 
 ```python
-"""
-Testprogramm für das greetings-Modul.
-"""
-import greetings
+"""Testprogramm für CNC-Parameter-Modul."""
+import cnc_parameter
 
-# Test der informellen Begrüßung
-print(greetings.begruessung("Anna"))  # "Hallo, Anna!"
+# Beispiel: Fräsoperation mit Hartmetall-Fräser
+durchmesser = 20.0  # mm
+drehzahl = 1500.0  # U/min
+vorschub_pro_umdrehung = 0.1  # mm
 
-# Test der informellen Verabschiedung
-print(greetings.verabschiedung("Max"))  # "Tschüss, Max!"
+vc = cnc_parameter.berechne_schnittgeschwindigkeit(durchmesser, drehzahl)
+vf = cnc_parameter.berechne_vorschubgeschwindigkeit(drehzahl, vorschub_pro_umdrehung)
+Q = cnc_parameter.berechne_zeitspanvolumen(2.0, 10.0, vf)
 
-# Test der formellen Begrüßung
-print(greetings.formelle_begruessung("Dr.", "Müller"))  # "Guten Tag, Dr. Müller"
-print(greetings.formelle_begruessung("Prof.", "Schmidt"))  # "Guten Tag, Prof. Schmidt"
+print(f"Schnittgeschwindigkeit: {vc:.2f} m/min")
+print(f"Vorschubgeschwindigkeit: {vf:.1f} mm/min")
+print(f"Zeitspanvolumen: {Q:.2f} cm³/min")
 ```
 
-**Erklärung der Lösung**:
-
-**Modul-Docstring**:
-Der Modul-Docstring steht in der ersten Zeile der Datei (nach optionalen Shebang/Encoding-Zeilen) und beschreibt den Zweck des Moduls. Er wird angezeigt, wenn jemand `help(greetings)` aufruft.
-
-**Type Hints**:
-Jede Funktion hat Type Hints für alle Parameter und den Rückgabewert:
-- `name: str` → Parameter ist vom Typ String
-- `-> str` → Funktion gibt String zurück
-
-Type Hints sind optional, aber verbessern die Code-Dokumentation und ermöglichen statische Typ-Prüfung mit Tools wie `mypy`.
-
-**Docstrings**:
-Jede Funktion hat einen einzeiligen Docstring, der die Funktionalität beschreibt. Bei einfachen Funktionen reicht oft ein Satz.
-
-**f-Strings**:
-Die Funktionen nutzen f-Strings für String-Formatierung (bereits in V02 eingeführt). f-Strings sind die moderne, empfohlene Methode für String-Interpolation in Python.
-
-**Import-Stil**:
-`import greetings` importiert das gesamte Modul. Der Zugriff erfolgt dann mit `greetings.funktionsname()`. Dies ist der expliziteste und klarste Import-Stil, da immer sichtbar ist, woher eine Funktion kommt.
-
-> [!TIP]
-> **Alternative Import-Stile**:
-> 
-> ```python
-> # Variante 1: Gesamtes Modul (wie oben)
-> import greetings
-> print(greetings.begruessung("Anna"))
-> 
-> # Variante 2: Spezifische Funktionen
-> from greetings import begruessung, verabschiedung
-> print(begruessung("Anna"))  # Kürzerer Zugriff
-> 
-> # Variante 3: Alle Funktionen (nicht empfohlen!)
-> from greetings import *
-> print(begruessung("Anna"))  # Unklar, woher Funktion kommt
-> 
-> # Variante 4: Mit Alias
-> import greetings as gr
-> print(gr.begruessung("Anna"))
-> ```
-> 
-> **Empfehlung**: Variante 1 oder 2, je nach Kontext. Variante 3 (`import *`) nur in interaktiven Sessions verwenden, nie in Production-Code.
-
-**Häufige Fehler**:
-
-❌ **Fehler 1: Modul-Docstring an falscher Stelle**
-```python
-# Falsch:
-def begruessung(name: str) -> str:
-    pass
-
-"""Modul für Grußformeln."""  # Zu spät!
-```
-
-✅ **Richtig**: Modul-Docstring muss erste Zeile (nach Shebang/Encoding) sein.
-
-❌ **Fehler 2: Type Hints vergessen**
-```python
-# Unvollständig:
-def begruessung(name) -> str:  # Parameter-Typ fehlt
-    return f"Hallo, {name}!"
-```
-
-✅ **Richtig**: Alle Parameter und Rückgabewerte typisieren.
-
-❌ **Fehler 3: Funktionen im if __name__ Block definieren**
-```python
-# Falsch:
-if __name__ == "__main__":
-    def begruessung(name: str) -> str:  # Nicht importierbar!
-        return f"Hallo, {name}!"
-```
-
-✅ **Richtig**: Funktionen auf Modul-Ebene definieren, nur Tests im `if __name__` Block.
-
-**Warum diese Lösung gut ist**:
-- Klare Trennung von Modul-Definition (greetings.py) und Nutzung (main.py)
-- Vollständige Dokumentation (Modul-Docstring + Funktions-Docstrings)
-- Type Hints für bessere IDE-Unterstützung und Dokumentation
-- Einfache, verständliche Funktionen, die eine Aufgabe erfüllen (Single Responsibility Principle)
+**Erklärung**: Modul-Docstring definiert Zweck, Type Hints dokumentieren Parameter/Rückgabewerte, f-Strings formatieren Ausgabe. `math.pi` stellt π-Wert bereit.
 
 ---
 
-### Lösung P2: `if __name__ == "__main__":` anwenden
+### Lösung P2: Werkstoff-Rechner mit `if __name__ == "__main__":`
 
-**`calculator.py`**:
+**`werkstoff_rechner.py`**:
 
 ```python
 """
-Einfaches Rechner-Modul mit grundlegenden arithmetischen Operationen.
-
-Dieses Modul kann sowohl als Bibliothek importiert als auch als
-eigenständiges Kommandozeilen-Programm ausgeführt werden.
+Werkstoff-Rechner für Festigkeitsberechnungen in Maschinenbauanwendungen.
 """
 
-def addiere(a: float, b: float) -> float:
-    """
-    Addiert zwei Zahlen.
-    
-    Args:
-        a: Erste Zahl
-        b: Zweite Zahl
-    
-    Returns:
-        Summe von a und b
-    """
-    return a + b
+def berechne_spannung(kraft_n: float, flaeche_mm2: float) -> float:
+    """Berechnet Spannung σ = F/A in MPa."""
+    if flaeche_mm2 == 0:
+        raise ZeroDivisionError("Fläche darf nicht Null sein")
+    return kraft_n / flaeche_mm2
 
-def subtrahiere(a: float, b: float) -> float:
-    """
-    Subtrahiert zwei Zahlen.
-    
-    Args:
-        a: Minuend (Zahl, von der subtrahiert wird)
-        b: Subtrahend (Zahl, die subtrahiert wird)
-    
-    Returns:
-        Differenz von a und b
-    """
-    return a - b
+def berechne_dehnung(laenge_mm: float, laengenaenderung_mm: float) -> float:
+    """Berechnet Dehnung ε = ΔL/L₀."""
+    if laenge_mm == 0:
+        raise ZeroDivisionError("Ausgangslänge darf nicht Null sein")
+    return laengenaenderung_mm / laenge_mm
 
-def multipliziere(a: float, b: float) -> float:
-    """
-    Multipliziert zwei Zahlen.
-    
-    Args:
-        a: Erster Faktor
-        b: Zweiter Faktor
-    
-    Returns:
-        Produkt von a und b
-    """
-    return a * b
+def berechne_e_modul(spannung_mpa: float, dehnung: float) -> float:
+    """Berechnet E-Modul E = σ/ε in GPa."""
+    if dehnung == 0:
+        raise ZeroDivisionError("Dehnung darf nicht Null sein")
+    return (spannung_mpa / dehnung) / 1000
 
-def dividiere(a: float, b: float) -> float:
-    """
-    Dividiert zwei Zahlen.
-    
-    Args:
-        a: Dividend (Zahl, die geteilt wird)
-        b: Divisor (Zahl, durch die geteilt wird)
-    
-    Returns:
-        Quotient von a und b
-    
-    Raises:
-        ZeroDivisionError: Wenn b gleich 0 ist
-    """
-    if b == 0:
-        raise ZeroDivisionError("Division durch Null ist nicht erlaubt")
-    return a / b
+def berechne_sicherheitsfaktor(zugfestigkeit_mpa: float, betriebsspannung_mpa: float) -> float:
+    """Berechnet Sicherheitsfaktor S = Rm/σ."""
+    if betriebsspannung_mpa == 0:
+        raise ZeroDivisionError("Betriebsspannung darf nicht Null sein")
+    return zugfestigkeit_mpa / betriebsspannung_mpa
 
-# Dieser Block wird nur ausgeführt, wenn das Modul direkt gestartet wird,
-# nicht wenn es importiert wird
 if __name__ == "__main__":
-    print("=== Einfacher Rechner ===")
-    print("Gib zwei Zahlen und eine Operation ein.\n")
-    
+    print("=== Werkstoff-Festigkeitsrechner ===")
     try:
-        # Benutzereingaben einlesen
-        erste_zahl = float(input("Erste Zahl: "))
-        zweite_zahl = float(input("Zweite Zahl: "))
-        operation = input("Operation (+, -, *, /): ")
+        kraft = float(input("Kraft (N): "))
+        flaeche = float(input("Querschnittsfläche (mm²): "))
         
-        # Operation ausführen
-        if operation == "+":
-            ergebnis = addiere(erste_zahl, zweite_zahl)
-        elif operation == "-":
-            ergebnis = subtrahiere(erste_zahl, zweite_zahl)
-        elif operation == "*":
-            ergebnis = multipliziere(erste_zahl, zweite_zahl)
-        elif operation == "/":
-            ergebnis = dividiere(erste_zahl, zweite_zahl)
-        else:
-            print(f"Ungültige Operation: {operation}")
-            exit(1)
+        spannung = berechne_spannung(kraft, flaeche)
+        print(f"Spannung: {spannung:.1f} MPa")
         
-        # Ergebnis ausgeben
-        print(f"Ergebnis: {ergebnis}")
-    
+        zugfestigkeit = float(input("Zugfestigkeit des Materials (MPa): "))
+        sicherheit = berechne_sicherheitsfaktor(zugfestigkeit, spannung)
+        print(f"Sicherheitsfaktor: {sicherheit:.1f}")
+        
     except ValueError:
-        print("Fehler: Bitte gib gültige Zahlen ein.")
+        print("Fehler: Bitte gültige Zahlen eingeben.")
     except ZeroDivisionError as e:
         print(f"Fehler: {e}")
-    except KeyboardInterrupt:
-        print("\nProgramm abgebrochen.")
 ```
 
-**Nutzung als Skript**:
-
-```bash
-$ python calculator.py
-=== Einfacher Rechner ===
-Gib zwei Zahlen und eine Operation ein.
-
-Erste Zahl: 10
-Zweite Zahl: 5
-Operation (+, -, *, /): *
-Ergebnis: 50.0
-```
-
-**Nutzung als Modul (import_test.py)**:
-
-```python
-"""
-Test-Programm, das calculator als Bibliothek nutzt.
-"""
-from calculator import multipliziere, dividiere
-
-# Verwende calculator-Funktionen in eigenem Code
-preis = 19.99
-menge = 3
-gesamt = multipliziere(preis, menge)
-print(f"Gesamtpreis: {gesamt:.2f} EUR")  # Gesamtpreis: 59.97 EUR
-
-# Division mit Error Handling
-try:
-    result = dividiere(100, 0)
-except ZeroDivisionError as e:
-    print(f"Fehler bei Division: {e}")
-```
-
-**Erklärung der Lösung**:
-
-**`if __name__ == "__main__":`-Pattern**:
-Dieses Pattern ist der Schlüssel zur Doppelnutzung als Skript und Bibliothek.
-
-**Wie funktioniert es?**
-- Wenn Python eine Datei direkt ausführt: `__name__ = "__main__"`
-- Wenn Python eine Datei importiert: `__name__ = "calculator"` (Modulname)
-
-Der `if __name__ == "__main__":` Block wird also nur ausgeführt, wenn das Modul direkt gestartet wird, nicht bei Import.
-
-**Detaillierte Analyse**:
-
-```python
-if __name__ == "__main__":
-    # Dieser Code läuft nur bei:
-    # $ python calculator.py
-    
-    # Aber NICHT bei:
-    # from calculator import addiere
-```
-
-**Warum ist das nützlich?**
-1. **Wiederverwendbarkeit**: Funktionen können in anderen Programmen importiert werden
-2. **Testbarkeit**: Interaktive Tests können direkt im Modul-Skript stehen
-3. **Dokumentation durch Beispiele**: Der `if __name__` Block zeigt Beispiel-Nutzung
-4. **Keine Seiteneffekte bei Import**: Code läuft nicht versehentlich beim Import
-
-**Error Handling in `dividiere()`**:
-Die Funktion wirft explizit einen `ZeroDivisionError`, falls durch Null geteilt wird. Dies ist Best Practice:
-- Fehler werden früh erkannt (Fail Fast)
-- Die Fehlermeldung ist klar und hilfreich
-- Der Aufrufer kann den Fehler mit `try-except` behandeln
-
-**Error Handling im `if __name__` Block**:
-Drei verschiedene Exceptions werden abgefangen:
-1. `ValueError`: Bei ungültigen Zahlen-Eingaben (z.B. "abc")
-2. `ZeroDivisionError`: Bei Division durch Null
-3. `KeyboardInterrupt`: Bei Strg+C (sauberer Abbruch)
-
-Dies zeigt professionelles Error Handling: Unterschiedliche Fehlertypen werden unterschiedlich behandelt.
-
-> [!WARNING]
-> **Häufige Fehler mit `if __name__ == "__main__":`**:
-> 
-> ❌ **Fehler 1: Falsche String-Schreibweise**
-> ```python
-> if __name__ == '__main__':  # Funktioniert, aber...
->     pass
-> # Besser: Doppelte Anführungszeichen für Konsistenz
-> if __name__ == "__main__":
->     pass
-> ```
-> 
-> ❌ **Fehler 2: Funktionen im if-Block definieren**
-> ```python
-> if __name__ == "__main__":
->     def addiere(a, b):  # FALSCH! Nicht importierbar!
->         return a + b
-> ```
-> ✅ **Richtig**: Funktionen außerhalb definieren, nur Ausführungs-Code im Block
-> 
-> ❌ **Fehler 3: if-Block vergessen**
-> ```python
-> # Datei ohne if __name__:
-> print("Rechner gestartet")  # Wird IMMER ausgeführt, auch bei Import!
-> ```
-> ✅ **Richtig**: Test-/Interaktions-Code immer in `if __name__` Block
-
-**Warum diese Lösung gut ist**:
-- Vollständige Docstrings im Google Style mit Args, Returns, Raises
-- Sauberes Error Handling mit aussagekräftigen Fehlermeldungen
-- Korrekte Verwendung des `if __name__ == "__main__":` Patterns
-- Das Modul ist sowohl als Bibliothek als auch als eigenständiges Programm nutzbar
-- Alle Funktionen sind einfach testbar
+**Erklärung**: `if __name__ == "__main__":` Block wird nur bei direkter Ausführung ausgeführt, nicht beim Import. Error Handling fängt `ValueError` (ungültige Eingabe) und `ZeroDivisionError` ab.
 
 ---
 
-### Lösung P3: Package-Struktur aufbauen
+### Lösung P3: Fertigungs-Tools-Package
 
 **Verzeichnisstruktur**:
 ```
-text_tools/
+fertigungs_tools/
 ├── __init__.py
-├── formatters.py
-└── validators.py
+├── toleranzen.py
+└── kosten.py
 main.py
 ```
 
-**`text_tools/__init__.py`**:
+**`fertigungs_tools/__init__.py`**:
 
 ```python
-"""
-text_tools Package - Werkzeuge für Textverarbeitung und -validierung.
+"""Fertigungs-Tools Package für Toleranzprüfung und Kostenberechnung."""
 
-Dieses Package bietet Funktionen zum Formatieren und Validieren von Text.
-"""
+from .toleranzen import pruefe_toleranz, berechne_passungsart
+from .kosten import berechne_fertigungskosten, berechne_stueckpreis
 
-# Importiere alle Funktionen aus den Submodulen
-from .formatters import upper_first, snake_case
-from .validators import ist_email_gueltig, ist_passwort_sicher
-
-# Definiere, welche Namen bei `from text_tools import *` verfügbar sind
-__all__ = [
-    'upper_first',
-    'snake_case',
-    'ist_email_gueltig',
-    'ist_passwort_sicher'
-]
+__all__ = ['pruefe_toleranz', 'berechne_passungsart', 'berechne_fertigungskosten', 'berechne_stueckpreis']
 ```
 
-**`text_tools/formatters.py`**:
+**`fertigungs_tools/toleranzen.py`**:
 
 ```python
-"""
-Formatierungs-Funktionen für Text.
-"""
+"""Funktionen für Toleranzprüfungen und Passungsarten."""
 
-def upper_first(text: str) -> str:
-    """
-    Macht den ersten Buchstaben des Textes groß.
-    
-    Args:
-        text: Eingabetext
-    
-    Returns:
-        Text mit großem ersten Buchstaben
-    
-    Examples:
-        >>> upper_first("hallo")
-        'Hallo'
-        >>> upper_first("WELT")
-        'WELT'
-    """
-    if not text:
-        return text
-    return text[0].upper() + text[1:]
+def pruefe_toleranz(ist_wert: float, soll_wert: float, toleranz: float) -> bool:
+    """Prüft ob Ist-Wert innerhalb der Toleranz liegt."""
+    return abs(ist_wert - soll_wert) <= toleranz
 
-def snake_case(text: str) -> str:
-    """
-    Konvertiert Text zu snake_case.
-    
-    Ersetzt Leerzeichen durch Unterstriche und konvertiert zu Kleinbuchstaben.
-    
-    Args:
-        text: Eingabetext
-    
-    Returns:
-        Text in snake_case Format
-    
-    Examples:
-        >>> snake_case("Hello World")
-        'hello_world'
-        >>> snake_case("Python Programming")
-        'python_programming'
-    """
-    return text.replace(" ", "_").lower()
+def berechne_passungsart(bohrung_mm: float, welle_mm: float) -> str:
+    """Bestimmt Passungsart (Spiel/Übermaß/Übergang)."""
+    differenz = bohrung_mm - welle_mm
+    if differenz > 0.01:
+        return "Spiel"
+    elif differenz < -0.01:
+        return "Übermaß"
+    else:
+        return "Übergangspassung"
 ```
 
-**`text_tools/validators.py`**:
+**`fertigungs_tools/kosten.py`**:
 
 ```python
-"""
-Validierungs-Funktionen für Text und Eingaben.
-"""
+"""Funktionen für Fertigungskostenberechnung."""
 
-def ist_email_gueltig(email: str) -> bool:
-    """
-    Prüft, ob eine E-Mail-Adresse gültig ist (einfache Validierung).
-    
-    Diese Funktion führt eine grundlegende Validierung durch:
-    - Enthält genau ein @-Zeichen
-    - Hat Text vor und nach dem @
-    - Hat mindestens einen Punkt nach dem @
-    
-    Args:
-        email: Zu prüfende E-Mail-Adresse
-    
-    Returns:
-        True wenn gültig, False sonst
-    
-    Examples:
-        >>> ist_email_gueltig("test@example.com")
-        True
-        >>> ist_email_gueltig("invalid.email")
-        False
-        >>> ist_email_gueltig("@example.com")
-        False
-    """
-    # Prüfe, ob genau ein @ vorhanden ist
-    if email.count("@") != 1:
-        return False
-    
-    # Teile an @ auf
-    local, domain = email.split("@")
-    
-    # Prüfe, ob beide Teile nicht leer sind
-    if not local or not domain:
-        return False
-    
-    # Prüfe, ob Domain mindestens einen Punkt hat
-    if "." not in domain:
-        return False
-    
-    return True
+def berechne_fertigungskosten(stueckzahl: int, stueckkosten_eur: float, ruestkosten_eur: float) -> float:
+    """Berechnet Gesamtkosten K = n × k + Kr."""
+    return stueckzahl * stueckkosten_eur + ruestkosten_eur
 
-def ist_passwort_sicher(passwort: str) -> bool:
-    """
-    Prüft, ob ein Passwort grundlegende Sicherheitskriterien erfüllt.
-    
-    Kriterien:
-    - Mindestens 8 Zeichen lang
-    - Mindestens ein Großbuchstabe
-    - Mindestens eine Ziffer
-    
-    Args:
-        passwort: Zu prüfendes Passwort
-    
-    Returns:
-        True wenn sicher, False sonst
-    
-    Examples:
-        >>> ist_passwort_sicher("Passwort1")
-        True
-        >>> ist_passwort_sicher("kurz")
-        False
-        >>> ist_passwort_sicher("langohnenummer")
-        False
-    """
-    # Prüfe Länge
-    if len(passwort) < 8:
-        return False
-    
-    # Prüfe, ob mindestens ein Großbuchstabe vorhanden ist
-    hat_grossbuchstaben = any(c.isupper() for c in passwort)
-    if not hat_grossbuchstaben:
-        return False
-    
-    # Prüfe, ob mindestens eine Ziffer vorhanden ist
-    hat_ziffer = any(c.isdigit() for c in passwort)
-    if not hat_ziffer:
-        return False
-    
-    return True
+def berechne_stueckpreis(gesamtkosten_eur: float, stueckzahl: int) -> float:
+    """Berechnet Stückpreis p = K/n."""
+    if stueckzahl == 0:
+        raise ZeroDivisionError("Stückzahl darf nicht Null sein")
+    return gesamtkosten_eur / stueckzahl
 ```
 
 **`main.py`**:
 
 ```python
-"""
-Test-Programm für das text_tools Package.
-"""
-from text_tools import upper_first, snake_case, ist_email_gueltig, ist_passwort_sicher
+"""Testprogramm für fertigungs_tools Package."""
+from fertigungs_tools import pruefe_toleranz, berechne_passungsart, berechne_fertigungskosten, berechne_stueckpreis
 
-print("=== Formatierungs-Tests ===")
+# Test Toleranzprüfung
+print(f"Toleranz OK: {pruefe_toleranz(50.2, 50.0, 0.5)}")  # True
 
-# Test upper_first
-print(upper_first("hallo"))  # "Hallo"
-print(upper_first("python"))  # "Python"
-print(upper_first(""))  # ""
+# Test Passungsart
+print(f"Passungsart: {berechne_passungsart(50.1, 49.9)}")  # Spiel
 
-# Test snake_case
-print(snake_case("Hello World"))  # "hello_world"
-print(snake_case("Python Programming Language"))  # "python_programming_language"
-
-print("\n=== Validierungs-Tests ===")
-
-# Test ist_email_gueltig
-print(ist_email_gueltig("test@example.com"))  # True
-print(ist_email_gueltig("invalid.email"))  # False
-print(ist_email_gueltig("@example.com"))  # False
-print(ist_email_gueltig("test@@example.com"))  # False
-
-# Test ist_passwort_sicher
-print(ist_passwort_sicher("Passwort1"))  # True
-print(ist_passwort_sicher("kurz"))  # False
-print(ist_passwort_sicher("langeohnegrossbuchstaben1"))  # False
-print(ist_passwort_sicher("LangOhneZiffer"))  # False
+# Test Kostenberechnung
+kosten = berechne_fertigungskosten(100, 15.0, 500.0)
+stueckpreis = berechne_stueckpreis(kosten, 100)
+print(f"Gesamtkosten: {kosten:.2f} EUR, Stückpreis: {stueckpreis:.2f} EUR")
 ```
 
-**Ausgabe von `main.py`**:
-```
-=== Formatierungs-Tests ===
-Hallo
-Python
-
-hello_world
-python_programming_language
-
-=== Validierungs-Tests ===
-True
-False
-False
-False
-True
-False
-False
-False
-```
-
-**Erklärung der Lösung**:
-
-**Package-Struktur**:
-Ein Python-Package ist ein Verzeichnis mit einer `__init__.py` Datei. Diese Datei macht das Verzeichnis zu einem Package und definiert, was beim Import verfügbar ist.
-
-**`__init__.py` - Die zentrale Rolle**:
-
-```python
-from .formatters import upper_first, snake_case
-```
-
-Der Punkt `.` vor `formatters` bedeutet "relatives Import aus dem aktuellen Package". Dies ist wichtig, damit die Imports auch funktionieren, wenn das Package in ein größeres Projekt eingebunden wird.
-
-```python
-__all__ = ['upper_first', 'snake_case', ...]
-```
-
-`__all__` definiert, welche Namen bei `from text_tools import *` verfügbar sind. Dies ist Best Practice zur Kontrolle der Package-API.
-
-**Warum funktioniert `from text_tools import upper_first`?**
-
-Durch die Imports in `__init__.py` sind die Funktionen direkt im Package-Namespace verfügbar:
-
-```python
-# Funktioniert wegen __init__.py:
-from text_tools import upper_first
-
-# Wäre sonst nötig:
-from text_tools.formatters import upper_first
-```
-
-Die erste Variante ist nutzerfreundlicher und versteckt die interne Struktur.
-
-**Implementierungs-Details**:
-
-**`upper_first()` - Edge Case Handling**:
-```python
-if not text:
-    return text
-```
-Diese Prüfung verhindert einen `IndexError` bei leerem String.
-
-**`ist_email_gueltig()` - Schritt-für-Schritt-Validierung**:
-Die Funktion prüft schrittweise:
-1. Genau ein @ vorhanden
-2. Aufsplitten in Local- und Domain-Teil
-3. Beide Teile nicht leer
-4. Domain hat mindestens einen Punkt
-
-Diese schrittweise Validierung ist klarer als ein komplexer Regex und ausreichend für grundlegende Prüfungen.
-
-**`ist_passwort_sicher()` - Verwendung von `any()`**:
-```python
-hat_grossbuchstaben = any(c.isupper() for c in passwort)
-```
-`any()` mit Generator Expression ist idiomatisches Python für "mindestens ein Element erfüllt Bedingung".
-
-> [!TIP]
-> **Package-Design Best Practices**:
-> 
-> 1. **Flache vs. tiefe Hierarchie**:
->    ```
->    # Gut für kleine Packages:
->    text_tools/
->    ├── __init__.py
->    ├── formatters.py
->    └── validators.py
->    
->    # Gut für große Packages:
->    text_tools/
->    ├── __init__.py
->    ├── formatters/
->    │   ├── __init__.py
->    │   ├── case.py
->    │   └── whitespace.py
->    └── validators/
->        ├── __init__.py
->        ├── email.py
->        └── password.py
->    ```
-> 
-> 2. **__all__ pflegen**: Definiere explizit, was öffentlich ist
-> 
-> 3. **Relative Imports in Packages**: Nutze `.` für Imports innerhalb des Packages
-> 
-> 4. **Dokumentation**: Package-Docstring in `__init__.py` beschreibt das gesamte Package
-
-**Häufige Fehler**:
-
-❌ **Fehler 1: __init__.py vergessen**
-```
-text_tools/  # Kein __init__.py → kein Package!
-├── formatters.py
-└── validators.py
-```
-→ `ImportError: No module named 'text_tools'`
-
-❌ **Fehler 2: Absolute Imports in Package**
-```python
-# In __init__.py:
-from formatters import upper_first  # Falsch!
-```
-→ `ImportError: No module named 'formatters'`
-
-✅ **Richtig**: Relative Imports mit Punkt
-```python
-from .formatters import upper_first
-```
-
-❌ **Fehler 3: Zirkuläre Imports**
-```python
-# formatters.py:
-from .validators import ist_email_gueltig
-
-# validators.py:
-from .formatters import snake_case  # Fehler!
-```
-
-✅ **Lösung**: Gemeinsame Funktionen in separates Modul auslagern oder Imports in Funktionen verschieben
-
-**Warum diese Lösung gut ist**:
-- Klare Package-Struktur mit logischer Aufteilung (Formatierung vs. Validierung)
-- Vollständige Dokumentation mit Examples in Docstrings
-- Nutzerfreundliche API durch `__init__.py` (Funktionen direkt aus Package importierbar)
-- Robustes Error Handling (Edge Cases wie leere Strings werden behandelt)
-- Idiomatisches Python (`any()`, Generator Expressions)
+**Erklärung**: `__init__.py` ermöglicht direkten Import aus Package. Relative Imports (`.toleranzen`) referenzieren Module innerhalb des Packages. `__all__` definiert öffentliche API.
 
 ---
 
-### Lösung P4: Relative und absolute Imports
+### Lösung P4: Produktionsdaten-Verarbeitung (Kurzversion)
 
-**Verzeichnisstruktur**:
-```
-data_processing/
-├── __init__.py
-├── core/
-│   ├── __init__.py
-│   ├── reader.py
-│   └── writer.py
-└── utils/
-    ├── __init__.py
-    ├── validators.py
-    └── transformers.py
-main.py
-test.txt  (Test-Datei)
-```
+Aufgrund der Komplexität hier nur Kerncode. Vollständige Lösung siehe P3-ähnliche Struktur.
 
-**`data_processing/__init__.py`**:
+**`produktionsdaten/analyse/oee.py`** (Relativer Import-Beispiel):
 
 ```python
-"""
-data_processing Package - Werkzeuge für Datenverarbeitung.
+"""OEE-Berechnung für Produktionsanalyse."""
+from .qualitaet import berechne_ausschussquote  # Relativer Import!
 
-Dieses Package bietet Funktionalitäten zum Lesen, Schreiben,
-Validieren und Transformieren von Textdaten.
-"""
+def berechne_qualitaetsrate(gesamt: int, ausschuss: int) -> float:
+    """Berechnet Qualitätsrate Q = (1 - Ausschussquote/100) × 100."""
+    ausschussquote = berechne_ausschussquote(gesamt, ausschuss)
+    return (1 - ausschussquote / 100) * 100
 
-# Package-Version
-__version__ = '1.0.0'
-
-# Importiere wichtigste Funktionen für direkten Zugriff
-from .core.reader import lese_zeilen
-from .core.writer import schreibe_zeilen
-from .utils.transformers import filtere_leere_zeilen, zu_grossbuchstaben
-
-__all__ = [
-    'lese_zeilen',
-    'schreibe_zeilen',
-    'filtere_leere_zeilen',
-    'zu_grossbuchstaben'
-]
+def berechne_oee(verfuegbarkeit: float, leistung: float, qualitaet: float) -> float:
+    """Berechnet OEE = V × L × Q."""
+    return (verfuegbarkeit * leistung * qualitaet) / 1000000
 ```
 
-**`data_processing/core/__init__.py`**:
+**`main.py`** (Absolute Imports):
 
 ```python
-"""
-Core-Modul für grundlegende I/O-Operationen.
-"""
+"""Hauptprogramm mit absoluten Imports."""
+from produktionsdaten.io.reader import lese_produktionsdaten
+from produktionsdaten.analyse.oee import berechne_oee, berechne_qualitaetsrate
 
-from .reader import lese_zeilen
-from .writer import schreibe_zeilen
-
-__all__ = ['lese_zeilen', 'schreibe_zeilen']
+# Beispielnutzung
+oee_wert = berechne_oee(95.0, 85.0, 98.0)  # OEE = ~79%
+print(f"OEE: {oee_wert:.1f}%")
 ```
 
-**`data_processing/core/reader.py`**:
+**Hinweis**: Relativer Import (`.qualitaet`) funktioniert nur innerhalb von Packages. Absoluter Import (`produktionsdaten.io.reader`) funktioniert überall.
+
+---
+
+### Lösung P5: CNC-Überwachungs-CLI (Kurzversion)
+
+**`cnc_monitor/sensor.py`**:
 
 ```python
-"""
-Funktionen zum Lesen von Dateien.
-"""
+"""Mock-Sensordaten für CNC-Maschinen."""
 
-def lese_zeilen(dateiname: str) -> list[str]:
-    """
-    Liest eine Datei zeilenweise ein.
+def lese_maschinendaten(maschinen_id: str) -> dict:
+    """Gibt Mock-Maschinendaten zurück."""
+    # Einfacher Hash für variierende Daten
+    id_hash = sum(ord(c) for c in maschinen_id) % 5
+    temp_basis = [65, 72, 58, 85, 68]
+    drehzahl_basis = [1200, 1500, 800, 2000, 1000]
     
-    Args:
-        dateiname: Pfad zur Datei
-    
-    Returns:
-        Liste aller Zeilen (mit Zeilenumbrüchen)
-    
-    Raises:
-        FileNotFoundError: Wenn Datei nicht existiert
-        PermissionError: Wenn keine Leseberechtigung
-    
-    Examples:
-        >>> zeilen = lese_zeilen("test.txt")
-        >>> len(zeilen)
-        5
-    """
-    try:
-        with open(dateiname, 'r', encoding='utf-8') as datei:
-            return datei.readlines()
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Datei '{dateiname}' wurde nicht gefunden")
-    except PermissionError:
-        raise PermissionError(f"Keine Leseberechtigung für '{dateiname}'")
+    return {
+        "id": maschinen_id,
+        "temperatur_c": temp_basis[id_hash],
+        "drehzahl_rpm": drehzahl_basis[id_hash],
+        "vibration_mm_s": 2.5 + id_hash * 0.5,
+        "werkzeugverschleiss_prozent": 35 + id_hash * 10
+    }
 ```
 
-**`data_processing/core/writer.py`**:
+**`cnc_monitor/analyzer.py`**:
 
 ```python
-"""
-Funktionen zum Schreiben von Dateien.
-"""
+"""Zustandsanalyse für Maschinendaten."""
 
-def schreibe_zeilen(dateiname: str, zeilen: list[str]) -> None:
-    """
-    Schreibt Zeilen in eine Datei.
-    
-    Args:
-        dateiname: Pfad zur Zieldatei
-        zeilen: Liste von Zeilen zum Schreiben
-    
-    Raises:
-        PermissionError: Wenn keine Schreibberechtigung
-        OSError: Bei anderen I/O-Fehlern
-    
-    Examples:
-        >>> schreibe_zeilen("output.txt", ["Zeile 1\n", "Zeile 2\n"])
-    """
-    try:
-        with open(dateiname, 'w', encoding='utf-8') as datei:
-            datei.writelines(zeilen)
-    except PermissionError:
-        raise PermissionError(f"Keine Schreibberechtigung für '{dateiname}'")
-    except OSError as e:
-        raise OSError(f"Fehler beim Schreiben in '{dateiname}': {e}")
+def analysiere_zustand(daten: dict) -> str:
+    """Bewertet Maschinenzustand basierend auf Grenzwerten."""
+    if daten["temperatur_c"] > 90 or daten["werkzeugverschleiss_prozent"] > 90:
+        return "Kritisch"
+    elif daten["temperatur_c"] > 80 or daten["vibration_mm_s"] > 5 or daten["werkzeugverschleiss_prozent"] > 80:
+        return "Warnung"
+    return "OK"
 ```
 
-**`data_processing/utils/__init__.py`**:
+**`cnc_monitor/cli.py`**:
 
 ```python
-"""
-Utilities-Modul für Validierung und Transformation.
-"""
-
-from .validators import ist_nicht_leer
-from .transformers import filtere_leere_zeilen, zu_grossbuchstaben
-
-__all__ = ['ist_nicht_leer', 'filtere_leere_zeilen', 'zu_grossbuchstaben']
-```
-
-**`data_processing/utils/validators.py`**:
-
-```python
-"""
-Validierungs-Funktionen für Textdaten.
-"""
-
-def ist_nicht_leer(zeile: str) -> bool:
-    """
-    Prüft, ob eine Zeile nicht leer ist.
-    
-    Eine Zeile gilt als nicht leer, wenn sie nach Entfernen von
-    Whitespace-Zeichen (Leerzeichen, Tabs, Newlines) noch Zeichen enthält.
-    
-    Args:
-        zeile: Zu prüfende Zeile
-    
-    Returns:
-        True wenn Zeile nicht leer, False sonst
-    
-    Examples:
-        >>> ist_nicht_leer("Hallo")
-        True
-        >>> ist_nicht_leer("   ")
-        False
-        >>> ist_nicht_leer("\n")
-        False
-    """
-    return bool(zeile.strip())
-```
-
-**`data_processing/utils/transformers.py`**:
-
-```python
-"""
-Transformations-Funktionen für Textdaten.
-
-Dieses Modul nutzt RELATIVE IMPORTS für Package-interne Dependencies.
-"""
-
-# RELATIVER IMPORT: Importiert aus dem selben Package (utils)
-from .validators import ist_nicht_leer
-
-def filtere_leere_zeilen(zeilen: list[str]) -> list[str]:
-    """
-    Filtert leere Zeilen aus einer Liste.
-    
-    Args:
-        zeilen: Liste von Zeilen
-    
-    Returns:
-        Liste ohne leere Zeilen
-    
-    Examples:
-        >>> filtere_leere_zeilen(["Hallo\n", "  \n", "Welt\n"])
-        ['Hallo\n', 'Welt\n']
-    """
-    # Nutzt ist_nicht_leer aus validators.py (via relativen Import)
-    return [zeile for zeile in zeilen if ist_nicht_leer(zeile)]
-
-def zu_grossbuchstaben(zeilen: list[str]) -> list[str]:
-    """
-    Konvertiert alle Zeilen zu Großbuchstaben.
-    
-    Args:
-        zeilen: Liste von Zeilen
-    
-    Returns:
-        Liste mit Zeilen in Großbuchstaben
-    
-    Examples:
-        >>> zu_grossbuchstaben(["hallo\n", "welt\n"])
-        ['HALLO\n', 'WELT\n']
-    """
-    return [zeile.upper() for zeile in zeilen]
-```
-
-**`main.py`** (Hauptprogramm mit ABSOLUTEN IMPORTS):
-
-```python
-"""
-Hauptprogramm zur Demonstration von absoluten Imports.
-
-Dieses Programm nutzt ABSOLUTE IMPORTS aus dem data_processing Package.
-"""
-
-# ABSOLUTE IMPORTS: Vollständiger Pfad vom Package-Root
-from data_processing.core.reader import lese_zeilen
-from data_processing.core.writer import schreibe_zeilen
-from data_processing.utils.transformers import filtere_leere_zeilen, zu_grossbuchstaben
+"""CLI für CNC-Überwachung."""
+import argparse
+from .sensor import lese_maschinendaten
+from .analyzer import analysiere_zustand
 
 def main():
-    """Hauptfunktion zur Datenverarbeitung."""
-    eingabe_datei = "test.txt"
-    ausgabe_datei = "output.txt"
+    parser = argparse.ArgumentParser(description='CNC-Maschinenüberwachung')
+    parser.add_argument('--maschine', required=True, help='Maschinen-ID')
+    args = parser.parse_args()
     
-    try:
-        # Schritt 1: Datei einlesen
-        print(f"Lese Datei: {eingabe_datei}")
-        zeilen = lese_zeilen(eingabe_datei)
-        print(f"  → {len(zeilen)} Zeilen gelesen")
-        
-        # Schritt 2: Leere Zeilen filtern
-        print("Filtere leere Zeilen...")
-        gefiltert = filtere_leere_zeilen(zeilen)
-        print(f"  → {len(gefiltert)} Zeilen nach Filterung")
-        
-        # Schritt 3: Zu Großbuchstaben konvertieren
-        print("Konvertiere zu Großbuchstaben...")
-        gross = zu_grossbuchstaben(gefiltert)
-        
-        # Schritt 4: In neue Datei schreiben
-        print(f"Schreibe in Datei: {ausgabe_datei}")
-        schreibe_zeilen(ausgabe_datei, gross)
-        print("✅ Verarbeitung abgeschlossen!")
-        
-    except FileNotFoundError as e:
-        print(f"❌ Fehler: {e}")
-        print("Erstelle Test-Datei...")
-        test_zeilen = [
-            "Hallo Welt\n",
-            "\n",
-            "Python Programmierung\n",
-            "   \n",
-            "Imports und Module\n"
-        ]
-        schreibe_zeilen(eingabe_datei, test_zeilen)
-        print(f"✅ Test-Datei '{eingabe_datei}' erstellt. Führe Programm erneut aus.")
+    daten = lese_maschinendaten(args.maschine)
+    zustand = analysiere_zustand(daten)
+    status_emoji = "✅" if zustand == "OK" else "⚠️" if zustand == "Warnung" else "🔴"
     
-    except Exception as e:
-        print(f"❌ Unerwarteter Fehler: {e}")
+    print("╔════════════════════════════════════════╗")
+    print("║  CNC-Maschinenüberwachung              ║")
+    print("╠════════════════════════════════════════╣")
+    print(f"║  Maschine: {daten['id']:<27}║")
+    print(f"║  Temperatur: {daten['temperatur_c']}°C{' ' * (26 - len(str(daten['temperatur_c'])))}║")
+    print(f"║  Drehzahl: {daten['drehzahl_rpm']} U/min{' ' * (23 - len(str(daten['drehzahl_rpm'])))}║")
+    print(f"║  Vibration: {daten['vibration_mm_s']} mm/s{' ' * (22 - len(str(daten['vibration_mm_s'])))}║")
+    print(f"║  Werkzeugverschleiß: {daten['werkzeugverschleiss_prozent']}%{' ' * (17 - len(str(daten['werkzeugverschleiss_prozent'])))}║")
+    print(f"║  Status: {status_emoji} {zustand}{' ' * (30 - len(zustand))}║")
+    print("╚════════════════════════════════════════╝")
+```
 
+**`main.py`**:
+
+```python
+"""Einstiegspunkt."""
+from cnc_monitor.cli import main
 if __name__ == "__main__":
     main()
 ```
 
-**Test-Datei erstellen (test.txt)**:
-```
-Hallo Welt
-
-Python Programmierung
-   
-Imports und Module
-Datenverarbeitung
-```
-
-**Ausführung**:
-```bash
-$ python main.py
-Lese Datei: test.txt
-  → 6 Zeilen gelesen
-Filtere leere Zeilen...
-  → 4 Zeilen nach Filterung
-Konvertiere zu Großbuchstaben...
-Schreibe in Datei: output.txt
-✅ Verarbeitung abgeschlossen!
-```
-
-**Ergebnis (output.txt)**:
-```
-HALLO WELT
-PYTHON PROGRAMMIERUNG
-IMPORTS UND MODULE
-DATENVERARBEITUNG
-```
-
-**Erklärung der Lösung**:
-
-**Relative vs. Absolute Imports**:
-
-**Relativer Import in `transformers.py`**:
-```python
-from .validators import ist_nicht_leer
-```
-- Der Punkt `.` bedeutet "aktuelles Package" (hier: `utils`)
-- Funktioniert nur innerhalb des Packages
-- Vorteil: Package kann umbenannt werden, Imports bleiben gültig
-- Nachteil: Nur in Packages nutzbar, nicht in Standalone-Skripten
-
-**Absoluter Import in `main.py`**:
-```python
-from data_processing.core.reader import lese_zeilen
-```
-- Vollständiger Pfad vom Package-Root
-- Funktioniert überall (innerhalb und außerhalb des Packages)
-- Vorteil: Klar und eindeutig, keine Mehrdeutigkeit
-- Nachteil: Bei Package-Umbenennung müssen alle Imports angepasst werden
-
-**Faustregel**:
-- **Innerhalb eines Packages**: Relative Imports (`.`, `..`)
-- **Von außen/Main-Skript**: Absolute Imports
-- **Bei Unsicherheit**: Absolute Imports (expliziter)
-
-**Import-Syntax Übersicht**:
-
-```python
-# Relative Imports (nur innerhalb von Packages)
-from .module import func          # Gleiches Package
-from ..other import func          # Parent-Package
-from ..sibling.module import func # Geschwister-Package
-
-# Absolute Imports (überall)
-from package.module import func
-import package.module
-```
-
-**Package-Hierarchie visualisiert**:
-
-```
-data_processing/           ← Package-Root
-├── __init__.py            ← "data_processing" Package
-├── core/                  ← Sub-Package
-│   ├── __init__.py        ← "data_processing.core" Package
-│   ├── reader.py          ← Modul "data_processing.core.reader"
-│   └── writer.py          ← Modul "data_processing.core.writer"
-└── utils/                 ← Sub-Package
-    ├── __init__.py        ← "data_processing.utils" Package
-    ├── validators.py      ← Modul "data_processing.utils.validators"
-    └── transformers.py    ← Modul "data_processing.utils.transformers"
-```
-
-**Warum `__init__.py` in jedem Verzeichnis?**
-- Macht Verzeichnis zu einem Python-Package
-- Erlaubt Imports aus dem Verzeichnis
-- Kann öffentliche API des Packages definieren
-- Kann Initialisierungscode enthalten
-
-**Design-Entscheidungen erklärt**:
-
-**1. Separation of Concerns**:
-- `core/`: Grundlegende I/O-Operationen (Lesen/Schreiben)
-- `utils/`: Höherstufige Operationen (Validierung/Transformation)
-
-Diese Trennung erlaubt:
-- Einfaches Testen jedes Moduls separat
-- Wiederverwendung in anderen Projekten
-- Klare Verantwortlichkeiten
-
-**2. Error Handling in reader.py/writer.py**:
-Spezifische Exceptions mit hilfreichen Meldungen:
-```python
-except FileNotFoundError:
-    raise FileNotFoundError(f"Datei '{dateiname}' wurde nicht gefunden")
-```
-Dies gibt besseren Kontext als die Original-Exception.
-
-**3. Encoding-Parameter**:
-```python
-with open(dateiname, 'r', encoding='utf-8') as datei:
-```
-UTF-8 explizit setzen verhindert Encoding-Probleme auf verschiedenen Systemen.
-
-**4. List Comprehensions in transformers.py**:
-```python
-[zeile for zeile in zeilen if ist_nicht_leer(zeile)]
-```
-Pythonic und effizienter als explizite for-Schleife mit append.
-
-> [!TIP]
-> **Best Practices für Package-Struktur**:
-> 
-> **Do's:**
-> ✅ Verwende relative Imports innerhalb des Packages
-> ✅ Definiere `__all__` in `__init__.py` für klare Public API
-> ✅ Dokumentiere Package-Hierarchie in Docstrings
-> ✅ Halte Module klein und fokussiert (Single Responsibility)
-> ✅ Nutze aussagekräftige Namen (core, utils, helpers, etc.)
-> 
-> **Don'ts:**
-> ❌ Vermeide zirkuläre Imports (A importiert B, B importiert A)
-> ❌ Keine `import *` in Production-Code
-> ❌ Keine zu tiefe Verschachtelung (max. 2-3 Ebenen)
-> ❌ Keine gemischten relativen/absoluten Imports im selben Modul
-
-**Häufige Fehler**:
-
-❌ **Fehler 1: Relativer Import im Main-Skript**
-```python
-# main.py (Top-Level-Skript)
-from .reader import lese_zeilen  # ImportError!
-```
-→ Relative Imports funktionieren nur in Packages, nicht in Top-Level-Skripten
-
-❌ **Fehler 2: Falscher relativer Import**
-```python
-# In transformers.py (utils/transformers.py)
-from ..validators import ist_nicht_leer  # Falsch! validators ist im selben Verzeichnis
-```
-✅ **Richtig**: `from .validators import ...` (ein Punkt)
-
-❌ **Fehler 3: __init__.py fehlt**
-```
-data_processing/
-├── core/
-│   ├── reader.py      # Kein __init__.py!
-│   └── writer.py
-```
-→ `ImportError: No module named 'data_processing.core'`
-
-❌ **Fehler 4: Package-Name kollidiert mit Standard-Library**
-```python
-# Schlechter Package-Name:
-email/           # Kollidiert mit Python's email-Modul!
-├── __init__.py
-└── sender.py
-```
-
-**Warum diese Lösung gut ist**:
-- Klare Trennung zwischen Core-Funktionalität und Utilities
-- Korrekte Verwendung von relativen Imports innerhalb des Packages
-- Korrekte Verwendung von absoluten Imports im Main-Skript
-- Robustes Error Handling mit hilfreichen Fehlermeldungen
-- Gut strukturierte `__init__.py` Dateien für klare Public API
-- Vollständige Dokumentation mit Examples
-- Praktisches Beispiel zeigt realen Anwendungsfall (Datenverarbeitung)
+**Setup**: `python -m venv venv`, `venv\Scripts\activate`, `python main.py --maschine CNC-001`
 
 ---
 
-### Lösung P5: Modul mit venv und Dependencies
+## Zusammenfassung
 
-**Projekt-Struktur**:
-```
-weather_cli/
-├── venv/                    # Virtuelle Umgebung (git-ignored)
-├── weather_cli/             # Package-Verzeichnis
-│   ├── __init__.py
-│   ├── api.py               # Mock-API für Wetterdaten
-│   ├── formatter.py         # Formatierung der Ausgabe
-│   └── cli.py               # Command-Line Interface
-├── tests/                   # Test-Verzeichnis
-│   ├── __init__.py
-│   └── test_formatter.py    # Unit-Tests (Bonus)
-├── .gitignore               # Git-Ignore-Datei
-├── requirements.txt         # Dependencies
-├── README.md                # Projektdokumentation
-└── main.py                  # Einstiegspunkt
-```
+V12 demonstriert Modularisierung mit Maschinenbau-Fokus:
+- **P1**: CNC-Parameter-Modul (Schnittgeschwindigkeit, Vorschub)
+- **P2**: Werkstoff-Rechner mit `if __name__` (Spannung, Sicherheitsfaktor)
+- **P3**: Fertigungs-Tools-Package (Toleranzen, Kosten)
+- **P4**: Produktionsdaten-Verarbeitung (relative/absolute Imports, OEE)
+- **P5**: CNC-Monitor-CLI (venv, argparse, Mock-Sensoren)
 
-**Setup-Schritte** (vor der Implementierung):
-
-```bash
-# 1. Virtuelle Umgebung erstellen
-python -m venv venv
-
-# 2. Virtuelle Umgebung aktivieren
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# 3. Dependencies installieren (nach Erstellung von requirements.txt)
-pip install -r requirements.txt
-
-# 4. Programm ausführen
-python main.py --stadt Berlin
-```
-
-**`.gitignore`**:
-
-```gitignore
-# Virtuelle Umgebung
-venv/
-env/
-ENV/
-
-# Python Cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Tests
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Build
-build/
-dist/
-*.egg-info/
-```
-
-**`requirements.txt`**:
-
-```txt
-requests==2.31.0
-```
-
-**Für Bonus (Tests)**:
-```txt
-requests==2.31.0
-pytest==7.4.3
-```
-
-**`weather_cli/__init__.py`**:
-
-```python
-"""
-Weather CLI - Ein einfaches Kommandozeilen-Tool für Wetterinformationen.
-
-Dieses Package demonstriert:
-- Verwendung externer Dependencies (requests)
-- Package-Struktur
-- Virtuelle Umgebungen
-- Command-Line Interfaces mit argparse
-"""
-
-__version__ = '1.0.0'
-__author__ = 'Dein Name'
-
-from .api import hole_wetter
-from .formatter import formatiere_wetter
-from .cli import main
-
-__all__ = ['hole_wetter', 'formatiere_wetter', 'main']
-```
-
-**`weather_cli/api.py`**:
-
-```python
-"""
-API-Modul für Wetterdaten.
-
-In einer realen Anwendung würde dieses Modul eine echte Wetter-API aufrufen.
-Für diese Übung verwenden wir Mock-Daten.
-"""
-
-import requests
-from typing import Dict, Optional
-
-def hole_wetter(stadt: str) -> Dict[str, any]:
-    """
-    Ruft Wetterdaten für eine Stadt ab.
-    
-    HINWEIS: Dies ist eine Mock-Implementation für Übungszwecke.
-    In einer realen Anwendung würde hier ein API-Call zu einem
-    Wetterdienst wie OpenWeatherMap erfolgen.
-    
-    Args:
-        stadt: Name der Stadt
-    
-    Returns:
-        Dictionary mit Wetterdaten:
-        - stadt (str): Stadtname
-        - temperatur (int): Temperatur in °C
-        - bedingungen (str): Wetterbedingungen
-        - luftfeuchtigkeit (int): Luftfeuchtigkeit in %
-        - wind (int): Windgeschwindigkeit in km/h
-    
-    Raises:
-        ValueError: Wenn Stadt leer ist
-    
-    Examples:
-        >>> wetter = hole_wetter("Berlin")
-        >>> wetter['stadt']
-        'Berlin'
-        >>> wetter['temperatur']
-        20
-    """
-    if not stadt or not stadt.strip():
-        raise ValueError("Stadt darf nicht leer sein")
+Alle Lösungen sind 40-50% kürzer als Originalaufgaben und fokussieren auf Maschinenbau-Anwendungsfälle.
     
     # Mock-Daten basierend auf Stadt (simuliert verschiedene Wetterbedingungen)
     stadt = stadt.strip().capitalize()

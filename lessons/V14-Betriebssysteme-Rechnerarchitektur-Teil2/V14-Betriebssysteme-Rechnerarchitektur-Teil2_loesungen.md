@@ -292,225 +292,137 @@ Dieser ungenutzter Speicher **innerhalb** der zugewiesenen Pages ist **interne F
 
 ## Teil 2: Python-Lösungen
 
-### P1: Bar Chart - CPU-Auslastung visualisieren (⭐)
+### P1: Bar Chart - CNC-Maschinenpräzision visualisieren (⭐)
 
 ```python
 import matplotlib.pyplot as plt
 
-# Daten
-prozesse = ['Python', 'Chrome', 'VS Code', 'Spotify', 'System']
-cpu_prozent = [12.5, 28.3, 15.7, 8.2, 5.1]
+maschinen = ['CNC-01', 'CNC-02', 'CNC-03', 'CNC-04', 'CNC-05']
+abweichung_um = [2.3, 8.7, 4.2, 1.8, 3.5]
 
-# Farben: Rot für >20%, Blau für ≤20%
-farben = ['red' if auslastung > 20 else 'blue' for auslastung in cpu_prozent]
+farben = ['red' if abw > 5 else 'green' for abw in abweichung_um]
 
-# Bar Chart erstellen
 plt.figure(figsize=(10, 6))
-plt.bar(prozesse, cpu_prozent, color=farben, edgecolor='black', alpha=0.8)
-
-# Beschriftungen und Titel
-plt.xlabel('Prozess', fontsize=12)
-plt.ylabel('CPU-Auslastung (%)', fontsize=12)
-plt.title('CPU-Auslastung verschiedener Prozesse', fontsize=14, fontweight='bold')
-
-# Y-Achse begrenzen und Gitter
-plt.ylim(0, 35)
+plt.bar(maschinen, abweichung_um, color=farben, edgecolor='black', alpha=0.8)
+plt.xlabel('CNC-Maschine', fontsize=12)
+plt.ylabel('Positionsabweichung (μm)', fontsize=12)
+plt.title('CNC-Maschinenpräzision: Positioniergenauigkeit', fontsize=14, fontweight='bold')
+plt.ylim(0, 12)
 plt.grid(axis='y', alpha=0.3)
-
-# Anzeigen
 plt.tight_layout()
 plt.show()
 ```
 
-**Erklärung:**
-
-- **List Comprehension** für Farben: `['red' if ... else 'blue' for ...]` erstellt dynamisch eine Farbliste basierend auf der Bedingung (>20%).
-- **`edgecolor='black'`**: Schwarze Ränder um Balken für bessere Sichtbarkeit.
-- **`alpha=0.8`**: Leichte Transparenz für ästhetisches Aussehen.
-- **`plt.ylim(0, 35)`**: Begrenzt Y-Achse wie gefordert.
-
 ---
 
-### P2: Histogramm - Speicherzugriff-Latenz analysieren (⭐⭐)
+### P2: Histogramm - Hydraulikdruck-Schwankungen analysieren (⭐⭐)
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Daten generieren
 np.random.seed(42)
-latenzen = np.random.normal(100, 15, 1000)
+druecke_bar = np.random.normal(180, 12, 1000)
 
-# Histogramm erstellen
 plt.figure(figsize=(10, 6))
-plt.hist(latenzen, bins=30, color='lightblue', edgecolor='black', alpha=0.7)
+plt.hist(druecke_bar, bins=30, color='lightblue', edgecolor='black', alpha=0.7)
 
-# Mittelwert und Ausreißer-Schwelle
-mittelwert = 100
-schwelle = mittelwert + 2 * 15  # 130 ns
+solldruck = 180
+kritische_grenze = 204
 
-# Vertikale Linien
-plt.axvline(x=mittelwert, color='green', linestyle='--', linewidth=2, label='Mittelwert (100 ns)')
-plt.axvline(x=schwelle, color='red', linestyle='--', linewidth=2, label='Ausreißer-Schwelle (130 ns)')
+plt.axvline(x=solldruck, color='green', linestyle='--', linewidth=2, label='Solldruck (180 bar)')
+plt.axvline(x=kritische_grenze, color='red', linestyle='--', linewidth=2, label='Kritische Grenze (204 bar)')
 
-# Beschriftungen
-plt.xlabel('Latenz (ns)', fontsize=12)
+plt.xlabel('Druck (bar)', fontsize=12)
 plt.ylabel('Häufigkeit', fontsize=12)
-plt.title('Verteilung der Speicherzugriff-Latenzen', fontsize=14, fontweight='bold')
-
-# Gitter und Legende
+plt.title('Verteilung der Hydraulikdruck-Schwankungen', fontsize=14, fontweight='bold')
 plt.grid(axis='y', alpha=0.3)
 plt.legend(fontsize=11)
-
-# Anzeigen
 plt.tight_layout()
 plt.show()
 ```
 
-**Erklärung:**
-
-- **`np.random.seed(42)`**: Macht Zufallsdaten reproduzierbar (gleiche Werte bei jedem Lauf).
-- **`plt.axvline()`**: Zeichnet vertikale Linien bei gegebenen x-Werten.
-- **Berechnungen**: Mittelwert 100, Standardabweichung 15 → 2σ-Schwelle = 100 + 2×15 = 130.
-- **Interpretation**: Etwa 95% der Werte liegen innerhalb von 2 Standardabweichungen (68-95-99.7-Regel bei Normalverteilung).
-
 ---
 
-### P3: Subplots - Prozess-Monitor Dashboard (⭐⭐⭐)
+### P3: Subplots - Materialprüfungs-Dashboard (⭐⭐⭐)
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Daten generieren
 np.random.seed(42)
-zeit = np.arange(0, 60, 1)  # 60 Sekunden
-cpu = 30 + 20 * np.sin(zeit / 10) + np.random.normal(0, 5, 60)
-ram = 50 + 10 * np.sin(zeit / 15 + 1) + np.random.normal(0, 3, 60)
-disk_read = np.random.exponential(10, 60)
-disk_write = np.random.exponential(8, 60)
+zeit_min = np.arange(0, 60, 1)
+zugspannung_mpa = 150 + 80 * np.sin(zeit_min / 10) + np.random.normal(0, 10, 60)
+dehnung_prozent = 2.0 + 1.5 * np.sin(zeit_min / 15 + 1) + np.random.normal(0, 0.3, 60)
+temperatur_c = np.random.exponential(25, 60) + 20
+kraftaufnahme_kn = np.random.exponential(15, 60) + 10
 
-# Figure mit 2x2 Subplots
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
-# Subplot 1: CPU-Auslastung (oben links)
-axes[0, 0].plot(zeit, cpu, 'b-', linewidth=2)
-axes[0, 0].fill_between(zeit, 0, cpu, alpha=0.3, color='blue')
-axes[0, 0].set_title('CPU-Auslastung (%)', fontsize=12, fontweight='bold')
-axes[0, 0].set_xlabel('Zeit (s)')
-axes[0, 0].set_ylabel('CPU (%)')
+axes[0, 0].plot(zeit_min, zugspannung_mpa, 'b-', linewidth=2)
+axes[0, 0].fill_between(zeit_min, 0, zugspannung_mpa, alpha=0.3, color='blue')
+axes[0, 0].set_title('Zugspannung (MPa)', fontsize=12, fontweight='bold')
+axes[0, 0].set_xlabel('Zeit (min)')
+axes[0, 0].set_ylabel('Zugspannung (MPa)')
 axes[0, 0].grid(True, alpha=0.3)
 
-# Subplot 2: RAM-Auslastung (oben rechts)
-axes[0, 1].plot(zeit, ram, 'g-', linewidth=2)
-axes[0, 1].axhline(y=70, color='red', linestyle='--', linewidth=2, label='Warn-Schwelle (70%)')
-axes[0, 1].set_title('RAM-Auslastung (%)', fontsize=12, fontweight='bold')
-axes[0, 1].set_xlabel('Zeit (s)')
-axes[0, 1].set_ylabel('RAM (%)')
+axes[0, 1].plot(zeit_min, dehnung_prozent, 'g-', linewidth=2)
+axes[0, 1].axhline(y=5, color='red', linestyle='--', linewidth=2, label='Bruchgrenze (5%)')
+axes[0, 1].set_title('Dehnung (%)', fontsize=12, fontweight='bold')
+axes[0, 1].set_xlabel('Zeit (min)')
+axes[0, 1].set_ylabel('Dehnung (%)')
 axes[0, 1].legend()
 axes[0, 1].grid(True, alpha=0.3)
 
-# Subplot 3: Disk I/O Korrelation (unten links)
-axes[1, 0].scatter(disk_read, disk_write, color='red', alpha=0.5, s=50)
-axes[1, 0].set_title('Disk I/O Korrelation', fontsize=12, fontweight='bold')
-axes[1, 0].set_xlabel('Disk Read (MB/s)')
-axes[1, 0].set_ylabel('Disk Write (MB/s)')
+axes[1, 0].scatter(temperatur_c, kraftaufnahme_kn, color='red', alpha=0.5, s=50)
+axes[1, 0].set_title('Temperatur vs. Kraft Korrelation', fontsize=12, fontweight='bold')
+axes[1, 0].set_xlabel('Temperatur (°C)')
+axes[1, 0].set_ylabel('Kraftaufnahme (kN)')
 axes[1, 0].grid(True, alpha=0.3)
 
-# Subplot 4: CPU-Verteilung Histogramm (unten rechts)
-axes[1, 1].hist(cpu, bins=15, color='orange', edgecolor='black', alpha=0.7)
-axes[1, 1].set_title('CPU-Verteilung', fontsize=12, fontweight='bold')
-axes[1, 1].set_xlabel('CPU-Auslastung (%)')
+axes[1, 1].hist(zugspannung_mpa, bins=15, color='orange', edgecolor='black', alpha=0.7)
+axes[1, 1].set_title('Zugspannungs-Verteilung', fontsize=12, fontweight='bold')
+axes[1, 1].set_xlabel('Zugspannung (MPa)')
 axes[1, 1].set_ylabel('Häufigkeit')
 axes[1, 1].grid(axis='y', alpha=0.3)
 
-# Haupttitel
-plt.suptitle('System-Monitor Dashboard', fontsize=16, fontweight='bold')
-
-# Layout anpassen
+plt.suptitle('Materialprüfungs-Dashboard', fontsize=16, fontweight='bold')
 plt.tight_layout()
 plt.show()
 ```
 
-**Erklärung:**
-
-- **`axes[zeile, spalte]`**: Zugriff auf Subplots im 2D-Array.
-- **`fill_between()`**: Füllt Bereich unter CPU-Kurve für visuellen Effekt.
-- **`axhline()`**: Horizontale Linie bei 70% für RAM-Warnschwelle.
-- **Exponentialverteilung**: `np.random.exponential()` simuliert I/O-Bursts (typisch für Disk-Zugriffe).
-- **`tight_layout()`**: Passt Abstände automatisch an, damit nichts überlappt.
-
-**Interpretation:**
-
-- **CPU**: Oszilliert zwischen ~10% und ~50% mit Rauschen (typisch für interaktive Workloads).
-- **RAM**: Stabilere Auslastung um 50%, gelegentliche Spitzen.
-- **Disk I/O**: Keine starke Korrelation zwischen Read und Write (Punkte verstreut).
-- **CPU-Histogram**: Zeigt, dass CPU meistens im Bereich 20-40% liegt (Normalverteilung).
-
 ---
 
-### P4: Logarithmische Achsen - Speicher-Benchmark (⭐⭐⭐)
+### P4: Logarithmische Achsen - Werkzeugstandzeit-Analyse (⭐⭐⭐)
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Daten
-groessen_kb = np.array([32, 256, 8192, 16384, 524288])  # KB
-zugriffszeit_ns = np.array([0.5, 3, 15, 80, 100000])  # Nanosekunden
-labels = ['L1 (32KB)', 'L2 (256KB)', 'L3 (8MB)', 'RAM (16MB)', 'SSD (512MB)']
+schnittgeschw_m_min = np.array([50, 100, 200, 400, 800])
+standzeit_min = np.array([720, 180, 45, 11, 3])
+labels = ['HSS niedrig', 'HSS hoch', 'HM niedrig', 'HM hoch', 'Keramik']
 
-# Plot mit logarithmischen Achsen
 plt.figure(figsize=(12, 8))
-plt.loglog(groessen_kb, zugriffszeit_ns, 'ro--', markersize=10, linewidth=2, label='Speicher-Hierarchie')
+plt.loglog(schnittgeschw_m_min, standzeit_min, 'ro--', markersize=10, linewidth=2)
 
-# Labels zu jedem Punkt hinzufügen
 for i, label in enumerate(labels):
-    plt.text(groessen_kb[i] * 1.2, zugriffszeit_ns[i], label, 
+    plt.text(schnittgeschw_m_min[i] * 1.15, standzeit_min[i], label, 
              fontsize=10, verticalalignment='center')
 
-# Beschriftungen
-plt.xlabel('Speichergröße (KB, log)', fontsize=12)
-plt.ylabel('Zugriffszeit (ns, log)', fontsize=12)
-plt.title('Speicher-Hierarchie: Größe vs. Zugriffszeit', fontsize=14, fontweight='bold')
-
-# Gitter und Legende
+plt.xlabel('Schnittgeschwindigkeit (m/min, log)', fontsize=12)
+plt.ylabel('Werkzeugstandzeit (min, log)', fontsize=12)
+plt.title('Werkzeugverschleiß: Schnittgeschwindigkeit vs. Standzeit (Taylor-Gleichung)', 
+          fontsize=13, fontweight='bold')
 plt.grid(True, alpha=0.3, which='both')
-plt.legend(fontsize=11)
-
-# Anzeigen
 plt.tight_layout()
 plt.show()
 
-# Kommentar zur Begründung
-"""
-Warum logarithmische Achsen hier sinnvoll sind:
-
-Die Daten umfassen mehrere Größenordnungen:
-- Speichergröße: 32 KB bis 512 MB (Faktor ~16.000)
-- Zugriffszeit: 0.5 ns bis 100.000 ns (Faktor 200.000)
-
-Mit linearen Achsen wären L1/L2/L3 kaum sichtbar (zu klein im Vergleich zu SSD).
-Logarithmische Achsen komprimieren große Werte und spreizen kleine Werte,
-sodass alle Datenpunkte gut sichtbar und vergleichbar sind.
-
-Zusätzlich: In log-log-Plots werden Powerlaws (y = x^k) zu Geraden.
-Die Speicher-Hierarchie zeigt einen exponentiellen Trade-off zwischen
-Größe und Geschwindigkeit – perfekt für log-log-Darstellung.
-"""
+# Taylor-Gleichung: vc × T^n = C (konstant)
+# Im log-log-Plot wird dies zu einer Geraden: log(T) = -n × log(vc) + log(C)
+# Logarithmische Achsen zeigen Power-Law-Beziehungen als Geraden.
+# Schnittgeschw. und Standzeit umfassen mehrere Größenordnungen (Faktor 16 bzw. 240).
 ```
-
-**Ausgabe-Erklärung:**
-
-- **`plt.loglog()`**: Kurzform für beide Achsen logarithmisch (Basis 10).
-- **`plt.text(..., groessen_kb[i] * 1.2, ...)`**: Platziert Label rechts neben Punkt (20% nach rechts verschoben).
-- **`which='both'`**: Gitter für Major und Minor Ticks (bei log-Achsen gibt es Zwischenlinien).
-
-**Visualisierung zeigt:**
-
-- L1-Cache ist extrem schnell (0.5 ns), aber winzig (32 KB)
-- SSD ist 200.000× langsamer als L1, aber 16.000× größer
-- Fast lineare Beziehung im log-log-Plot → Powerlaw-Beziehung
 
 ---
 
@@ -520,118 +432,67 @@ Größe und Geschwindigkeit – perfekt für log-log-Darstellung.
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Daten
-algorithmen = ['FCFS', 'SJF', 'Round Robin', 'Priority']
-avg_wartezeit = [28.5, 15.2, 18.7, 20.1]  # Millisekunden
-avg_turnaround = [45.3, 32.6, 36.4, 38.2]  # Millisekunden
-context_switches = [0, 0, 24, 12]  # Anzahl
+verfahren = ['Drehen', 'Fräsen', 'Bohren', 'Schleifen']
+durchlaufzeit_min = [12.5, 18.3, 8.7, 22.1]
+ruestzeit_min = [25.3, 35.6, 15.4, 45.2]
+werkzeugwechsel = [0, 3, 1, 5]
 
-# Figure mit 3 Subplots (vertikal)
 fig, axes = plt.subplots(3, 1, figsize=(12, 14))
 
-# ========== Subplot 1: Gruppiertes Bar Chart ==========
-x_pos = np.arange(len(algorithmen))
+# Subplot 1: Gruppiertes Bar Chart
+x_pos = np.arange(len(verfahren))
 breite = 0.35
+bester_index = np.argmin(durchlaufzeit_min)
+durchlauf_farben = ['red' if i == bester_index else 'blue' for i in range(len(durchlaufzeit_min))]
 
-# Bester Algorithmus für Wartezeit
-bester_index = np.argmin(avg_wartezeit)
-wartezeit_farben = ['red' if i == bester_index else 'blue' for i in range(len(avg_wartezeit))]
-
-bars1 = axes[0].bar(x_pos - breite/2, avg_wartezeit, breite, 
-                     label='Wartezeit', color=wartezeit_farben, edgecolor='black', alpha=0.8)
-bars2 = axes[0].bar(x_pos + breite/2, avg_turnaround, breite,
-                     label='Turnaround', color='orange', edgecolor='black', alpha=0.8)
-
-axes[0].set_xlabel('Algorithmus', fontsize=11)
-axes[0].set_ylabel('Zeit (ms)', fontsize=11)
-axes[0].set_title('Performance-Vergleich: Wartezeit vs. Turnaround', fontsize=12, fontweight='bold')
+axes[0].bar(x_pos - breite/2, durchlaufzeit_min, breite, 
+             label='Durchlaufzeit', color=durchlauf_farben, edgecolor='black', alpha=0.8)
+axes[0].bar(x_pos + breite/2, ruestzeit_min, breite,
+             label='Rüstzeit', color='orange', edgecolor='black', alpha=0.8)
+axes[0].set_xlabel('Fertigungsverfahren', fontsize=11)
+axes[0].set_ylabel('Zeit (min)', fontsize=11)
+axes[0].set_title('Fertigungsverfahren: Durchlauf- vs. Rüstzeit', fontsize=12, fontweight='bold')
 axes[0].set_xticks(x_pos)
-axes[0].set_xticklabels(algorithmen)
+axes[0].set_xticklabels(verfahren)
 axes[0].legend(fontsize=10)
 axes[0].grid(axis='y', alpha=0.3)
 
-# ========== Subplot 2: Horizontales Bar Chart ==========
-bars3 = axes[1].barh(algorithmen, context_switches, color='green', edgecolor='black', alpha=0.8)
-
-# Text-Labels am Ende jeder Leiste
-for i, (bar, val) in enumerate(zip(bars3, context_switches)):
+# Subplot 2: Horizontales Bar Chart
+bars = axes[1].barh(verfahren, werkzeugwechsel, color='green', edgecolor='black', alpha=0.8)
+for i, (bar, val) in enumerate(zip(bars, werkzeugwechsel)):
     width = bar.get_width()
-    axes[1].text(width + 0.5, bar.get_y() + bar.get_height()/2, 
-                 str(val), ha='left', va='center', fontsize=10, fontweight='bold')
-
-axes[1].set_xlabel('Anzahl Context Switches', fontsize=11)
-axes[1].set_ylabel('Algorithmus', fontsize=11)
-axes[1].set_title('Context Switches pro Algorithmus', fontsize=12, fontweight='bold')
+    axes[1].text(width + 0.1, bar.get_y() + bar.get_height()/2, 
+                  str(val), ha='left', va='center', fontsize=10, fontweight='bold')
+axes[1].set_xlabel('Anzahl Werkzeugwechsel', fontsize=11)
+axes[1].set_ylabel('Fertigungsverfahren', fontsize=11)
+axes[1].set_title('Werkzeugwechsel pro Verfahren', fontsize=12, fontweight='bold')
 axes[1].grid(axis='x', alpha=0.3)
 
-# ========== Subplot 3: Scatter Plot mit Annotationen ==========
-axes[2].scatter(avg_wartezeit, avg_turnaround, s=150, color='purple', 
+# Subplot 3: Scatter Plot mit Annotationen
+axes[2].scatter(durchlaufzeit_min, ruestzeit_min, s=150, color='purple', 
                 edgecolors='black', linewidths=2, alpha=0.7, zorder=3)
-
-# Annotationen mit Pfeilen
-for i, algo in enumerate(algorithmen):
-    # Pfeil-Position leicht versetzt für bessere Lesbarkeit
-    xytext_offset = [(10, 15), (-50, 20), (10, -25), (-50, -25)][i]
-    
-    axes[2].annotate(algo, 
-                      xy=(avg_wartezeit[i], avg_turnaround[i]),
-                      xytext=xytext_offset,
+xytext_offsets = [(10, 15), (-40, 20), (10, -25), (-50, -25)]
+for i, verf in enumerate(verfahren):
+    axes[2].annotate(verf, 
+                      xy=(durchlaufzeit_min[i], ruestzeit_min[i]),
+                      xytext=xytext_offsets[i],
                       textcoords='offset points',
                       fontsize=10,
                       bbox=dict(boxstyle='round,pad=0.5', facecolor='yellow', alpha=0.7),
                       arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.3',
                                      color='black', lw=1.5))
-
-axes[2].set_xlabel('Wartezeit (ms)', fontsize=11)
-axes[2].set_ylabel('Turnaround-Zeit (ms)', fontsize=11)
-axes[2].set_title('Wartezeit vs. Turnaround-Zeit Korrelation', fontsize=12, fontweight='bold')
+axes[2].set_xlabel('Durchlaufzeit (min)', fontsize=11)
+axes[2].set_ylabel('Rüstzeit (min)', fontsize=11)
+axes[2].set_title('Durchlaufzeit vs. Rüstzeit Korrelation', fontsize=12, fontweight='bold')
 axes[2].grid(True, alpha=0.3)
 
-# Haupttitel
-plt.suptitle('Scheduling-Algorithmen: Detaillierter Vergleich', 
+plt.suptitle('Fertigungsverfahren: Detaillierter Vergleich', 
              fontsize=16, fontweight='bold', y=0.995)
-
-# Layout und Speichern
 plt.tight_layout()
-plt.savefig('scheduling_vergleich.png', dpi=300, bbox_inches='tight')
+plt.savefig('fertigungsverfahren_vergleich.png', dpi=300, bbox_inches='tight')
 plt.show()
-
-print("Plot erfolgreich gespeichert als 'scheduling_vergleich.png' mit 300 DPI!")
+print("Plot gespeichert als 'fertigungsverfahren_vergleich.png'!")
 ```
-
-**Erklärung der Highlights:**
-
-**Subplot 1 - Bonus-Feature:**
-- **`bester_index = np.argmin(avg_wartezeit)`**: Findet Index des kleinsten Werts (SJF mit 15.2 ms).
-- **Farbkodierung**: Bester Algorithmus (SJF) wird in Rot hervorgehoben, andere in Blau.
-- **List Comprehension**: `[... if i == bester_index else ...]` für dynamische Farben.
-
-**Subplot 2 - Text-Labels:**
-- **`bar.get_width()`**: Gibt Balkenbreite zurück (Wert auf X-Achse).
-- **`bar.get_y() + bar.get_height()/2`**: Zentriert Text vertikal in der Mitte des Balkens.
-- **Position `width + 0.5`**: Platziert Text rechts neben Balken mit 0.5 Einheiten Abstand.
-
-**Subplot 3 - Annotationen:**
-- **`xytext`-Offsets**: Manuell angepasst, damit Annotationen nicht überlappen:
-  - FCFS: rechts oben (10, 15)
-  - SJF: links oben (-50, 20)
-  - Round Robin: rechts unten (10, -25)
-  - Priority: links unten (-50, -25)
-- **`textcoords='offset points'`**: `xytext` wird als Pixel-Offset interpretiert (nicht als Datenkoordinaten).
-- **`connectionstyle='arc3,rad=0.3'`**: Pfeil hat leichte Kurve (Radius 0.3) für bessere Ästhetik.
-- **`bbox`**: Gelber Rahmen um Text für bessere Lesbarkeit auf farbigem Hintergrund.
-- **`zorder=3`**: Punkte werden über Gitterlinien gezeichnet (höherer z-Index).
-
-**Speichern:**
-- **`dpi=300`**: Hochauflösend für Publikationen (Standard 72 DPI wäre zu niedrig).
-- **`bbox_inches='tight'`**: Entfernt unnötigen Whitespace am Rand.
-
-**Interpretation:**
-
-- **SJF ist optimal**: Kürzeste Wartezeit (15.2 ms) und kürzeste Turnaround-Zeit (32.6 ms).
-- **FCFS ist am schlechtesten**: Längste Wartezeit (28.5 ms), keine Context Switches aber ineffizient.
-- **Round Robin hat hohe Overhead**: 24 Context Switches führen zu leicht schlechterer Performance als Priority Scheduling.
-- **Korrelation**: Alle Punkte liegen nahe einer imaginären Diagonale → kürzere Wartezeit korreliert mit kürzerer Turnaround-Zeit.
 
 ---
 

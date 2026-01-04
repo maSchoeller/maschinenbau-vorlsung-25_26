@@ -68,9 +68,18 @@ Gekürzt:  _______________________________________
 
 ---
 
-### Aufgabe 3: Subnetting-Szenario ⭐⭐⭐ (Schwer)
+### Aufgabe 3: Subnetting für Produktionsanlagen ⭐⭐⭐ (Schwer)
 
-Ein Unternehmen hat das Netzwerk **`172.16.100.0/24`** zugewiesen bekommen. Die IT-Abteilung soll dieses Netzwerk in **acht gleich große Subnetze** aufteilen, um verschiedene Abteilungen zu isolieren.
+Ein Maschinenbau-Unternehmen hat das Netzwerk **`172.16.100.0/24`** für seine Produktionshalle zugewiesen bekommen. Die IT-Abteilung soll dieses Netzwerk in **acht gleich große Subnetze** aufteilen, um verschiedene Produktionszellen zu isolieren:
+
+- **Zelle 1**: CNC-Fräsmaschinen (15 Maschinen)
+- **Zelle 2**: Drehmaschinen (12 Maschinen)
+- **Zelle 3**: Roboterarme (20 Maschinen)
+- **Zelle 4**: Qualitätsprüfung (8 Geräte)
+- **Zelle 5**: Lagerverwaltung (10 Scanner)
+- **Zelle 6**: Montage (18 Arbeitsplätze)
+- **Zelle 7**: Wartung (5 Mobile Geräte)
+- **Zelle 8**: Management/SCADA (10 Systeme)
 
 **Aufgaben:**
 
@@ -87,23 +96,95 @@ Ein Unternehmen hat das Netzwerk **`172.16.100.0/24`** zugewiesen bekommen. Die 
 
 Fülle die folgende Tabelle für die **ersten drei** Subnetze aus:
 
-| Subnetz | Netzwerkadresse | Erste nutzbare IP | Letzte nutzbare IP | Broadcast-Adresse |
-|---------|-----------------|-------------------|--------------------|-------------------|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| Subnetz | Produktionszelle | Netzwerkadresse | Erste nutzbare IP | Letzte nutzbare IP | Broadcast-Adresse |
+|---------|------------------|-----------------|-------------------|--------------------|-------------------|
+| 1 | CNC-Fräsmaschinen | | | | |
+| 2 | Drehmaschinen | | | | |
+| 3 | Roboterarme | | | | |
 
 **d) Praktische Anwendung**
 
-Die Personalabteilung benötigt mindestens **20 Hosts**. Ist eines der acht Subnetze ausreichend? Begründe deine Antwort.
+- Zelle 3 (Roboterarme) benötigt **20 Hosts**. Ist eines der acht Subnetze ausreichend? Begründe deine Antwort.
+- Welche Produktionszellen passen **nicht** in ein einzelnes Subnetz und benötigen spezielle Lösungen?
 
-**Bonus (+⭐):** Die IT-Abteilung benötigt **60 Hosts**. Kannst du zwei benachbarte Subnetze zu einem größeren zusammenfassen? Wenn ja, wie lautet die neue CIDR-Notation und der nutzbare IP-Bereich?
+**Bonus (+⭐):** Die SCADA-Systeme benötigen **60 Adressen** für zukünftige Erweiterungen. Kannst du zwei benachbarte Subnetze zu einem größeren zusammenfassen? Wenn ja, wie lautet die neue CIDR-Notation und der nutzbare IP-Bereich?
 
 ---
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe 4: Zeilen-Filter mit Generator ⭐ (Leicht)
+### Aufgabe P1: Netzwerk-Paket-Analyse ⭐⭐ (Mittel)
+
+**Datei:** `netzwerk_pakete.csv`
+
+In einer Produktionshalle wurden über 5 Minuten industrielle Netzwerkpakete aufgezeichnet. Die CSV-Datei enthält folgende Spalten:
+
+```
+Zeitstempel,Quell_IP,Ziel_IP,Protokoll,Paketgroesse_Bytes,Latenz_ms
+```
+
+**Aufgabe:**
+
+Schreibe ein Python-Programm, das die CSV-Datei analysiert und folgende Informationen ausgibt:
+
+**a) Protokoll-Verteilung**
+- Anzahl der Pakete pro Protokoll (Modbus TCP, MQTT, OPC UA)
+- Prozentuale Verteilung
+
+**b) Netzwerk-Last**
+- Gesamtes übertragenes Datenvolumen in MB
+- Durchschnittliche Paketgröße pro Protokoll
+
+**c) Performance-Analyse**
+- Durchschnittliche Latenz pro Protokoll
+- Anzahl der Pakete mit Latenz > 100ms (kritisch für Echtzeitsteuerung)
+
+**d) Maschinen-Kommunikation**
+- Top 3 aktivste Maschinen (Quell-IPs mit den meisten gesendeten Paketen)
+- Liste aller Maschinen, die mit dem SCADA-Server (192.168.1.100) kommunizieren
+
+**Anforderungen:**
+- Nutze `csv.DictReader` für das Einlesen
+- Behandle fehlerhafte oder unvollständige Zeilen
+- Formatiere Ausgaben übersichtlich mit Einheiten
+
+**Erwartete Ausgabe (Beispiel):**
+```
+=== Netzwerk-Paket-Analyse ===
+
+Protokoll-Verteilung:
+  Modbus TCP: 42 Pakete (42.0%)
+  MQTT: 35 Pakete (35.0%)
+  OPC UA: 23 Pakete (23.0%)
+
+Netzwerk-Last:
+  Gesamt: 0.15 MB
+  Ø Paketgröße Modbus TCP: 1024 Bytes
+  Ø Paketgröße MQTT: 512 Bytes
+  Ø Paketgröße OPC UA: 2048 Bytes
+
+Performance:
+  Ø Latenz Modbus TCP: 15.3 ms
+  Ø Latenz MQTT: 8.7 ms
+  Ø Latenz OPC UA: 42.1 ms
+  Kritische Pakete (>100ms): 5
+
+Top 3 aktivste Maschinen:
+  1. 192.168.1.10: 18 Pakete
+  2. 192.168.1.11: 15 Pakete
+  3. 192.168.1.12: 12 Pakete
+
+Kommunikation mit SCADA (192.168.1.100):
+  - 192.168.1.10
+  - 192.168.1.11
+  - 192.168.1.13
+```
+
+---
+
+###
+
+ Aufgabe P2: Socket-Programmierung – Maschinen-Status-Monitor ⭐⭐ (Mittel)
 
 Schreibe eine **Generator-Funktion** `filtere_zeilen(dateiname, mindestlaenge)`, die:
 - Eine Textdatei Zeile für Zeile liest

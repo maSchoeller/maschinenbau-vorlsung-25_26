@@ -246,38 +246,251 @@ Index | Schlüssel
 
 ## Teil B: Python-Aufgaben - Lösungen
 
-### Lösung P1: Sichere Zahleneingabe
+### Lösung P1: Sichere Messwert-Eingabe für Sensorkalibrierung
 
 **Vollständiger Code**:
 ```python
-def eingabe_ganzzahl(prompt, min_wert, max_wert):
-    """
-    Fordert den Benutzer zur Eingabe einer Ganzzahl auf.
-    Wiederholt die Eingabe bei Fehlern.
-    
-    Args:
-        prompt: Anzeigetext für die Eingabeaufforderung
-        min_wert: Minimaler erlaubter Wert (inklusive)
-        max_wert: Maximaler erlaubter Wert (inklusive)
-    
-    Returns:
-        int: Die validierte Ganzzahl
-    """
+def eingabe_messwert(prompt, min_wert, max_wert, einheit):
     while True:
         try:
-            # Versuche, Eingabe in Ganzzahl zu konvertieren
-            zahl = int(input(prompt))
+            wert = float(input(prompt))
             
-            # Prüfe, ob Zahl im erlaubten Bereich liegt
-            if zahl < min_wert or zahl > max_wert:
-                print(f"Fehler: Zahl muss zwischen {min_wert} und {max_wert} liegen.")
-                continue  # Springe zum nächsten Schleifendurchlauf
+            if wert < min_wert or wert > max_wert:
+                print(f"⚠️  Fehler: Wert muss zwischen {min_wert} und {max_wert} {einheit} liegen.")
+                continue
             
-            # Wenn wir hier ankommen, ist die Eingabe gültig
-            return zahl
+            print(f"✅ Wert akzeptiert: {wert} {einheit}")
+            return wert
             
         except ValueError:
-            # Wird ausgeführt, wenn int() eine Exception wirft
+            print("⚠️  Fehler: Bitte gib eine gültige Zahl ein.")
+
+# Test
+temp = eingabe_messwert("Referenztemperatur: ", -50, 1200, "°C")
+print(f"Kalibriert auf: {temp}°C")
+```
+
+**Erklärung**:
+
+`try-except` fängt `ValueError` bei ungültiger Eingabe ab. `continue` wiederholt bei Fehler. `float()` erlaubt Dezimalzahlen für präzise Sensorwerte.
+
+---
+
+### Lösung P2: Maschinen-Logfile-Analyse mit Fehlerbehandlung
+
+**Vollständiger Code**:
+```python
+def analyse_maschinenlog(dateiname):
+    try:
+        with open(dateiname, 'r', encoding='utf-8') as f:
+            zeilen = f.readlines()
+            
+        alarme = sum(1 for z in zeilen if "ALARM" in z)
+        errors = sum(1 for z in zeilen if "ERROR" in z)
+        
+        print("✅ Logfile erfolgreich analysiert.")
+        return {"zeilen": len(zeilen), "alarme": alarme, "errors": errors}
+        
+    except FileNotFoundError:
+        print(f"❌ Fehler: Datei '{dateiname}' wurde nicht gefunden.")
+        return None
+        
+    except PermissionError:
+        print(f"❌ Fehler: Keine Leseberechtigung für '{dateiname}'.")
+        return None
+        
+    finally:
+        print("Analyse abgeschlossen.")
+
+# Test
+stats = analyse_maschinenlog("maschine_01.log")
+if stats:
+    print(f"Alarme: {stats['alarme']}, Errors: {stats['errors']}")
+```
+
+**Erklärung**:
+
+`with open()` schließt Datei automatisch. Generator-Expressions mit `sum()` zählen effizient. `finally` wird immer ausgeführt, auch bei Exceptions.
+
+---
+
+### Lösung P3: Verschachtelte Maschinen-Konfiguration
+
+**Vollständiger Code**:
+```python
+def parameter_lesen(config, pfad):
+    try:
+        wert = config
+        for schluessel in pfad:
+            wert = wert[schluessel]
+        return wert
+        
+    except KeyError as e:
+        print(f"❌ Fehler: Schlüssel {e} nicht gefunden in Pfad {pfad}")
+        return None
+        
+    except TypeError:
+        print(f"❌ Fehler: Element in Pfad {pfad} ist kein Dictionary")
+        return None
+
+# Test
+cnc_config = {
+    "achsen": {
+        "x_achse": {"max_geschwindigkeit": 15000},
+        "y_achse": {"max_geschwindigkeit": 12000}
+    },
+    "spindel": {"max_drehzahl": 24000}
+}
+
+print(parameter_lesen(cnc_config, ["achsen", "x_achse", "max_geschwindigkeit"]))  # 15000
+print(parameter_lesen(cnc_config, ["achsen", "z_achse", "max_geschwindigkeit"]))  # None
+```
+
+**Erklärung**:
+
+Iteration durch Pfad mit Dictionary-Zugriff. `KeyError` für fehlende Schlüssel, `TypeError` für nicht-Dictionary-Elemente. Gibt `None` bei Fehler zurück.
+
+---
+
+### Lösung P4: Benutzerdefinierte Exception für Materialvalidierung
+
+**Vollständiger Code**:
+```python
+class UngueltigerEModulError(Exception):
+    pass
+
+class UngueltigeDichteError(Exception):
+    pass
+
+class UngueltigeStreckgrenzeError(Exception):
+    pass
+
+class MaterialValidator:
+    def validiere_e_modul(self, e_modul):
+        if not (1 <= e_modul <= 1000):
+            raise UngueltigerEModulError(
+                f"E-Modul muss zwischen 1 und 1000 GPa liegen (erhalten: {e_modul} GPa)."
+            )
+    
+    def validiere_dichte(self, dichte):
+        if not (0.1 <= dichte <= 25):
+            raise UngueltigeDichteError(
+                f"Dichte muss zwischen 0.1 und 25 g/cm³ liegen (erhalten: {dichte} g/cm³)."
+            )
+    
+    def validiere_streckgrenze(self, re):
+        if not (1 <= re <= 3000):
+            raise UngueltigeStreckgrenzeError(
+                f"Streckgrenze muss zwischen 1 und 3000 MPa liegen (erhalten: {re} MPa)."
+            )
+    
+    def validiere_material(self, e_modul, dichte, re, name):
+        self.validiere_e_modul(e_modul)
+        self.validiere_dichte(dichte)
+        self.validiere_streckgrenze(re)
+        return True
+
+# Test
+validator = MaterialValidator()
+
+try:
+    validator.validiere_material(210, 7.85, 235, "Baustahl S235")
+    print("✅ Material 'Baustahl S235' erfolgreich validiert!")
+except (UngueltigerEModulError, UngueltigeDichteError, UngueltigeStreckgrenzeError) as e:
+    print(f"❌ Validierungsfehler: {e}")
+```
+
+**Erklärung**:
+
+Benutzerdefinierte Exception-Klassen erben von `Exception`. `raise` wirft Exception mit Nachricht. Validator ruft Einzelprüfungen auf, erste Exception wird propagiert.
+
+---
+
+### Lösung P5: Robustes Maschinen-Konfigurationssystem
+
+**Vollständiger Code**:
+```python
+import json
+
+class KonfigurationsFehler(Exception):
+    pass
+
+class KonfigurationsDateiFehler(KonfigurationsFehler):
+    pass
+
+class KonfigurationsFormatFehler(KonfigurationsFehler):
+    pass
+
+class KonfigurationsValidierungsFehler(KonfigurationsFehler):
+    pass
+
+class FertigungszellenKonfiguration:
+    def __init__(self, dateiname, erforderliche_felder=None, defaults=None):
+        self.dateiname = dateiname
+        self.erforderliche_felder = erforderliche_felder or []
+        self.defaults = defaults or {}
+        self.daten = {}
+    
+    def laden(self):
+        try:
+            with open(self.dateiname, 'r', encoding='utf-8') as f:
+                self.daten = json.load(f)
+                
+        except FileNotFoundError:
+            raise KonfigurationsDateiFehler(
+                f"Konfigurationsdatei '{self.dateiname}' nicht gefunden."
+            )
+        except PermissionError:
+            raise KonfigurationsDateiFehler(
+                f"Keine Leseberechtigung für '{self.dateiname}'."
+            )
+        except json.JSONDecodeError:
+            raise KonfigurationsFormatFehler(
+                f"Ungültiges JSON-Format in '{self.dateiname}'."
+            )
+        
+        # Defaults hinzufügen
+        for key, value in self.defaults.items():
+            if key not in self.daten:
+                self.daten[key] = value
+        
+        # Validieren
+        self.validieren()
+    
+    def validieren(self):
+        for feld in self.erforderliche_felder:
+            if feld not in self.daten:
+                raise KonfigurationsValidierungsFehler(
+                    f"Erforderliches Feld '{feld}' fehlt in Konfiguration."
+                )
+    
+    def get(self, schluessel, default=None):
+        return self.daten.get(schluessel, default)
+    
+    def speichern(self, dateiname):
+        try:
+            with open(dateiname, 'w', encoding='utf-8') as f:
+                json.dump(self.daten, f, indent=2)
+        except Exception as e:
+            raise KonfigurationsFehler(f"Fehler beim Speichern: {e}")
+
+# Test
+try:
+    config = FertigungszellenKonfiguration(
+        "fertigungszelle_01.json",
+        erforderliche_felder=["maschine", "qualitaet"],
+        defaults={"debug_modus": False}
+    )
+    config.laden()
+    print(f"✅ Maschine: {config.get('maschine')['typ']}")
+    print(f"Debug-Modus: {config.get('debug_modus')}")
+except KonfigurationsFehler as e:
+    print(f"❌ Fehler: {e}")
+```
+
+**Erklärung**:
+
+Exception-Hierarchie mit Basisklasse. `json.load()` für JSON-Parsing. Dictionary-Update für Defaults. Validierung prüft erforderliche Felder. `with open()` für sichere Datei-I/O.
             print("Fehler: Bitte gib eine gültige Zahl ein.")
 
 

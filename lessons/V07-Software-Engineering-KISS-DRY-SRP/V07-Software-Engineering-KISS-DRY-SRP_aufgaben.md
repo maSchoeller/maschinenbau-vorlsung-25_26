@@ -264,139 +264,255 @@ def validiere_passwort(passwort):
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Primzahlen-Finder mit break (Leicht)
+### Aufgabe P1: CNC-Werkzeugwechsel-Sequenz optimieren (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 15-20 Minuten  
-**Vorkenntnisse**: Schleifen, `break`, Modulo-Operator
+**Vorkenntnisse**: Schleifen, `break`, List/Array-Verarbeitung  
+**Maschinenbau-Kontext**: Optimierung von CNC-Werkzeugmagazin-Sequenzen
 
-Schreibe ein Programm, das alle Primzahlen bis zu einer vom Benutzer eingegebenen Obergrenze findet und ausgibt.
+Schreibe ein Programm zur Suche nach **optimalen Werkzeugpositionen** in einem CNC-Werkzeugmagazin.
+
+> [!NOTE]
+> **CNC-Werkzeugmagazin**: Speichersystem für Fräs- und Drehwerkzeuge mit typisch 12-60 Positionen. Werkzeugwechsel kostet Zeit (2-10 Sekunden). Häufig genutzte Werkzeuge sollten an bevorzugten Positionen liegen.
+
+**Aufgabe**:
+Erstelle ein Programm, das ein **Werkzeug in einem Magazin sucht** und bei Fund die Schleife sofort beendet.
 
 **Anforderungen**:
-- Fordere den Benutzer auf, eine Obergrenze einzugeben (z.B. 50)
-- Für jede Zahl von 2 bis zur Obergrenze prüfe, ob sie eine Primzahl ist
-- Eine Zahl ist eine Primzahl, wenn sie nur durch 1 und sich selbst teilbar ist
-- Verwende `break`, um die Prüfung vorzeitig zu beenden, sobald ein Teiler gefunden wurde
-- Nutze die `else`-Klausel der Schleife, um Primzahlen zu identifizieren
-- Gib alle gefundenen Primzahlen aus
+- Gegeben: Liste mit Werkzeug-IDs im Magazin (z.B. `[101, 205, 310, 405, 210, 115, 320]`)
+- Eingabe: Gesuchte Werkzeug-ID
+- Durchsuche das Magazin Position für Position
+- Bei Fund: Gib Position aus und beende Suche mit `break`
+- Verwende `else`-Klausel, um "Werkzeug nicht gefunden" anzuzeigen
+- Zähle die Anzahl der geprüften Positionen (Suchaufwand)
 
 **Beispiel Ein-/Ausgabe**:
 ```
-Obergrenze eingeben: 20
-Primzahlen bis 20:
-2 3 5 7 11 13 17 19
+Werkzeugmagazin: [101, 205, 310, 405, 210, 115, 320]
+Gesuchte Werkzeug-ID: 210
+─────────────────────────────────
+Suche Werkzeug 210...
+Position 1: 101 ❌
+Position 2: 205 ❌
+Position 3: 310 ❌
+Position 4: 405 ❌
+Position 5: 210 ✅ GEFUNDEN!
+─────────────────────────────────
+Werkzeug 210 gefunden auf Position 5
+Suchaufwand: 5 Positionen geprüft
+```
+
+**Beispiel (nicht gefunden)**:
+```
+Gesuchte Werkzeug-ID: 999
+─────────────────────────────────
+...
+❌ Werkzeug 999 nicht im Magazin!
+Empfehlung: Werkzeug nachladen oder Programm anpassen.
 ```
 
 **Hinweise**:
-- Eine Zahl n ist keine Primzahl, wenn sie durch irgendeine Zahl von 2 bis n-1 teilbar ist
-- Optimierung: Es genügt, bis zur Quadratwurzel von n zu testen
-- Die `else`-Klausel nach der Schleife wird nur ausgeführt, wenn kein `break` aufgerufen wurde
+- Verwende `for i, werkzeug_id in enumerate(magazin, start=1):` für Position und ID
+- `break` beendet die Suche sofort nach Fund (Effizienz!)
+- Die `else`-Klausel der Schleife wird nur ausgeführt, wenn kein `break` erfolgte
 
 ---
 
-### Aufgabe P2: Zahlenrate-Spiel mit continue (Leicht-Mittel)
+### Aufgabe P2: Hydraulikdruck-Überwachung mit Eingabevalidierung (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 20-25 Minuten  
-**Vorkenntnisse**: Schleifen, `break`, `continue`, Eingabevalidierung
+**Vorkenntnisse**: Schleifen, `break`, `continue`, Eingabevalidierung  
+**Maschinenbau-Kontext**: Echtzeit-Überwachung von Hydrauliksystemen mit Fehlertoleranz
 
-Erstelle ein interaktives Zahlenrate-Spiel, bei dem der Computer eine Zufallszahl zwischen 1 und 100 wählt und der Spieler sie erraten muss.
+Erstelle ein **Hydraulikdruck-Überwachungssystem** mit robuster Eingabevalidierung.
+
+> [!NOTE]
+> **Hydraulik-Überwachung**: Kontinuierliche Druckmessung in hydraulischen Systemen (Pressen, Bagger, Industriemaschinen). Kritische Werte: Unterdruck < 50 bar (Leckage), Überdruck > 250 bar (Berstgefahr). Sensoren liefern manchmal fehlerhafte Werte durch elektromagnetische Störungen.
+
+**Aufgabe**:
+Simuliere eine **kontinuierliche Drucküberwachung** mit Eingabevalidierung und Alarmfunktion.
 
 **Anforderungen**:
-- Verwende `import random` und `random.randint(1, 100)`, um eine Zufallszahl zu generieren
-- Verwende eine `while`-Schleife für die Spiellogik
-- Fordere den Spieler auf, eine Zahl einzugeben
-- Validiere die Eingabe:
-  - Wenn die Eingabe keine gültige Zahl ist, gib eine Fehlermeldung aus und verwende `continue`
-  - Wenn die Zahl außerhalb des Bereichs 1-100 liegt, gib eine Fehlermeldung aus und verwende `continue`
-- Gib Hinweise: "Zu hoch!", "Zu niedrig!" oder "Richtig!"
-- Beende das Spiel mit `break`, wenn die richtige Zahl erraten wurde
-- Zähle die Anzahl der Versuche und gib sie am Ende aus
+- Fordere den Benutzer wiederholt auf, Druckwerte einzugeben (simuliert Sensor-Readings)
+- Validiere jede Eingabe:
+  - Wenn keine gültige Zahl: Fehlermeldung + `continue` (Messung wiederholen)
+  - Wenn negativer Wert: Fehlermeldung + `continue` (Sensor defekt)
+  - Wenn Wert > 300 bar: Fehlermeldung + `continue` (unrealistisch)
+- Bewerte gültige Druckwerte:
+  - **< 50 bar**: 🔴 ALARM - Unterdruck! Leckage möglich!
+  - **50-180 bar**: 🟢 OK - Normaler Betriebsbereich
+  - **180-250 bar**: 🟡 WARNUNG - Hoher Druck!
+  - **> 250 bar**: 🔴 ALARM - Überdruck! System abschalten!
+- Bei ALARM: Beende Überwachung mit `break`
+- Zähle gültige Messungen
+- Eingabe "STOP" beendet die Überwachung manuell
 
-**Beispiel Spielablauf**:
+**Beispiel Ablauf**:
 ```
-Ich habe mir eine Zahl zwischen 1 und 100 ausgedacht.
-Dein Tipp: abc
-Das ist keine gültige Zahl! Versuche es nochmal.
-Dein Tipp: 150
-Die Zahl muss zwischen 1 und 100 liegen!
-Dein Tipp: 50
-Zu niedrig!
-Dein Tipp: 75
-Zu hoch!
-Dein Tipp: 63
-Richtig! Du hast die Zahl in 5 Versuchen erraten.
+═══════════════════════════════════
+  Hydraulikdruck-Überwachung
+═══════════════════════════════════
+Normbereich: 50-180 bar
+Warnung: 180-250 bar
+Alarm: <50 bar oder >250 bar
+
+Messung eingeben (oder 'STOP'): abc
+⚠️  Fehler: Ungültiger Wert! Sensor prüfen.
+
+Messung eingeben (oder 'STOP'): -5
+⚠️  Fehler: Negativer Wert nicht möglich! Sensor defekt.
+
+Messung eingeben (oder 'STOP'): 120
+🟢 OK - Druck: 120.0 bar (Normal)
+
+Messung eingeben (oder 'STOP'): 195
+🟡 WARNUNG - Druck: 195.0 bar (Erhöht)
+
+Messung eingeben (oder 'STOP'): 270
+🔴 ALARM! Überdruck: 270.0 bar
+SYSTEM WIRD ABGESCHALTET!
+─────────────────────────────────
+Überwachung beendet.
+Gültige Messungen: 3
 ```
 
 **Hinweise**:
-- Verwende `input().strip()`, um Leerzeichen zu entfernen
-- Verwende `.isdigit()` zur Validierung
-- Denke an den Fall, dass der Benutzer negative Zahlen eingibt (z.B. "-5")
+- Verwende `while True:` für Endlosschleife
+- Verwende `try-except` für robuste Eingabevalidierung
+- `continue` überspringt ungültige Messungen
+- `break` beendet bei kritischen Alarmen
 
 ---
 
-### Aufgabe P3: Multiplikationstabelle mit verschachtelten Schleifen (Mittel)
+### Aufgabe P3: Drehmoment-Tabelle für Schraubverbindungen (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 25-30 Minuten  
-**Vorkenntnisse**: Verschachtelte Schleifen, String-Formatierung
+**Vorkenntnisse**: Verschachtelte Schleifen, String-Formatierung  
+**Maschinenbau-Kontext**: Anziehdrehmomente für ISO-Metrische Schrauben nach VDI 2230
 
-Erstelle ein Programm, das eine formatierte Multiplikationstabelle ausgibt.
+Erstelle ein Programm zur Ausgabe einer **Anziehdrehmoment-Tabelle** für Schraubenverbindungen.
+
+> [!NOTE]
+> **Anziehdrehmoment**: Das Drehmoment, mit dem eine Schraube angezogen werden muss, um die gewünschte Vorspannkraft zu erreichen. Abhängig von:
+> - **Gewindegröße** (M3, M4, M5, M6, M8, M10, M12, M16, M20...)
+> - **Festigkeitsklasse** (4.6, 5.6, 8.8, 10.9, 12.9) - höhere Zahl = höhere Festigkeit
+> - **Reibungsverhältnisse** (trocken, geölt, verzinkt)
+
+**Aufgabe**:
+Erstelle eine formatierte Tabelle mit Anziehdrehmomenten für verschiedene Schraubengrößen und Festigkeitsklassen.
+
+**Vereinfachte Formel** (für trockene, verzinkte Schrauben):
+$$M_A = 0.2 \times d \times F_{Vorspann}$$
+
+Wobei:
+- $ M_A $ = Anziehdrehmoment [Nm]
+- $ d $ = Nenndurchmesser [mm]
+- $ F_{Vorspann} $ = Vorspannkraft [N] ≈ 0.7 × $ A_S $ × $ R_m $
+- $ A_S $ = Spannungsquerschnitt [mm²] ≈ 0.8 × $ \frac{\pi d^2}{4} $
+- $ R_m $ = Zugfestigkeit [MPa] - abhängig von Festigkeitsklasse
+
+**Festigkeitsklassen** (vereinfacht):
+- 4.6: $ R_m $ = 400 MPa
+- 8.8: $ R_m $ = 800 MPa
+- 10.9: $ R_m $ = 1000 MPa
 
 **Anforderungen**:
-- Fordere den Benutzer auf, die Größe der Tabelle einzugeben (z.B. 10 für 1×1 bis 10×10)
-- Erstelle eine Tabelle mit Überschriften für Zeilen und Spalten
-- Formatiere die Zahlen rechtsbündig, sodass die Spalten ausgerichtet sind
-- Füge eine horizontale Trennlinie nach der Kopfzeile ein
-- Verwende verschachtelte `for`-Schleifen
+- Eingabe: Liste der Gewindegrößen (z.B. M3, M4, M5, M6, M8, M10)
+- Berechne Drehmomentwerte für Festigkeitsklassen 4.6, 8.8, 10.9
+- Formatiere als übersichtliche Tabelle mit Überschriften
+- Rechtsbündige Zahlenformatierung
+- Trennlinie nach Kopfzeile
 
-**Beispiel Ausgabe** (für Größe 5):
+**Beispiel Ausgabe**:
 ```
-     |    1    2    3    4    5
------|----------------------------
-   1 |    1    2    3    4    5
-   2 |    2    4    6    8   10
-   3 |    3    6    9   12   15
-   4 |    4    8   12   16   20
-   5 |    5   10   15   20   25
+═══════════════════════════════════════════════
+  Anziehdrehmoment-Tabelle (trocken, verzinkt)
+═══════════════════════════════════════════════
+Gewinde |  4.6 [Nm] |  8.8 [Nm] | 10.9 [Nm]
+────────|───────────|───────────|──────────
+   M3   |      0.5  |      1.0  |      1.3
+   M4   |      1.2  |      2.4  |      3.0
+   M5   |      2.4  |      4.7  |      5.9
+   M6   |      3.9  |      7.8  |      9.8
+   M8   |      9.4  |     18.8  |     23.5
+   M10  |     18.3  |     36.6  |     45.8
 ```
-
-**Erweiterte Anforderungen** (optional):
-- Färbe oder markiere die Quadratzahlen (1, 4, 9, 16, 25, ...) in der Diagonale
-- Füge eine zusätzliche Summenzeile am Ende hinzu
 
 **Hinweise**:
-- Verwende f-Strings mit Breitenangabe: `f"{zahl:4d}"` für rechtsbündige Ganzzahlen mit Breite 4
-- Die Trennlinie kann mit `"-" * laenge` erzeugt werden
-- Überlege, wie breit die Spalten sein müssen (abhängig von der maximalen Zahl)
+- Verwende verschachtelte `for`-Schleifen: äußere für Gewindegrößen, innere für Festigkeitsklassen
+- Extrahiere Durchmesser aus String "M6" → 6 mm
+- Verwende f-String-Formatierung: `f"{wert:8.1f}"` für rechtsbündige Zahlen
+- Die Trennlinie kann mit `"─" * breite` erzeugt werden
 
 ---
 
-### Aufgabe P4: Passwort-Generator mit List Comprehension (Mittel-Schwer)
+### Aufgabe P4: Prüfprotokoll-Generator für Qualitätskontrolle (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 30-40 Minuten  
-**Vorkenntnisse**: List Comprehensions, String-Methoden, `random`-Modul
+**Vorkenntnisse**: List Comprehensions, String-Methoden, `random`-Modul  
+**Maschinenbau-Kontext**: Automatisierte Generierung von Prüfprotokollen nach ISO 9001
 
-Erstelle einen sicheren Passwort-Generator, der Passwörter nach verschiedenen Kriterien erzeugt.
+Erstelle einen **Prüfprotokoll-Generator** für die Qualitätskontrolle in der Fertigung.
+
+> [!NOTE]
+> **Prüfprotokoll**: Dokumentation der Qualitätsprüfung mit Soll-Ist-Vergleich, Toleranzen und Bewertung (i.O./n.i.O.). Erforderlich nach ISO 9001, DIN EN 10204, IATF 16949. Enthält: Prüfmerkmal, Sollwert, Istwert, Toleranz, Status.
+
+**Aufgabe**:
+Generiere realistische Prüfprotokolle mit zufälligen, aber plausiblen Messwerten.
 
 **Anforderungen**:
-- Der Benutzer kann die gewünschte Passwortlänge eingeben (mindestens 8 Zeichen)
-- Der Benutzer kann wählen, welche Zeichentypen enthalten sein sollen:
-  - Großbuchstaben (A-Z)
-  - Kleinbuchstaben (a-z)
-  - Ziffern (0-9)
-  - Sonderzeichen (!@#$%^&*()_+-=[]{}|;:,.<>?)
-- Generiere ein Passwort, das mindestens ein Zeichen von jedem ausgewählten Typ enthält
-- Fülle den Rest zufällig auf
-- Verwende List Comprehensions, wo sinnvoll
-- Gib mehrere Passwörter zur Auswahl aus (z.B. 5 Stück)
+- Definiere Prüfmerkmale für ein Bauteil (z.B. Bohrdurchmesser, Länge, Oberflächenrauheit)
+- Für jedes Merkmal: Sollwert und Toleranz
+- Generiere zufällige Istwerte im realistischen Bereich (90% innerhalb Toleranz, 10% außerhalb)
+- Bewertung: "i.O." wenn innerhalb Toleranz, sonst "n.i.O."
+- Ausgabe als formatierte Tabelle
+- Statistik: Gesamtbewertung (Alle i.O. → "Bauteil freigegeben", sonst "Bauteil gesperrt")
 
-**Beispiel Interaktion**:
+**Prüfmerkmale-Definition** (Beispiel für Wellenzapfen):
+```python
+pruefmerkmale = [
+    {"name": "Durchmesser Ø20h7", "soll": 20.00, "toleranz": 0.021, "einheit": "mm"},
+    {"name": "Länge gesamt", "soll": 150.0, "toleranz": 0.5, "einheit": "mm"},
+    {"name": "Rauheit Ra", "soll": 1.6, "toleranz": 0.4, "einheit": "µm"},
+    {"name": "Rundlauf", "soll": 0.0, "toleranz": 0.02, "einheit": "mm"},
+    {"name": "Härte HRC", "soll": 58, "toleranz": 3, "einheit": "HRC"}
+]
 ```
-Willkommen beim Passwort-Generator!
 
-Passwortlänge (min. 8): 12
+**Beispiel Ausgabe**:
+```
+═══════════════════════════════════════════════════════════════
+  PRÜFPROTOKOLL - Qualitätskontrolle
+═══════════════════════════════════════════════════════════════
+Bauteil: Wellenzapfen WZ-2024-001
+Datum: 2026-01-04
+Prüfer: QK-42
+
+─────────────────────────────────────────────────────────────
+Prüfmerkmal          | Soll    | Ist     | Tol.   | Status
+─────────────────────────────────────────────────────────────
+Durchmesser Ø20h7    | 20.000  | 19.992  | ±0.021 | ✅ i.O.
+Länge gesamt         | 150.0   | 150.3   | ±0.5   | ✅ i.O.
+Rauheit Ra           | 1.6     | 1.4     | ±0.4   | ✅ i.O.
+Rundlauf             | 0.0     | 0.015   | ±0.02  | ✅ i.O.
+Härte HRC            | 58      | 62      | ±3     | ❌ n.i.O.
+─────────────────────────────────────────────────────────────
+
+GESAMT-BEWERTUNG: ❌ BAUTEIL GESPERRT
+Grund: 1 von 5 Prüfmerkmalen außerhalb Toleranz
+Maßnahme: Nacharbeit oder Ausschuss
+```
+
+**Hinweise**:
+- Verwende `import random` und `random.uniform()` für Messwerte
+- Verwende List Comprehensions für Filterung (z.B. alle n.i.O.-Merkmale)
+- Berechne Abweichung: `abweichung = abs(ist - soll)`
+- Status: `"i.O." if abweichung <= toleranz else "n.i.O."`
+- Formatierung: f-Strings mit fester Breite für Tabellenausrichtung
 
 Welche Zeichentypen sollen enthalten sein?
 Großbuchstaben (J/N): J
@@ -423,96 +539,128 @@ Weiteres Passwort generieren? (J/N): N
 
 ---
 
-### Aufgabe P5: Text-Analyse-Tool (Schwer/Komplex)
+### Aufgabe P5: Maschinendaten-Analyse-Tool (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 45-60 Minuten  
-**Vorkenntnisse**: Alle bisherigen Schleifen-Konzepte, List Comprehensions, Dictionaries (Vorgriff auf V08)
+**Vorkenntnisse**: Alle Schleifen-Konzepte, List Comprehensions, String-Verarbeitung  
+**Maschinenbau-Kontext**: Analyse von Maschinen-Logfiles für Predictive Maintenance
 
-Erstelle ein umfassendes Text-Analyse-Tool, das verschiedene Statistiken über einen eingegebenen Text berechnet.
+Erstelle ein umfassendes **Maschinendaten-Analyse-Tool** zur Auswertung von CNC-Maschinen-Logdateien.
 
-**Anforderungen**:
+> [!NOTE]
+> **Predictive Maintenance**: Vorausschauende Wartung durch Analyse von Maschinendaten. Früherkennung von Verschleiß, Überlastung, Fehlermustern. Typische Datenquellen: CNC-Steuerung, SPS-Logs, Sensor-Streams. Format: Timestamped Events mit Parametern.
 
-1. **Eingabe**: Fordere den Benutzer auf, einen Text einzugeben (kann auch mehrzeilig sein, beendet durch eine Zeile mit nur "END")
+**Aufgabe**:
+Analysiere einen Multi-Line-Maschinenlog und extrahiere relevante Statistiken.
 
-2. **Grundlegende Statistiken**:
-   - Anzahl der Zeichen (mit und ohne Leerzeichen)
-   - Anzahl der Wörter
-   - Anzahl der Sätze (Zähle '.', '!', '?')
-   - Durchschnittliche Wortlänge
-   - Durchschnittliche Satzlänge (in Wörtern)
+**Log-Format** (Beispiel):
+```
+2026-01-04 08:15:23 | CNC-01 | SPINDLE_START | RPM=3000 | TOOL=T05
+2026-01-04 08:15:45 | CNC-01 | FEED_RATE | F=500 | AXIS=X
+2026-01-04 08:16:12 | CNC-01 | ALARM | CODE=E402 | MSG=Overload
+2026-01-04 08:16:15 | CNC-01 | SPINDLE_STOP | RPM=0
+2026-01-04 08:20:00 | CNC-02 | SPINDLE_START | RPM=5000 | TOOL=T12
+```
 
-3. **Zeichenanalyse**:
-   - Anzahl Großbuchstaben
-   - Anzahl Kleinbuchstaben
-   - Anzahl Ziffern
-   - Anzahl Sonderzeichen
-   - Prozentuale Verteilung der obigen Kategorien
+**Eingabe**: 
+Fordere den Benutzer auf, Log-Zeilen einzugeben (mehrzeilig, beendet durch Zeile mit nur "END")
 
-4. **Wortanalyse**:
-   - Längstes Wort
-   - Kürzestes Wort (ignoriere Wörter mit nur 1 Zeichen)
-   - Die 5 häufigsten Wörter (case-insensitive)
+**Zu analysierende Statistiken**:
 
-5. **Erweiterte Analyse**:
-   - Alle Wörter, die mit Großbuchstaben beginnen (potenzielle Eigennamen)
-   - Alle Zahlen, die im Text vorkommen
-   - Wörter mit mehr als 10 Buchstaben
+1. **Grundlegende Statistiken**:
+   - Anzahl der Log-Einträge gesamt
+   - Anzahl verschiedener Maschinen (z.B. CNC-01, CNC-02...)
+   - Zeitspanne (erste bis letzte Logzeile)
+   - Anzahl verschiedener Event-Typen
 
-6. **Ausgabe**: Präsentiere alle Statistiken übersichtlich formatiert
+2. **Event-Analyse**:
+   - Anzahl SPINDLE_START / SPINDLE_STOP Events
+   - Anzahl ALARM Events
+   - Anzahl FEED_RATE Änderungen
+   - Anzahl Werkzeugwechsel (TOOL=...)
+
+3. **Maschinen-spezifisch**:
+   - Welche Maschine hatte die meisten Events?
+   - Welche Maschine hatte Alarme?
+   - Liste aller verwendeten Werkzeuge (T01, T05, T12...)
+
+4. **Alarm-Analyse**:
+   - Alle Alarm-Codes mit Häufigkeit (z.B. E402: 3×, E101: 1×)
+   - Durchschnittliche Drehzahl bei Alarmen
+   - Kritischste Maschine (meiste Alarme)
+
+5. **Drehzahl-Statistik**:
+   - Minimale Drehzahl
+   - Maximale Drehzahl
+   - Durchschnittliche Drehzahl
+   - Anzahl Hochgeschwindigkeits-Events (RPM > 8000)
+
+6. **Werkzeug-Nutzung**:
+   - Alle verwendeten Werkzeuge
+   - Häufigstes Werkzeug
+   - Anzahl Werkzeugwechsel
 
 **Beispiel Ausgabe**:
 ```
-=== TEXT-ANALYSE ===
-
-Text eingeben (beende mit 'END' auf einer neuen Zeile):
-> Python ist eine vielseitige Programmiersprache.
-> Sie wurde 1991 von Guido van Rossum entwickelt.
-> Heute nutzen über 8 Millionen Entwickler Python.
-> END
+═══════════════════════════════════════════════════
+  MASCHINENDATEN-ANALYSE
+═══════════════════════════════════════════════════
 
 --- GRUNDSTATISTIKEN ---
-Zeichen (gesamt):        153
-Zeichen (ohne Leerz.):   128
-Wörter:                   18
-Sätze:                     3
-Ø Wortlänge:             7.1
-Ø Satzlänge:             6.0
+Log-Einträge:              47
+Erfasste Maschinen:         3 (CNC-01, CNC-02, CNC-03)
+Zeitspanne:                 08:15:23 - 16:42:18
+Event-Typen:                7
 
---- ZEICHENANALYSE ---
-Großbuchstaben:          5 (3.3%)
-Kleinbuchstaben:       112 (73.2%)
-Ziffern:                 4 (2.6%)
-Sonderzeichen:           7 (4.6%)
-Leerzeichen:            25 (16.3%)
+--- EVENT-ANALYSE ---
+SPINDLE_START:             15
+SPINDLE_STOP:              15
+ALARM:                      5
+FEED_RATE:                 12
+Werkzeugwechsel:            8
 
---- WORTANALYSE ---
-Längstes Wort:           "Programmiersprache" (18 Buchstaben)
-Kürzestes Wort:          "ist" (3 Buchstaben)
+--- MASCHINEN-ANALYSE ---
+Aktivste Maschine:         CNC-01 (23 Events)
+Maschinen mit Alarmen:     CNC-01 (3×), CNC-03 (2×)
+Werkzeuge verwendet:       T01, T05, T08, T12, T15, T20
 
-Top 5 häufigste Wörter:
-  1. Python (2×)
-  2. eine (1×)
-  3. vielseitige (1×)
-  4. Programmiersprache (1×)
-  5. Sie (1×)
+--- ALARM-DETAILS ---
+Gesamt-Alarme:              5
+Alarm-Codes:
+  • E402 (Overload):        3×
+  • E101 (Temp. High):      1×
+  • E505 (Tool Broken):     1×
+Kritischste Maschine:      CNC-01 (3 Alarme)
 
---- ERWEITERTE ANALYSE ---
-Potenzielle Eigennamen: Python, Sie, Guido, Rossum, Heute, Python
-Zahlen im Text: 1991, 8
-Lange Wörter (>10): Programmiersprache, Entwickler
+--- DREHZAHL-STATISTIK ---
+Min. Drehzahl:             1200 RPM
+Max. Drehzahl:             8500 RPM
+Ø Drehzahl:                4750 RPM
+Hochgeschw.-Events:         3 (RPM > 8000)
+
+--- WERKZEUG-ANALYSE ---
+Häufigstes Werkzeug:       T05 (5× verwendet)
+Werkzeugwechsel-Rate:      0.17 pro Event
+═══════════════════════════════════════════════════
+
+⚠️  EMPFEHLUNG:
+- CNC-01: Wartung prüfen (3 Alarme, davon 3× Overload)
+- CNC-03: Temperatur überwachen (E101)
+- Werkzeug T05: Verschleiß kontrollieren (häufig genutzt)
 ```
 
 **Hinweise**:
 - Verwende List Comprehensions für Filteroperationen
-- Verwende ein Dictionary, um Worthäufigkeiten zu zählen (wird in V08 detailliert erklärt, aber hier kann es als Vorschau verwendet werden)
-- Verwende `str.split()` zum Zerlegen in Wörter
-- Verwende `str.strip(".,!?")`, um Satzzeichen von Wörtern zu entfernen
-- Für das Zählen von Zeichentypen kannst du `str.isupper()`, `str.islower()`, `str.isdigit()` verwenden
-- Strukturiere dein Programm mit Funktionen (Vorgriff auf V10), um es übersichtlich zu halten
+- Verwende `str.split("|")` zum Zerlegen der Log-Zeilen
+- Verwende Dictionaries zum Zählen (Häufigkeiten)
+- Strukturiere mit Funktionen (z.B. `parse_log_line()`, `analyze_alarms()`)
+- Extrahiere Parameter mit String-Slicing oder `.split("=")`
+- Verwende `try-except` für robuste Parsing-Fehlerbehandlung
 
 **Bonus-Challenge** (optional):
-- Berechne den "Flesch Reading Ease Score" (Lesbarkeitsindex)
-- Erkenne und zähle E-Mail-Adressen und URLs im Text
-- Erstelle ein einfaches Histogramm der Wortlängen-Verteilung mit ASCII-Art
+- Erkenne Muster: Alarm immer nach hoher Drehzahl?
+- Berechne durchschnittliche Zeit zwischen Alarmen
+- Erstelle ASCII-Histogramm der Event-Verteilung pro Stunde
+
 
