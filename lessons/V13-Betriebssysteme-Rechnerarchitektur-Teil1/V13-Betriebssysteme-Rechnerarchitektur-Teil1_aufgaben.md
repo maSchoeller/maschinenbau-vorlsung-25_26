@@ -256,164 +256,147 @@ produktionsvolumen_tsd = [10, 12, 15, 18, 22, 25, 30, 35, 42]  # in Tausend Stü
 
 ---
 
-### Aufgabe P4: Messdaten-Analyse mit Fehlerbalken (Mittel-Schwer)
+### Aufgabe P4: FEM-Spannungsanalyse mit Fehlerbalken (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 35-40 Minuten  
-**Vorkenntnisse**: `plt.plot()`, `plt.scatter()`, `plt.fill_between()`, statistische Konzepte
+**Vorkenntnisse**: `plt.plot()`, `plt.scatter()`, `plt.errorbar()`, `plt.fill_between()`
 
-Ein Ingenieur misst die Zugfestigkeit eines Materials bei verschiedenen Temperaturen. Jede Messung wurde 5-mal wiederholt, um die Streuung zu erfassen:
+Ein Konstrukteur führt FEM-Simulationen (Finite-Elemente-Methode) durch, um die Zugspannung in einem Bauteil bei verschiedenen Lasten zu analysieren. Jede Simulation wurde 5-mal mit leicht variierten Parametern wiederholt:
 
 ```python
-temperaturen = [20, 40, 60, 80, 100, 120, 140, 160]  # °C
-zugfestigkeit_mittel = [450, 445, 438, 428, 415, 398, 375, 348]  # MPa
-zugfestigkeit_std = [12, 15, 18, 22, 25, 30, 35, 40]  # MPa (Standardabweichung)
+lasten_kn = [5, 10, 15, 20, 25, 30, 35, 40]  # kN
+spannung_mittel_mpa = [48, 95, 142, 189, 235, 282, 328, 375]  # MPa
+spannung_std_mpa = [3, 5, 7, 9, 12, 15, 18, 22]  # MPa (Standardabweichung)
 ```
 
 **Aufgaben**:
 
 **Teil a)**: Erstelle einen Plot mit Fehlerbalken:
-- X-Achse: "Temperatur (°C)"
-- Y-Achse: "Zugfestigkeit (MPa)"
-- Titel: "Temperaturabhängigkeit der Zugfestigkeit"
-- Verwende `plt.errorbar(x, y, yerr=std, fmt='o-', capsize=5, label='Messdaten ± Std')`
+- X-Achse: "Last (kN)"
+- Y-Achse: "Spannung (MPa)"
+- Titel: "FEM-Spannungsanalyse mit Messunsicherheit"
+- Verwende `plt.errorbar(x, y, yerr=std, fmt='o-', capsize=5, label='Simulation ± σ')`
 - Farbe: Dunkelblau
 - Gitterlinien aktiviert
 
 **Teil b)**: Füge einen **Unsicherheitsbereich** (Confidence Band) hinzu:
 - Verwende `plt.fill_between()` um den Bereich Mittelwert ± Standardabweichung zu schattieren
-- Berechne obere Grenze: `[mittel + std for mittel, std in zip(zugfestigkeit_mittel, zugfestigkeit_std)]`
-- Berechne untere Grenze: `[mittel - std for mittel, std in zip(zugfestigkeit_mittel, zugfestigkeit_std)]`
-- `plt.fill_between(temperaturen, untere_grenze, obere_grenze, alpha=0.2, color='blue', label='±1σ Bereich')`
+- Berechne obere Grenze: `[mittel + std for mittel, std in zip(spannung_mittel_mpa, spannung_std_mpa)]`
+- Berechne untere Grenze: `[mittel - std for mittel, std in zip(spannung_mittel_mpa, spannung_std_mpa)]`
+- `plt.fill_between(lasten_kn, untere_grenze, obere_grenze, alpha=0.2, color='blue', label='±1σ Bereich')`
 
-**Teil c)**: Markiere kritische Bereiche:
-- Wenn Zugfestigkeit < 380 MPa: Material gilt als **kritisch**
-- Finde alle Temperaturen, bei denen Zugfestigkeit < 380 MPa
-- Zeichne diese Bereiche mit roter Hintergrund-Schattierung: `plt.axvspan(temp_start, temp_end, color='red', alpha=0.15, label='Kritischer Bereich')`
+**Teil c)**: Markiere die **Streckgrenze** des Materials (σ_y = 300 MPa):
+- Zeichne eine horizontale rote gestrichelte Linie: `plt.axhline(y=300, color='red', linestyle='--', linewidth=2, label='Streckgrenze (300 MPa)')`
+- Markiere den Bereich ab dem die Streckgrenze überschritten wird mit roter Schattierung: `plt.axvspan(x_min, x_max, color='red', alpha=0.1, label='Plastische Verformung')`
 
 **Teil d)**: Füge eine Trendlinie hinzu:
-- Verwende `numpy.polyfit()` für eine lineare Regression: `koeffizienten = np.polyfit(temperaturen, zugfestigkeit_mittel, deg=1)`
-- Berechne Trendlinie: `trendlinie = [koeffizienten[0] * t + koeffizienten[1] for t in temperaturen]`
-- Zeichne Trendlinie mit gestrichelter schwarzer Linie: `plt.plot(temperaturen, trendlinie, 'k--', label='Trendlinie')`
+- Verwende `numpy.polyfit()` für eine lineare Regression
+- Berechne: `koeffizienten = np.polyfit(lasten_kn, spannung_mittel_mpa, deg=1)`
+- Zeichne Trendlinie: `plt.plot(lasten_kn, trendlinie, 'k--', label='Trendlinie')`
 
 **Beispiel-Ausgabe**:
-Ein Plot mit blauen Datenpunkten mit Fehlerbalken, blauem Unsicherheitsbereich, roter kritischer Zone ab ca. 120°C, und schwarzer Trendlinie.
+Ein Plot mit blauen Fehlerbalken, blauem Unsicherheitsbereich, roter Streckgrenze und schwarzer Trendlinie.
 
 **Hinweise**:
-- `plt.errorbar()` ist speziell für Messdaten mit Unsicherheiten
-- `plt.fill_between()` schattiert den Bereich zwischen zwei Kurven
-- `plt.axvspan(xmin, xmax, ...)` schattiert einen vertikalen Bereich
-- NumPy wird hier verwendet (Installation: `pip install numpy`)
-- `np.polyfit(x, y, deg)` berechnet Polynom-Koeffizienten (deg=1 für linear)
+- Die Streckgrenze wird zwischen 25-30 kN überschritten
+- Lineare Regression zeigt perfekten Zusammenhang (Hookesche Gesetz: σ = E·ε)
+- `np.polyfit()` benötigt `import numpy as np`
 
 ---
 
-### Aufgabe P5: Cache-Performance-Simulation (Schwer/Komplex)
+### Aufgabe P5: Lager-Vibrations-Performance-Analyse (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
 **Vorkenntnisse**: Schleifen, Funktionen, `plt.plot()`, `plt.subplot()`, Performance-Analyse
 
-In dieser Aufgabe simulierst du die Auswirkungen von Cache-Größen auf die Programm-Performance und visualisierst die Ergebnisse.
+In dieser Aufgabe simulierst du die Vibrationseffekte bei Wälzlagern unter verschiedenen Betriebsbedingungen und visualisierst die Ergebnisse.
 
-**Szenario**: Ein Programm durchläuft ein Array und greift sequenziell auf Elemente zu. Die Performance hängt davon ab, ob Daten im Cache liegen (Cache Hit) oder aus dem RAM geladen werden müssen (Cache Miss).
+**Szenario**: Wälzlager erzeugen bei hohen Drehzahlen Vibrationsamplituden, die von der Drehzahl und dem Lagerzustand abhängen. Die Amplitude steigt mit der Drehzahl, aber gesunde Lager zeigen deutlich niedrigere Amplituden als beschädigte.
 
 **Gegeben**:
-- L1-Cache: 64 KB, Zugriffszeit: 4 Taktzyklen
-- L2-Cache: 512 KB, Zugriffszeit: 12 Taktzyklen
-- L3-Cache: 8 MB, Zugriffszeit: 40 Taktzyklen
-- RAM: Zugriffszeit: 100 Taktzyklen
-- Jedes Array-Element: 8 Bytes (Float)
+- Lagerzustände: Neu (Faktor 1.0), Leicht verschlissen (Faktor 1.8), Stark verschlissen (Faktor 3.5), Beschädigt (Faktor 8.0)
+- Drehzahlbereich: 100 bis 10.000 U/min
+- Basisvibration bei 1000 U/min: 0.5 mm/s
 
 **Aufgaben**:
 
-**Teil a)**: Implementiere eine Funktion `berechne_zugriffszeit(array_groesse_kb, cache_groesse_kb, cache_zyklen)`, die die **durchschnittliche Zugriffszeit** berechnet:
-- Wenn `array_groesse_kb <= cache_groesse_kb`: Alle Daten im Cache → Zugriffszeit = `cache_zyklen`
-- Sonst: Cache Miss Rate = `1 - (cache_groesse_kb / array_groesse_kb)`
-- Durchschnittliche Zeit = `(1 - miss_rate) * cache_zyklen + miss_rate * ram_zyklen`
+**Teil a)**: Implementiere eine Funktion `berechne_vibrationsamplitude(drehzahl_upm, zustandsfaktor)`:
+- Formel: `amplitude = basisvibration * (drehzahl / 1000)**0.7 * zustandsfaktor`
+- Der Exponent 0.7 modelliert das nicht-lineare Verhalten bei steigender Drehzahl
+- Rückgabe: Vibrationsamplitude in mm/s
 
-**Teil b)**: Simuliere verschiedene Array-Größen von 1 KB bis 16 MB (verwende logarithmische Schritte):
+**Teil b)**: Simuliere verschiedene Drehzahlen von 100 bis 10.000 U/min (in logarithmischen Schritten):
 ```python
-array_groessen_kb = [2**i for i in range(0, 15)]  # 1, 2, 4, 8, ..., 16384 KB
+drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]  # U/min
 ```
 
-Berechne für jede Array-Größe die durchschnittliche Zugriffszeit für:
-- Nur L1-Cache (64 KB)
-- L1 + L2-Cache (kombiniert: Erst L1, dann L2, dann RAM)
-- L1 + L2 + L3-Cache (kombiniert: Erst L1, dann L2, dann L3, dann RAM)
+Berechne für jede Drehzahl die Vibrationsamplituden für alle vier Lagerzustände.
 
 **Teil c)**: Erstelle einen Plot mit **logarithmischer X-Achse**:
-- X-Achse: "Array-Größe (KB)" (logarithmisch: `plt.xscale('log')`)
-- Y-Achse: "Durchschnittliche Zugriffszeit (Taktzyklen)"
-- Drei Linien für die drei Cache-Konfigurationen
-- Titel: "Cache-Performance: Einfluss der Array-Größe"
-- Legende mit Cache-Hierarchien
-- Gitterlinien aktiviert
+- X-Achse: "Drehzahl (U/min)" (logarithmisch: `plt.xscale('log')`)
+- Y-Achse: "Vibrationsamplitude (mm/s)"
+- Vier Linien für die vier Lagerzustände (verschiedene Farben und Linienstile)
+- Titel: "Lager-Vibrations-Analyse: Einfluss von Drehzahl und Lagerzustand"
+- Legende mit Lagerzuständen
+- Gitterlinien aktiviert (`which='both'` für logarithmische Achse)
 
-**Teil d)**: Erstelle einen zweiten Plot (verwende `plt.subplot(2, 1, 2)`), der die **Speedup** zeigt:
-- Speedup = `Zugriffszeit_ohne_Cache / Zugriffszeit_mit_Cache`
-- "Ohne Cache" bedeutet: Alle Zugriffe gehen direkt zum RAM (100 Taktzyklen)
-- Y-Achse: "Speedup-Faktor"
-- Zeige Speedup für L1, L1+L2, L1+L2+L3
+**Teil d)**: Erstelle einen zweiten Plot (verwende `plt.subplot(2, 1, 2)`), der den **Schadensfaktor** zeigt:
+- Schadensfaktor = `Amplitude_Zustand / Amplitude_Neu` 
+- Y-Achse: "Schadensfaktor (relativ zu Neu-Lager)"
+- Zeige Schadensfaktoren für leicht verschlissen, stark verschlissen und beschädigt
+- Markiere kritische Schwelle: `plt.axhline(y=5, color='red', linestyle='--', label='Kritische Schwelle')`
 
 **Bonus-Challenge** (optional):
-Erweitere die Simulation um **Cache Line Effects**:
-- Cache Lines sind typisch 64 Bytes (8 Float-Werte)
-- Bei sequenziellem Zugriff wird eine ganze Cache Line geladen → Spatial Locality
-- Modifiziere die Simulation, um diesen Effekt zu berücksichtigen
+Erweitere die Simulation um **Resonanzeffekte**:
+- Bei bestimmten Drehzahlen (z.B. 3000, 6000 U/min) treten Resonanzen auf
+- Modifiziere die Formel um Resonanzpeaks zu berücksichtigen
 
 **Beispiel-Ausgabe**:
 Zwei Plots:
-1. Zugriffszeit vs. Array-Größe: Stufenförmige Kurven, die bei Cache-Größen "springen"
-2. Speedup vs. Array-Größe: Zeigt, wie dramatisch Cache die Performance verbessert
+1. Vibrationsamplitude vs. Drehzahl: Zeigt steigendes Vibrationsniveau, deutliche Unterschiede zwischen Lagerzuständen
+2. Schadensfaktor vs. Drehzahl: Zeigt, wie stark beschädigte Lager von gesunden abweichen
 
 **Starter-Code**:
 ```python
 import matplotlib.pyplot as plt
 
 # Konstanten
-L1_KB = 64
-L2_KB = 512
-L3_KB = 8 * 1024  # 8 MB
-RAM_ZYKLEN = 100
-L1_ZYKLEN = 4
-L2_ZYKLEN = 12
-L3_ZYKLEN = 40
+BASISVIBRATION = 0.5  # mm/s bei 1000 U/min
+REFERENZ_DREHZAHL = 1000
+ZUSTANDSFAKTOREN = {
+    'Neu': 1.0,
+    'Leicht verschlissen': 1.8,
+    'Stark verschlissen': 3.5,
+    'Beschädigt': 8.0
+}
 
-def berechne_zugriffszeit(array_groesse_kb, cache_groesse_kb, cache_zyklen, naechster_cache_zyklen):
+def berechne_vibrationsamplitude(drehzahl_upm, zustandsfaktor):
     """
-    Berechnet durchschnittliche Zugriffszeit basierend auf Cache-Größe.
-    
-    Args:
-        array_groesse_kb: Größe des Arrays in KB
-        cache_groesse_kb: Größe des Caches in KB
-        cache_zyklen: Zugriffszeit bei Cache Hit
-        naechster_cache_zyklen: Zugriffszeit bei Cache Miss (nächste Ebene)
-    
-    Returns:
-        Durchschnittliche Zugriffszeit in Taktzyklen
+    Berechnet Vibrationsamplitude basierend auf Drehzahl und Lagerzustand.
     """
     # Dein Code hier
     pass
 
-# Array-Größen von 1 KB bis 16 MB (logarithmisch)
-array_groessen_kb = [2**i for i in range(0, 15)]
+# Drehzahlen (logarithmisch verteilt)
+drehzahlen = [100, 200, 500, 1000, 2000, 3000, 5000, 7000, 10000]
 
-# Simuliere verschiedene Cache-Hierarchien
+# Simuliere verschiedene Lagerzustände
 # Dein Code hier
 
-# Plot 1: Zugriffszeiten
+# Plot 1: Vibrationsamplituden
 # Dein Code hier
 
-# Plot 2: Speedup
+# Plot 2: Schadensfaktoren
 # Dein Code hier
 ```
 
 **Hinweise**:
 - Verwende `plt.subplot(2, 1, 1)` und `plt.subplot(2, 1, 2)` für zwei übereinander angeordnete Plots
 - Logarithmische X-Achse: `plt.xscale('log')`
-- Bei Cache-Hierarchien: Erst L1 prüfen, dann L2, dann L3, dann RAM
-- Die Kurven sollten "Stufen" zeigen: Bei kleinen Arrays ist alles schnell, bei größeren Arrays wird es stufenweise langsamer
+- Bei logarithmischen Achsen: `plt.grid(True, which='both', alpha=0.3)`
+- Dictionary-Iteration: `for zustand, faktor in ZUSTANDSFAKTOREN.items()`
 
 ---
 
