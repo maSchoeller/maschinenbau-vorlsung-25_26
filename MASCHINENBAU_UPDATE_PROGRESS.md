@@ -13,7 +13,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V04 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V05 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V06 | ✅ | 🔄 | ➖ | In Arbeit |
-| V07 | ❌ | ❌ | ❌ | Ausstehend |
+| V07 | ✅ | 🔄 | ➖ | In Arbeit |
 | V08 | ❌ | ❌ | ❌ | Ausstehend |
 | V09 | ❌ | ❌ | ❌ | Ausstehend |
 | V10 | ❌ | ❌ | ❌ | Ausstehend |
@@ -47,6 +47,7 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V04: CNC-Kühlmittel-Monitor, Hydraulikpress-Validierung, Sensor-Plausibilität, Maschinenbedien-Berechtigungen, SPS-Logik-Simulator – ✅ Abgeschlossen
 - V05: CNC-Drehzahl-Warnung, Hydraulikdruck-Monitor, Materialspannungs-Klassifikation, CNC-Bearbeitungskosten, Werkstoffprüfung-Validator – ✅ Abgeschlossen
 - V06: CNC-Drehzahl-Sequenzen, Zahnrad-Übersetzung, G-Code Analyse, Material-Zugversuch, Fertigungslinie-Simulation – 🔄 In Arbeit (Aufgaben ✅, Lösungen teilweise aktualisiert)
+- V07: CNC-Werkzeugsuche, Hydraulikdruck-Überwachung, Drehmoment-Tabelle, Prüfprotokoll-Generator, Maschinendaten-Analyse – ✅ Aufgaben aktualisiert, 🔄 Lösungen offen
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)
