@@ -19,9 +19,9 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V10 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V11 | ✅ | ✅ | ✅ (1 Datei) | ✅ Abgeschlossen |
 | V12 | ✅ | ✅ | ✅ (2 Dateien) | ✅ Abgeschlossen |
-| V13 | ❌ | ❌ | ❌ | Ausstehend |
-| V14 | ❌ | ❌ | ❌ | Ausstehend |
-| V15 | ❌ | ❌ | ❌ | Ausstehend |
+| V13 | ✅ | ✅ | ✅ (2 Dateien) | ✅ Abgeschlossen |
+| V14 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
+| V15 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
 
 ## Prinzipien
 
@@ -53,6 +53,9 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V10: Maschinenbau-Berechnungen, Werkzeugstandzeit, Werkzeugsuche-Performance, Fibonacci-Drehzahl, Produktionsreihenfolge-Optimierer – ✅ Abgeschlossen (keine Testdaten nötig)
 - V11: CNC-Maschinen-Log, Sensor-Statistik, Werkstoff-Datenbankfilterung, CAD-Dokumentations-Generator (Template-System), Wartungsprotokoll-Manager – ✅ Abgeschlossen (Testdaten: cad_template_technisch.txt)
 - V12: CNC-Parameter-Extractor, Material-Datenblatt-Zusammenfasser, Fertigungs-Anforderungs-Validator, Technische-Zeichnungs-Beschreibung, Produktionsüberwachungs-Assistent – ✅ Abgeschlossen (Testdaten: produktionsdaten_test.csv, TESTDATEN_README.md)
+- V13: CNC-Werkzeugverschleiß-Visualisierung, Hydrauliksystem-Überwachung, Produktionsqualitäts-Dashboard, FEM-Spannungsanalyse, Lager-Schwingungsanalyse – ✅ Abgeschlossen (Testdaten: lager_vibrationsdaten.csv, TESTDATEN_README.md)
+- V14: CNC-Präzisions-Analyse, Hydraulik-Durchfluss-Monitoring, Material-Festigkeits-Vergleich, Werkzeugverschleiß-Heatmap, Fertigungsprozess-Radar-Analyse – ✅ Abgeschlossen (Testdaten: cnc_praezision.csv, werkstoff_pruefung.json, produktionslinien_vergleich.xml, TESTDATEN_README.md)
+- V15: Netzwerk-Paket-Analyse, Maschinen-Kommunikations-Monitoring, OPC-UA-Datenverarbeitung, Modbus-Protokoll-Decoder, Industrienetzwerk-Latenz-Analyse – ✅ Abgeschlossen (Testdaten: netzwerk_pakete.csv, maschinenkommunikation.json, opc_ua_daten.xml, TESTDATEN_README.md)
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)
