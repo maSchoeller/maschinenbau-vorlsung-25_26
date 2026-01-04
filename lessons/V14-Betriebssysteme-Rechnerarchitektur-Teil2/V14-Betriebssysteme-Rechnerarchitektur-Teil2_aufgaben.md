@@ -81,26 +81,35 @@ c) Nennen Sie **zwei moderne Dateisysteme** (außer ext4) und jeweils **eine Bes
 
 ## Teil 2: Python-Aufgaben
 
-### P1: Bar Chart - CNC-Maschinenpräzision visualisieren (⭐)
+### P1: Bar Chart - CNC-Maschinenpräzision visualisieren (⭐⭐)
 
-Eine Qualitätskontrolle hat die **Positioniergenauigkeit** (Abweichung in μm) verschiedener CNC-Maschinen über einen Produktionstag gemessen:
-
-```python
-maschinen = ['CNC-01', 'CNC-02', 'CNC-03', 'CNC-04', 'CNC-05']
-abweichung_um = [2.3, 8.7, 4.2, 1.8, 3.5]  # Mikrometer
-```
+Eine Qualitätskontrolle hat die **Positioniergenauigkeit** verschiedener CNC-Maschinen über einen Produktionstag gemessen. Die Daten liegen in der Datei **`cnc_praezision.csv`** vor.
 
 **Aufgabe:**
 
-Erstellen Sie einen **Bar Chart**, der:
-- Die Maschinen auf der X-Achse zeigt
-- Die Abweichung (μm) auf der Y-Achse zeigt
-- Balken in unterschiedlichen Farben darstellt (verwenden Sie eine Liste von Farben)
+a) Laden Sie die Daten aus `cnc_praezision.csv`:
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+daten = pd.read_csv('cnc_praezision.csv')
+```
+
+b) Berechnen Sie für jede Maschine die **durchschnittliche Gesamt-Abweichung**:
+   - Formel: `gesamt_abweichung = sqrt(X² + Y² + Z²)` mit den drei Abweichungskomponenten
+   - Verwenden Sie NumPy für die Berechnung
+
+c) Erstellen Sie einen **Bar Chart**, der:
+- Die ersten 10 Maschinen auf der X-Achse zeigt
+- Die berechnete Gesamt-Abweichung (μm) auf der Y-Achse zeigt
+- Balken **farbcodiert nach Toleranz**:
+  - Grün: Abweichung ≤ 5 μm (innerhalb Toleranz)
+  - Orange: 5 μm < Abweichung ≤ 10 μm (Warnung)
+  - Rot: Abweichung > 10 μm (außerhalb Toleranz)
 - Einen passenden **Titel** und **Achsenbeschriftungen** hat
 - Ein **Gitter** auf der Y-Achse zeigt (`alpha=0.3`)
-- Die Y-Achse von 0 bis 12 begrenzt
 
-**Zusatz**: Markieren Sie Balken mit Abweichung > 5 μm in Rot (außerhalb Toleranz), alle anderen in Grün (innerhalb Toleranz).
+d) Fügen Sie eine **horizontale Linie** bei 5 μm (Toleranzgrenze) hinzu.
 
 ---
 
@@ -134,48 +143,42 @@ d) Zeigen Sie eine **Legende** an.
 
 ---
 
-### P3: Subplots - Materialprüfungs-Dashboard (⭐⭐⭐)
+### P3: Box Plots - Material-Festigkeits-Vergleich (⭐⭐⭐)
 
-Erstellen Sie ein **Dashboard mit 4 Subplots** (2×2 Grid), das verschiedene Materialprüfungs-Metriken visualisiert.
+Vergleichen Sie die **Zugfestigkeit** verschiedener Stahl-Werkstoffe basierend auf Materialprüfungs-Daten aus der Datei **`werkstoff_pruefung.json`**.
 
-**Daten generieren:**
+**Aufgabe:**
+
+a) Laden Sie die Daten aus `werkstoff_pruefung.json`:
 ```python
-import numpy as np
+import json
 import matplotlib.pyplot as plt
 
-np.random.seed(42)
-zeit_min = np.arange(0, 60, 1)  # 60 Minuten Zugversuch
-zugspannung_mpa = 150 + 80 * np.sin(zeit_min / 10) + np.random.normal(0, 10, 60)
-dehnung_prozent = 2.0 + 1.5 * np.sin(zeit_min / 15 + 1) + np.random.normal(0, 0.3, 60)
-temperatur_c = np.random.exponential(25, 60) + 20  # Probentemperatur
-kraftaufnahme_kn = np.random.exponential(15, 60) + 10
+with open('werkstoff_pruefung.json', 'r', encoding='utf-8') as file:
+    pruef_daten = json.load(file)
 ```
 
-**Subplots:**
+b) Gruppieren Sie die Zugfestigkeitswerte nach **Werkstoff-Typ**:
+   - Extrahieren Sie alle Proben aus `pruef_daten['proben']`
+   - Erstellen Sie ein Dictionary, das Werkstoff-Namen (z.B. "S235JR", "C45E") auf Listen von Zugfestigkeitswerten abbildet
+   - Beispiel: `{'S235JR': [412, 425], 'C45E': [682, 695], ...}`
 
-1. **Oben links**: Zugspannung über Zeit
-   - Linienplot mit blauer Linie
-   - Fülle Bereich unter der Linie (blau, `alpha=0.3`)
-   - Titel: "Zugspannung (MPa)"
+c) Erstellen Sie **Box Plots** zum Vergleich:
+   - X-Achse: Werkstoff-Namen
+   - Y-Achse: Zugfestigkeit (MPa)
+   - Färben Sie die Boxen unterschiedlich (z.B. 'lightblue', 'lightgreen', 'lightyellow', etc.)
+   - Zeigen Sie Ausreißer als rote Punkte
+   - Titel: "Zugfestigkeit: Vergleich verschiedener Stahl-Werkstoffe"
+   - X-Achse Beschriftung: "Werkstoff"
+   - Y-Achse Beschriftung: "Zugfestigkeit (MPa)"
+   - Gitter auf der Y-Achse
 
-2. **Oben rechts**: Dehnung über Zeit
-   - Linienplot mit grüner Linie
-   - Horizontale rote Linie bei 5% (Bruchgrenze)
-   - Titel: "Dehnung (%)"
+d) Fügen Sie eine **horizontale Linie** bei 500 MPa hinzu (Referenzwert für mittlere Festigkeit) mit Label "Referenz: 500 MPa"
 
-3. **Unten links**: Temperatur vs. Kraftaufnahme (Scatter)
-   - X-Achse: `temperatur_c`, Y-Achse: `kraftaufnahme_kn`
-   - Rote Punkte, `alpha=0.5`
-   - Titel: "Temperatur vs. Kraft Korrelation"
-
-4. **Unten rechts**: Histogramm der Zugspannungswerte
-   - 15 Bins, orange Farbe
-   - Titel: "Zugspannungs-Verteilung"
-
-**Anforderungen:**
-- Verwenden Sie `plt.subplots(2, 2, figsize=(14, 10))`
-- Nutzen Sie `tight_layout()`
-- Haupttitel über allen Plots: "Materialprüfungs-Dashboard"
+e) Ergänzen Sie die Visualisierung mit:
+   - Medianwert-Annotation über jeder Box
+   - Legende für die Referenzlinie
+   - Rotation der X-Achsen-Labels um 45° für bessere Lesbarkeit
 
 ---
 
@@ -215,54 +218,51 @@ d) Erklären Sie in einem **Kommentar**, warum logarithmische Achsen hier sinnvo
 
 ---
 
-### P5: Komplettes Dashboard mit Annotationen (⭐⭐⭐⭐⭐)
+###P5: Radar/Polar Chart - Produktionslinien-Vergleich (⭐⭐⭐⭐)
 
-Erstellen Sie eine **umfassende Visualisierung** eines Fertigungsverfahrens-Vergleichs.
-
-**Daten:**
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-verfahren = ['Drehen', 'Fräsen', 'Bohren', 'Schleifen']
-durchlaufzeit_min = [12.5, 18.3, 8.7, 22.1]  # Minuten pro Werkstück
-ruestzeit_min = [25.3, 35.6, 15.4, 45.2]  # Rüstzeit in Minuten
-werkzeugwechsel = [0, 3, 1, 5]  # Anzahl Werkzeugwechsel pro Werkstück
-```
+Erstellen Sie eine **Radar-Chart-Visualisierung** zum Vergleich von 5 Produktionslinien basierend auf Daten aus der Datei **`produktionslinien_vergleich.xml`**.
 
 **Aufgabe:**
 
-Erstellen Sie eine Figure mit **3 Subplots** (vertikal angeordnet):
+a) Laden Sie die Daten aus `produktionslinien_vergleich.xml`:
+```python
+import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
+import numpy as np
 
-**Subplot 1: Gruppiertes Bar Chart**
-- X-Achse: Verfahren
-- Y-Achse: Zeit (min)
-- Zwei Balken pro Verfahren: Durchlaufzeit (blau) und Rüstzeit (orange)
-- Legende mit Label "Durchlaufzeit" und "Rüstzeit"
-- Titel: "Fertigungsverfahren: Durchlauf- vs. Rüstzeit"
+tree = ET.parse('produktionslinien_vergleich.xml')
+root = tree.getroot()
+```
 
-**Subplot 2: Horizontales Bar Chart**
-- Y-Achse: Verfahren
-- X-Achse: Anzahl Werkzeugwechsel
-- Balkenfarbe: Grün
-- Fügen Sie **Text-Labels** am Ende jeder Leiste hinzu (Wert)
-- Titel: "Werkzeugwechsel pro Verfahren"
+b) Extrahieren Sie für jede Produktionslinie folgende **6 Kennzahlen** (normalisiert auf 0-100):
+   - **Auslastung**: `(tatsaechliche_output / kapazitaet) × 100`
+   - **Qualität**: `(100 - ausschussquote)`
+   - **Effizienz**: `(100 / ruestzeit) × 10` (skaliert)
+   - **Personaleffizienz**: `(tatsaechliche_output / anzahl_mitarbeiter) × 10` (skaliert)
+   - **Energieeffizienz**: `(tatsaechliche_output / energieverbrauch) × 100` (skaliert)
+   - **Kosteneffizienz**: `(100000 / wartungskosten) × 10` (skaliert)
 
-**Subplot 3: Scatter Plot mit Annotationen**
-- X-Achse: Durchlaufzeit
-- Y-Achse: Rüstzeit
-- Jedes Verfahren als Punkt
-- **Annotieren** Sie jeden Punkt mit dem Verfahrensnamen
-- Verwenden Sie `arrowprops` für Pfeile von Annotationen zu Punkten
-- Titel: "Durchlaufzeit vs. Rüstzeit Korrelation"
+c) Erstellen Sie **ein Radar/Polar-Diagramm** mit allen 5 Linien:
+   - Jede Linie in unterschiedlicher Farbe
+   - Transparenz `alpha=0.25` für die Füllung
+   - Linienstärke `linewidth=2`
+   - 6 Achsen für die Kennzahlen (0-100 Skala)
+   - Titel: "Produktionslinien-Vergleich: Multidimensionale Analyse"
+   - Legende außerhalb des Plots (rechts oben)
 
-**Zusätzliche Anforderungen:**
-- Gesamtgröße: `figsize=(12, 14)`
-- Verwenden Sie `tight_layout()`
-- Haupt-Titel über allen Plots: "Fertigungsverfahren: Detaillierter Vergleich"
-- Speichern Sie das Ergebnis als `fertigungsverfahren_vergleich.png` mit **300 DPI**
+d) Beschriften Sie die 6 Achsen mit:
+   - "Auslastung (%)"
+   - "Qualität (100-Ausschuss)"
+   - "Rüst-Effizienz"
+   - "Personal-Effizienz"
+   - "Energie-Effizienz"
+   - "Kosten-Effizienz"
 
-**Bonus (+)**: Heben Sie in Subplot 1 das Verfahren mit der kürzesten Durchlaufzeit farblich hervor.
+e) Zusatz:
+   - Markieren Sie auf jeder Achse die Idealwerte (z.B. 80, 95, 70, etc.) als gestrichelte Kreise
+   - Fügen Sie Annotationen für die beste Linie in jeder Kategorie hinzu
+
+**Hinweis**: Für Radar Charts verwenden Sie `subplot_kw=dict(projection='polar')` und Winkel-Berechnung mit `np.linspace(0, 2*np.pi, 6, endpoint=False)`.
 
 ---
 
