@@ -360,24 +360,234 @@ if Front == Rear nach Pop:
 
 ## Teil B: Python-Aufgaben - Lösungen
 
-### Lösung P1: Listen-Grundlagen
+### Lösung P1: Sensor-Messwerte-Erfassung
 
 **Vollständiger Code**:
 ```python
-# Leere Einkaufsliste erstellen
-einkaufsliste = []
+temperaturen = []
 
-# Eingabeschleife
 while True:
-    artikel = input("Artikel eingeben (oder 'fertig' zum Beenden): ")
+    eingabe = input("Temperatur eingeben (oder 'STOP'): ")
     
-    if artikel.lower() == "fertig":
+    if eingabe.upper() == "STOP":
         break
     
-    # Artikel zur Liste hinzufügen
-    einkaufsliste.append(artikel)
+    temp = float(eingabe)
+    temperaturen.append(temp)
+    print(f"Messwerte: {temperaturen}")
+
+print("\n" + "═" * 35)
+print("Erfassung beendet.")
+print(f"Gesamtanzahl: {len(temperaturen)} Messwerte")
+
+if any(t > 100 for t in temperaturen):
+    print("⚠️  WARNUNG: Kritische Temperatur erfasst! (>100°C)")
+    print("Maßnahme: Kühlung prüfen, Maschine ggf. abschalten")
+else:
+    print("✅ Alle Temperaturen im Normbereich")
+```
+
+**Erklärung**:
+
+`.append()` fügt Messwerte zur Liste hinzu. `any()` mit Generator-Expression prüft effizient auf kritische Werte. `float()` konvertiert String-Eingabe zu Dezimalzahl.
+
+---
+
+### Lösung P2: Vibrationsdaten-Analyse für Predictive Maintenance
+
+**Vollständiger Code**:
+```python
+vibrationen = [2.5, 8.3, 5.1, 9.8, 3.7, 7.2, 12.4, 4.9, 6.5, 10.3]
+
+print("═" * 39)
+print("  Vibrations-Analyse - Lager #42")
+print("═" * 39)
+
+# Extremwerte und Durchschnitt
+print(f"Max. Vibration: {max(vibrationen)} m/s²")
+print(f"Min. Vibration: {min(vibrationen)} m/s²")
+print(f"Durchschnitt: {sum(vibrationen) / len(vibrationen):.1f} m/s²")
+
+# Klassifikation mit List Comprehensions
+kritisch = sorted([v for v in vibrationen if v > 10])
+erhoeht = sorted([v for v in vibrationen if 7 <= v <= 10])
+normal = sorted([v for v in vibrationen if v < 7])
+
+print(f"\n⚠️  Kritische Werte (>10 m/s²): {kritisch}")
+print(f"🟡 Erhöhte Werte (7-10 m/s²): {erhoeht}")
+print(f"✅ Normale Werte (<7 m/s²): {normal}")
+
+# Bewertung
+if kritisch:
+    print("\nBEWERTUNG: ❌ LAGER KRITISCH")
+    print("Empfehlung: Wartung einplanen, Lager austauschen")
+elif erhoeht:
+    print("\nBEWERTUNG: 🟡 LAGER ÜBERWACHEN")
+else:
+    print("\nBEWERTUNG: ✅ LAGER OK")
+
+# In-place sortieren
+vibrationen.sort()
+print(f"\nSortierte Werte: {vibrationen}")
+```
+
+**Erklärung**:
+
+List Comprehensions mit Bedingungen filtern Werte effizient. `sorted()` erstellt neue Liste, `.sort()` sortiert in-place. `max()`, `min()`, `sum()` sind Built-in-Funktionen für Listen.
+
+---
+
+### Lösung P3: NC-Programm-Validator mit Stack
+
+**Vollständiger Code**:
+```python
+def nc_struktur_gueltig(programm):
+    stack = []
+    paare = {'L11': 'L10', 'P101': 'P100', 'ENDIF': 'IF'}
+    oeffnend = ['L10', 'P100', 'IF']
     
-    # Aktuelle Liste anzeigen
+    for befehl in programm:
+        if befehl in oeffnend:
+            stack.append(befehl)
+        elif befehl in paare:
+            if not stack or stack.pop() != paare[befehl]:
+                return False
+    
+    return len(stack) == 0
+
+# Tests
+print(nc_struktur_gueltig(["L10", "L11"]))                    # True
+print(nc_struktur_gueltig(["L10", "P100", "P101", "L11"]))    # True
+print(nc_struktur_gueltig(["IF", "L10", "L11", "ENDIF"]))     # True
+print(nc_struktur_gueltig(["L10", "P100", "L11", "P101"]))    # False
+print(nc_struktur_gueltig(["L10", "IF", "L11", "ENDIF"]))     # False
+```
+
+**Erklärung**:
+
+Stack (Liste) mit `.append()` und `.pop()` verwaltet Verschachtelung. Dictionary `paare` mappt schließende zu öffnenden Befehlen. `not stack` prüft auf leeren Stack. Am Ende muss Stack leer sein.
+
+---
+
+### Lösung P4: Materialprüfungs-Datenbank
+
+**Vollständiger Code**:
+```python
+proben_ids = ["S235-001", "AlMg3-002", "X5CrNi-003", "S235-004", "AlMg3-005"]
+zugfestigkeit = [360, 250, 520, 370, 245]
+streckgrenze = [235, 180, 210, 240, 175]
+
+def durchschnitt(werte):
+    return sum(werte) / len(werte)
+
+def beste_drei(proben, werte):
+    sortiert = sorted(zip(proben, werte), key=lambda x: x[1], reverse=True)
+    return [p for p, v in sortiert[:3]]
+
+def materialklassifikation(zugfestigkeiten):
+    klassen = {'Niedrig': 0, 'Mittel': 0, 'Hoch': 0, 'Sehr hoch': 0}
+    for rm in zugfestigkeiten:
+        if rm < 300:
+            klassen['Niedrig'] += 1
+        elif rm < 450:
+            klassen['Mittel'] += 1
+        elif rm < 600:
+            klassen['Hoch'] += 1
+        else:
+            klassen['Sehr hoch'] += 1
+    return klassen
+
+def verhaeltnis_berechnen(zugfest, streck):
+    return [round(rm / re, 2) for rm, re in zip(zugfest, streck)]
+
+# Ausgabe
+print("═" * 39)
+print("  Materialprüfungs-Datenbank")
+print("═" * 39)
+print(f"Ø Zugfestigkeit: {durchschnitt(zugfestigkeit):.1f} MPa")
+print(f"Ø Streckgrenze: {durchschnitt(streckgrenze):.1f} MPa")
+
+print(f"\nTop 3 Zugfestigkeit: {beste_drei(proben_ids, zugfestigkeit)}")
+print(f"Top 3 Streckgrenze: {beste_drei(proben_ids, streckgrenze)}")
+
+print("\nFestigkeitsklassifikation:")
+for klasse, anzahl in materialklassifikation(zugfestigkeit).items():
+    print(f"  {klasse}: {anzahl}")
+
+print("\nVerhältnis Rm/Re (Verfestigungspotential):")
+verhaeltnisse = verhaeltnis_berechnen(zugfestigkeit, streckgrenze)
+for probe, verh in zip(proben_ids, verhaeltnisse):
+    print(f"  {probe}: {verh}")
+```
+
+**Erklärung**:
+
+`zip()` kombiniert Listen elementweise. `lambda x: x[1]` extrahiert zweiten Wert für Sortierung. `reverse=True` sortiert absteigend. List Comprehension mit `zip()` berechnet Verhältnisse parallel.
+
+---
+
+### Lösung P5: CNC-Programm-Editor mit Undo/Redo
+
+**Vollständiger Code**:
+```python
+nc_code = ""
+undo_stack = []
+redo_stack = []
+
+def speichere_zustand():
+    undo_stack.append(nc_code)
+    redo_stack.clear()
+
+def befehl_hinzufuegen(code):
+    global nc_code
+    speichere_zustand()
+    nc_code += code
+
+def zeichen_loeschen(anzahl):
+    global nc_code
+    speichere_zustand()
+    nc_code = nc_code[:-anzahl] if anzahl <= len(nc_code) else ""
+
+def undo():
+    global nc_code
+    if undo_stack:
+        redo_stack.append(nc_code)
+        nc_code = undo_stack.pop()
+
+def redo():
+    global nc_code
+    if redo_stack:
+        undo_stack.append(nc_code)
+        nc_code = redo_stack.pop()
+
+def anzeigen():
+    print(f"NC-Code: '{nc_code}'")
+
+# Test
+befehl_hinzufuegen("G01 X100")
+anzeigen()  # "G01 X100"
+
+befehl_hinzufuegen(" Y50")
+anzeigen()  # "G01 X100 Y50"
+
+zeichen_loeschen(4)
+anzeigen()  # "G01 X100"
+
+undo()
+anzeigen()  # "G01 X100 Y50"
+
+redo()
+anzeigen()  # "G01 X100"
+```
+
+**Erklärung**:
+
+Zwei Stacks speichern Zustände. `global` ermöglicht Funktionszugriff auf Modul-Variable. String-Slicing `[:-anzahl]` entfernt letzte Zeichen. `.clear()` leert Redo-Stack bei neuer Änderung.
+
+**Häufige Fehler**:
+- **Fehler**: Redo-Stack nicht leeren bei neuer Änderung
+  - **Warum falsch**: Alte Redo-Historie bleibt ungültig nach neuer Änderung
+  - **Richtig**: `redo_stack.clear()` in `speichere_zustand()`
     print(f"Einkaufsliste: {einkaufsliste}")
 
 # Anzahl anzeigen
