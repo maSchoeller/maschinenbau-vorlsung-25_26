@@ -182,158 +182,210 @@ Kommunikation mit SCADA (192.168.1.100):
 
 ---
 
-###
+### Aufgabe P2: Modbus-Protokoll-Parser für industrielle Steuerungen ⭐⭐ (Mittel)
 
- Aufgabe P2: Socket-Programmierung – Maschinen-Status-Monitor ⭐⭐ (Mittel)
+**Datei:** `maschinenkommunikation.json`
 
-Schreibe eine **Generator-Funktion** `filtere_zeilen(dateiname, mindestlaenge)`, die:
-- Eine Textdatei Zeile für Zeile liest
-- Nur Zeilen zurückgibt, die **mindestens `mindestlaenge` Zeichen** haben (nach `.strip()`)
-- Leerzeilen ignoriert
+Die JSON-Datei enthält aufgezeichnete Modbus-Nachrichten zwischen einer SPS (Speicherprogrammierbare Steuerung) und verschiedenen Maschinen. Jede Nachricht hat folgende Struktur:
+
+```json
+{
+  "timestamp": "2024-01-15T08:30:15",
+  "slave_id": 1,
+  "function_code": 3,
+  "register_address": 1000,
+  "value": 2350,
+  "status": "success"
+}
+```
+
+**Aufgabe:**
+
+Schreibe ein Python-Programm, das die JSON-Datei mit einem **Generator** speicher-effizient verarbeitet und folgende Analysen durchführt:
+
+**a) Generator-Funktion implementieren**
+
+Erstelle eine Generator-Funktion `lies_modbus_nachrichten(dateiname)`, die:
+- Die JSON-Datei Eintrag für Eintrag liest (die Datei enthält eine Liste von Dictionaries)
+- Jede Nachricht als Dictionary zurückgibt
+- Nur Nachrichten mit `status == "success"` liefert
+- Bei Fehler eine aussagekräftige Fehlermeldung ausgibt
+
+**b) Kommunikationsstatistik**
+
+Berechne für jeden `slave_id`:
+- Anzahl der erfolgreichen Nachrichten
+- Am häufigsten verwendeter `function_code`
+- Durchschnittlicher Registerwert
+
+**c) Zeitbasierte Analyse**
+
+Finde Zeiträume mit erhöhter Kommunikation:
+- Gruppiere Nachrichten nach Stunden
+- Zeige die Top 3 Stunden mit den meisten Nachrichten
 
 **Anforderungen:**
 - Nutze `yield` für speicher-effiziente Verarbeitung
-- Verwende `with`-Statement für sicheres Datei-Handling
-- Behandle FileNotFoundError mit aussagekräftiger Fehlermeldung
+- Verwende `json.load()` zum Einlesen
+- Behandle FileNotFoundError und json.JSONDecodeError
+- Formatiere Ausgaben übersichtlich
 
-**Testdatei erstellen** (`test.txt`):
+**Erwartete Ausgabe (Beispiel):**
 ```
-Kurz
-Diese Zeile ist lang genug
-x
+=== Modbus-Kommunikationsanalyse ===
 
-Mittlere Länge hier
-Superlange Zeile mit vielen Wörtern und Zeichen
-```
+Slave-Statistiken:
+  Slave 1: 45 Nachrichten, häufigster FC: 3, Ø Wert: 2340
+  Slave 2: 32 Nachrichten, häufigster FC: 6, Ø Wert: 1850
+  Slave 3: 28 Nachrichten, häufigster FC: 3, Ø Wert: 3120
 
-**Beispiel-Nutzung:**
-```python
-for zeile in filtere_zeilen("test.txt", mindestlaenge=20):
-    print(zeile)
-
-# Erwartete Ausgabe:
-# Diese Zeile ist lang genug
-# Superlange Zeile mit vielen Wörtern und Zeichen
+Top 3 Kommunikationsstunden:
+  1. 08:00-09:00: 35 Nachrichten
+  2. 14:00-15:00: 28 Nachrichten
+  3. 10:00-11:00: 22 Nachrichten
 ```
 
 ---
 
-### Aufgabe 5: CSV-Analyse – Studenten-Datenbank ⭐⭐ (Mittel)
+### Aufgabe P3: Sensor-Datenanalyse mit CSV ⭐⭐ (Mittel)
 
-Gegeben ist eine CSV-Datei `studenten.csv` mit folgendem Inhalt:
+**Datei:** `sensoren_daten.csv`
+
+Eine Produktionsanlage hat mehrere Temperatursensoren installiert, die kontinuierlich Messwerte aufzeichnen. Die CSV-Datei hat folgende Struktur:
 
 ```csv
-Matrikelnummer,Name,Studiengang,Semester,Note
-12345,Alice,Informatik,3,1.3
-23456,Bob,Maschinenbau,5,2.1
-34567,Charlie,Informatik,2,1.7
-45678,Diana,Elektrotechnik,4,1.9
-56789,Eve,Informatik,6,2.3
-67890,Frank,Maschinenbau,1,3.0
-78901,Grace,Informatik,4,1.5
+Sensor_ID,Zone,Temperatur_C,Timestamp,Status
+S001,Presswerk,245.5,2024-01-15T08:00:00,OK
+S002,Presswerk,248.2,2024-01-15T08:00:00,OK
+S003,Schweissen,1850.3,2024-01-15T08:00:00,OK
+S001,Presswerk,251.7,2024-01-15T08:01:00,Warnung
+S004,Lackierung,65.2,2024-01-15T08:01:00,OK
 ```
 
 **Schreibe ein Programm, das folgende Aufgaben löst:**
 
-**a) Durchschnittsnote pro Studiengang**
+**a) Durchschnittstemperatur pro Zone**
 
-Berechne die Durchschnittsnote für jeden Studiengang und gib das Ergebnis formatiert aus.
-
-**Erwartete Ausgabe:**
-```
-Durchschnittsnoten nach Studiengang:
-  Informatik: 1.70
-  Maschinenbau: 2.55
-  Elektrotechnik: 1.90
-```
-
-**b) Beste Studenten**
-
-Gib alle Studenten aus, die eine Note **besser als 1.8** haben. Sortiere nach Note (beste zuerst).
+Berechne die Durchschnittstemperatur für jede Produktionszone und gib das Ergebnis formatiert aus.
 
 **Erwartete Ausgabe:**
 ```
-Studenten mit Note < 1.8:
-  1. Alice (Informatik, Semester 3): 1.3
-  2. Grace (Informatik, Semester 4): 1.5
-  3. Charlie (Informatik, Semester 2): 1.7
+Durchschnittstemperaturen nach Zone:
+  Presswerk: 248.5°C
+  Schweissen: 1850.3°C
+  Lackierung: 65.2°C
+```
+
+**b) Kritische Messwerte**
+
+Gib alle Sensoren aus, die eine **Warnung** haben oder deren Temperatur außerhalb des Normbereichs liegt (< 0°C oder > 300°C für Presswerk, > 2000°C für Schweißen). Sortiere nach Temperatur (höchste zuerst).
+
+**Erwartete Ausgabe:**
+```
+Kritische Sensoren:
+  1. S001 (Presswerk): 251.7°C - Status: Warnung
+  2. S003 (Schweissen): 1850.3°C - Status: OK (Grenzwert)
 ```
 
 **c) Neue CSV schreiben**
 
-Erstelle eine neue CSV-Datei `informatik_studenten.csv`, die nur Informatik-Studenten enthält. Füge eine zusätzliche Spalte "Bewertung" hinzu:
-- Note ≤ 1.5: "Sehr gut"
-- Note ≤ 2.0: "Gut"
-- Note > 2.0: "Befriedigend"
+Erstelle eine neue CSV-Datei `presswerk_sensoren.csv`, die nur Sensoren aus dem Presswerk enthält. Füge eine zusätzliche Spalte "Bewertung" hinzu:
+- Temperatur ≤ 240°C: "Normal"
+- Temperatur ≤ 260°C: "Erhöht"
+- Temperatur > 260°C: "Kritisch"
 
 **Anforderungen:**
 - Nutze `csv.DictReader` und `csv.DictWriter`
 - Behandle fehlende Dateien und ungültige Datenformate
-- Runde Durchschnittsnoten auf 2 Dezimalstellen
+- Runde Durchschnittstemperaturen auf 1 Dezimalstelle
+- Verwende `newline=''` beim Schreiben der CSV
 
 ---
 
-### Aufgabe 6: Iterator vs. Iterable verstehen ⭐⭐ (Mittel)
+### Aufgabe P4: OPC UA-Datenverarbeitung mit Iterator-Protokoll ⭐⭐ (Mittel)
 
 **Teil 1: Analyse**
 
-Analysiere den folgenden Code und beantworte die Fragen:
+Analysiere den folgenden Code, der OPC UA-Datenpunkte aus einer industriellen Anlage verarbeitet:
 
 ```python
-class Fibonacci:
-    def __init__(self, n):
-        self.n = n
-        self.a, self.b = 0, 1
-        self.count = 0
+class OPCDataStream:
+    def __init__(self, xml_file, max_items):
+        self.xml_file = xml_file
+        self.max_items = max_items
+        self.current = 0
+        self.data_points = []
+        self._load_data()
+    
+    def _load_data(self):
+        import xml.etree.ElementTree as ET
+        tree = ET.parse(self.xml_file)
+        for node in tree.findall('.//DataPoint'):
+            self.data_points.append({
+                'node_id': node.get('id'),
+                'value': float(node.find('Value').text),
+                'quality': node.find('Quality').text
+            })
     
     def __iter__(self):
         return self
     
     def __next__(self):
-        if self.count >= self.n:
+        if self.current >= self.max_items or self.current >= len(self.data_points):
             raise StopIteration
-        self.count += 1
-        result = self.a
-        self.a, self.b = self.b, self.a + self.b
-        return result
+        data = self.data_points[self.current]
+        self.current += 1
+        return data
 
 # Verwendung:
-fib = Fibonacci(5)
+opc_stream = OPCDataStream('opc_ua_daten.xml', 10)
 ```
 
 **Fragen:**
-1. Ist `Fibonacci` ein **Iterable**, ein **Iterator**, oder beides? Begründe.
-2. Was gibt `list(fib)` zurück?
-3. Was passiert, wenn du danach `list(fib)` ein zweites Mal aufrufst? Warum?
+1. Ist `OPCDataStream` ein **Iterable**, ein **Iterator**, oder beides? Begründe.
+2. Was gibt `list(opc_stream)` zurück?
+3. Was passiert, wenn du danach `list(opc_stream)` ein zweites Mal aufrufst? Warum?
 4. Wie müsste die Klasse geändert werden, damit sie **mehrfach** iterierbar ist?
+5. Welcher Nachteil besteht beim Laden aller Daten in `_load_data()`? Wie könnte man das mit Generatoren lösen?
 
 **Teil 2: Implementierung**
 
-Schreibe eine **Generator-Funktion** `fibonacci_generator(n)`, die dieselbe Funktionalität wie die obige Klasse bietet, aber als Generator implementiert ist.
+Schreibe eine **Generator-Funktion** `opc_data_generator(xml_file, max_items, quality_filter="Good")`, die:
+- Die XML-Datei `opc_ua_daten.xml` speicher-effizient liest
+- Nur Datenpunkte mit der angegebenen Qualität zurückgibt
+- Maximal `max_items` Einträge liefert
+- Bei ungültigen XML-Strukturen eine Warnung ausgibt und weitermacht
 
 **Anforderungen:**
 - Nutze `yield` statt `return`
-- Funktion soll Fibonacci-Zahlen von 0 bis zur n-ten Zahl erzeugen
-- Teste mit `n=10`
+- Nutze `xml.etree.ElementTree` zum Parsen
+- Teste mit verschiedenen `quality_filter` Werten ("Good", "Bad", "Uncertain")
 
 **Erwartete Ausgabe:**
 ```python
-print(list(fibonacci_generator(10)))
-# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+for data in opc_data_generator('opc_ua_daten.xml', max_items=5, quality_filter="Good"):
+    print(f"Node {data['node_id']}: {data['value']}")
+
+# Ausgabe:
+# Node ns=2;i=1001: 245.8
+# Node ns=2;i=1003: 89.2
+# Node ns=2;i=1005: 1023.5
+# Node ns=2;i=1008: 512.0
+# Node ns=2;i=1012: 78.9
 ```
 
 ---
 
-### Aufgabe 7: Log-Datei-Analyse mit Generator-Pipeline ⭐⭐⭐ (Schwer)
+### Aufgabe P5: SCADA-Log-Analyse mit Generator-Pipeline ⭐⭐⭐ (Schwer)
 
-Du erhältst eine große Log-Datei `access.log` im Apache Combined Log Format:
+Du erhältst eine große Log-Datei `scada_system.log` von einem SCADA-System (Supervisory Control and Data Acquisition) einer Produktionsanlage:
 
 ```
-192.168.1.100 - - [10/Jan/2024:13:55:36 +0000] "GET /index.html HTTP/1.1" 200 2326
-192.168.1.101 - - [10/Jan/2024:13:55:37 +0000] "GET /about.html HTTP/1.1" 200 1523
-192.168.1.102 - - [10/Jan/2024:13:55:38 +0000] "POST /api/login HTTP/1.1" 401 512
-192.168.1.100 - - [10/Jan/2024:13:55:39 +0000] "GET /admin HTTP/1.1" 403 234
-192.168.1.103 - - [10/Jan/2024:13:55:40 +0000] "GET /data.json HTTP/1.1" 500 1024
+2024-01-15T08:00:15.234 | PLC-001 | INFO | Register 1000 read: 2450 | Response: 12ms
+2024-01-15T08:00:16.145 | PLC-002 | INFO | Register 2000 read: 3500 | Response: 8ms
+2024-01-15T08:00:17.876 | PLC-001 | WARNING | Register 1000 read: 2650 | Response: 125ms
+2024-01-15T08:00:18.234 | PLC-003 | ERROR | Connection timeout | Response: 5000ms
+2024-01-15T08:00:19.456 | PLC-002 | INFO | Register 2000 write: 3600 | Response: 15ms
 ```
 
 **Erstelle ein Programm mit Generator-Pipeline, das folgende Analysen durchführt:**
@@ -349,33 +401,32 @@ Implementiere die folgenden drei Generator-Funktionen:
 2. **`parse_log_zeile(zeilen)`**:
    - Nimmt Generator von Zeilen entgegen
    - Parst jede Zeile und gibt Dictionary zurück mit:
-     - `ip`: IP-Adresse
-     - `timestamp`: Zeitstempel (String)
-     - `method`: HTTP-Methode (GET, POST, etc.)
-     - `path`: Pfad (z.B. `/index.html`)
-     - `status`: HTTP-Statuscode als Integer
-     - `bytes`: Übertragene Bytes als Integer
+     - `timestamp`: Zeitstempel als String
+     - `plc_id`: PLC-Identifier (z.B. "PLC-001")
+     - `level`: Log-Level (INFO, WARNING, ERROR)
+     - `message`: Nachricht (z.B. "Register 1000 read: 2450")
+     - `response_time`: Response-Zeit in ms als Integer
    - Ignoriere ungültige Zeilen (fehlerhafte Struktur)
 
-3. **`filtere_status(log_entries, status_code)`**:
+3. **`filtere_level(log_entries, level)`**:
    - Nimmt Generator von Dictionaries entgegen
-   - Gibt nur Einträge mit spezifischem Statuscode zurück
+   - Gibt nur Einträge mit spezifischem Log-Level zurück
 
 **b) Analyse-Funktionen**
 
 Implementiere folgende Analyse-Funktionen, die die Pipeline nutzen:
 
-1. **`zaehle_status_codes(dateiname)`**:
-   - Gibt Dictionary mit Anzahl pro Statuscode zurück
-   - Format: `{200: 152, 404: 23, 500: 5, ...}`
+1. **`zaehle_log_levels(dateiname)`**:
+   - Gibt Dictionary mit Anzahl pro Log-Level zurück
+   - Format: `{"INFO": 152, "WARNING": 23, "ERROR": 5}`
 
-2. **`finde_fehlerhafte_requests(dateiname)`**:
-   - Gibt Liste aller Requests mit Statuscode 4xx oder 5xx zurück
-   - Sortiert nach Statuscode (höchste zuerst)
+2. **`finde_langsame_responses(dateiname, schwellwert_ms=100)`**:
+   - Gibt Liste aller Log-Einträge mit Response-Zeit über Schwellwert zurück
+   - Sortiert nach Response-Zeit (langsamste zuerst)
 
-3. **`top_ips(dateiname, n=5)`**:
-   - Gibt die Top-N IP-Adressen mit den meisten Requests zurück
-   - Format: Liste von Tupeln `[(ip, anzahl), ...]`
+3. **`top_plcs(dateiname, n=5)`**:
+   - Gibt die Top-N PLCs mit den meisten Log-Einträgen zurück
+   - Format: Liste von Tupeln `[(plc_id, anzahl), ...]`
 
 **Anforderungen:**
 - **Speicher-Effizienz**: Nutze Generator-Pipeline, nicht `readlines()`
@@ -385,127 +436,129 @@ Implementiere folgende Analyse-Funktionen, die die Pipeline nutzen:
 
 **Beispiel-Ausgabe:**
 ```python
-# Status-Code-Verteilung:
-status_counts = zaehle_status_codes("access.log")
-print("Status-Code-Verteilung:")
-for code, count in sorted(status_counts.items()):
-    print(f"  {code}: {count}")
+# Log-Level-Verteilung:
+level_counts = zaehle_log_levels("scada_system.log")
+print("Log-Level-Verteilung:")
+for level, count in sorted(level_counts.items()):
+    print(f"  {level}: {count}")
 
 # Output:
-# Status-Code-Verteilung:
-#   200: 152
-#   401: 12
-#   403: 8
-#   404: 23
-#   500: 5
+# Log-Level-Verteilung:
+#   INFO: 152
+#   WARNING: 23
+#   ERROR: 5
 
-# Fehlerhafte Requests:
-errors = finde_fehlerhafte_requests("access.log")
-print(f"\n{len(errors)} fehlerhafte Requests gefunden")
+# Langsame Responses:
+slow_responses = finde_langsame_responses("scada_system.log", schwellwert_ms=100)
+print(f"\n{len(slow_responses)} langsame Responses gefunden")
 
-# Top-5 IPs:
-top = top_ips("access.log", n=5)
-print("\nTop-5 aktivste IP-Adressen:")
-for i, (ip, count) in enumerate(top, 1):
-    print(f"  {i}. {ip}: {count} Requests")
+# Top-5 PLCs:
+top = top_plcs("scada_system.log", n=5)
+print("\nTop-5 aktivste PLCs:")
+for i, (plc, count) in enumerate(top, 1):
+    print(f"  {i}. {plc}: {count} Log-Einträge")
 ```
 
-**Bonus (+⭐):** Erweitere die Pipeline um eine Funktion `zeitfenster_analyse(dateiname, start_stunde, end_stunde)`, die nur Requests innerhalb eines bestimmten Stunden-Fensters analysiert (z.B. zwischen 13:00 und 15:00 Uhr).
+**Bonus (+⭐):** Erweitere die Pipeline um eine Funktion `error_burst_detection(dateiname, zeitfenster_sekunden=60, min_errors=3)`, die Zeiträume mit gehäuften ERROR-Meldungen findet (z.B. 3+ Errors innerhalb von 60 Sekunden).
 
 ---
 
-### Aufgabe 8: CSV-Daten-Transformation mit Generatoren ⭐⭐⭐⭐ (Sehr Schwer)
+### Aufgabe P6: Produktionsdaten-ETL mit Generator-Pipeline ⭐⭐⭐⭐ (Sehr Schwer)
 
-Du arbeitest für ein E-Commerce-Unternehmen und erhältst täglich eine große CSV-Datei `orders.csv` mit Bestellungen:
+Du arbeitest für ein Maschinenbau-Unternehmen und erhältst täglich eine große CSV-Datei `produktion_maschinen.csv` mit Produktionsdaten:
 
 ```csv
-OrderID,CustomerID,ProductID,Quantity,Price,OrderDate,Status
-1001,C001,P100,2,19.99,2024-01-10,completed
-1002,C002,P101,1,49.99,2024-01-10,completed
-1003,C001,P102,3,9.99,2024-01-10,pending
-1004,C003,P100,1,19.99,2024-01-11,completed
-1005,C002,P103,5,5.99,2024-01-11,cancelled
-1006,C004,P100,2,19.99,2024-01-11,completed
+Maschine_ID,Schicht,Produkt_ID,Menge,Ausschuss,Zykluszeit_s,Timestamp,Status
+M001,Frueh,P100,250,5,12.5,2024-01-15T06:00:00,completed
+M002,Frueh,P101,180,3,18.2,2024-01-15T06:00:00,completed
+M001,Frueh,P100,245,8,12.8,2024-01-15T07:00:00,warning
+M003,Frueh,P102,320,1,9.5,2024-01-15T07:00:00,completed
+M002,Spaet,P101,0,0,0,2024-01-15T14:00:00,malfunction
+M001,Spaet,P100,260,4,12.3,2024-01-15T14:00:00,completed
 ```
 
 **Aufgabe: Erstelle eine speicher-effiziente ETL-Pipeline (Extract, Transform, Load)**
 
 **Teil 1: Extrahieren und Validieren**
 
-Implementiere einen Generator `validiere_bestellungen(dateiname)`, der:
+Implementiere einen Generator `validiere_produktionsdaten(dateiname)`, der:
 - CSV-Datei mit `csv.DictReader` liest
-- Jede Bestellung validiert:
-  - `OrderID`, `CustomerID`, `ProductID` müssen vorhanden sein
-  - `Quantity` muss positive Ganzzahl sein
-  - `Price` muss positive Dezimalzahl sein
-  - `OrderDate` muss gültiges Datum sein (Format: YYYY-MM-DD)
-  - `Status` muss einer der Werte sein: `completed`, `pending`, `cancelled`
-- Nur **valide** Bestellungen als Dictionary zurückgibt
-- **Fehlerhafte** Zeilen in separate Datei `errors.log` schreibt (mit Fehlerbeschreibung)
+- Jede Produktionszeile validiert:
+  - `Maschine_ID`, `Produkt_ID`, `Schicht` müssen vorhanden sein
+  - `Menge`, `Ausschuss` müssen nicht-negative Ganzzahlen sein
+  - `Zykluszeit_s` muss positive Dezimalzahl sein
+  - `Timestamp` muss gültiges Datum sein (Format: ISO 8601)
+  - `Status` muss einer der Werte sein: `completed`, `warning`, `malfunction`
+- Nur **valide** Produktionsdaten als Dictionary zurückgibt
+- **Fehlerhafte** Zeilen in separate Datei `validation_errors.log` schreibt (mit Fehlerbeschreibung)
 
 **Teil 2: Transformieren**
 
-Implementiere einen Generator `transformiere_bestellungen(bestellungen)`, der:
-- `OrderDate` von String zu `datetime`-Objekt konvertiert
-- Neues Feld `TotalPrice` berechnet: `Quantity * Price`
-- Neues Feld `Year`, `Month`, `Day` aus `OrderDate` extrahiert
-- Neues Feld `IsHighValue` hinzufügt: `True` wenn `TotalPrice > 50`, sonst `False`
+Implementiere einen Generator `transformiere_produktionsdaten(daten)`, der:
+- `Timestamp` von String zu `datetime`-Objekt konvertiert
+- Neues Feld `Ausschussrate` berechnet: `(Ausschuss / Menge) * 100` in Prozent
+- Neues Feld `OEE_Faktor` berechnet: Simplified OEE = `((Menge - Ausschuss) / Menge) * 100`
+- Neues Feld `Stunde`, `Datum` aus `Timestamp` extrahiert
+- Neues Feld `IstProblematisch` hinzufügt: `True` wenn `Status != "completed"` oder `Ausschussrate > 3%`
 
 **Teil 3: Aggregieren**
 
 Implementiere folgende Analyse-Funktionen:
 
-1. **`umsatz_pro_tag(bestellungen)`**:
-   - Berechnet Gesamtumsatz pro Tag (nur `completed` Orders)
-   - Gibt Dictionary zurück: `{datetime.date(...): Decimal('...')}`
+1. **`produktion_pro_schicht(daten)`**:
+   - Berechnet Gesamtproduktion (gute Stücke = Menge - Ausschuss) pro Schicht
+   - Gibt Dictionary zurück: `{"Frueh": int, "Spaet": int, "Nacht": int}`
 
-2. **`top_produkte(bestellungen, n=5)`**:
-   - Findet die Top-N meist-bestellten Produkte
-   - Gibt Liste von Tupeln: `[(ProductID, Anzahl_Bestellungen, Gesamtumsatz), ...]`
+2. **`top_maschinen(daten, n=5)`**:
+   - Findet die Top-N produktivsten Maschinen (höchste Gutmenge)
+   - Gibt Liste von Tupeln: `[(Maschine_ID, Gutmenge, Durchschnitt_OEE), ...]`
 
-3. **`kunden_statistik(bestellungen)`**:
-   - Berechnet pro Kunde: Anzahl Bestellungen, Gesamtumsatz, durchschnittlicher Warenkorb
-   - Gibt Dictionary: `{CustomerID: {'orders': int, 'total': Decimal, 'avg': Decimal}}`
+3. **`problem_analyse(daten)`**:
+   - Berechnet pro Maschine: Anzahl problematischer Zyklen, durchschnittliche Ausschussrate
+   - Gibt Dictionary: `{Maschine_ID: {'probleme': int, 'avg_ausschuss': float}}`
 
 **Teil 4: Laden (Exportieren)**
 
-Implementiere `exportiere_aggregierte_daten(input_datei, output_prefix)`, das:
+Implementiere `exportiere_produktionsbericht(input_datei, output_prefix)`, das:
 - Die gesamte Pipeline durchläuft
 - Drei neue CSV-Dateien erstellt:
-  - `{output_prefix}_daily_revenue.csv`: Tagesumsätze
-  - `{output_prefix}_top_products.csv`: Top-Produkte
-  - `{output_prefix}_customer_stats.csv`: Kunden-Statistik
-- Alle Dateien mit `csv.DictWriter` schreibt
+  - `{output_prefix}_schicht_uebersicht.csv`: Produktionen pro Schicht
+  - `{output_prefix}_top_maschinen.csv`: Beste Maschinen
+  - `{output_prefix}_problem_bericht.csv`: Problemanalyse
+- Alle Dateien mit `csv.DictWriter` schreibt (mit `newline=''`)
 
 **Anforderungen:**
 - **Speicher-Effizienz**: Datei wird nur **einmal** durchgelesen für alle Analysen (nutze `itertools.tee()` falls nötig)
 - **Fehlertoleranz**: Einzelne fehlerhafte Zeilen stoppen nicht die gesamte Verarbeitung
-- **Genauigkeit**: Nutze `decimal.Decimal` für Geldbeträge (keine Float-Rundungsfehler!)
-- **Performance**: Bei 1 Million Zeilen < 30 Sekunden
+- **Genauigkeit**: Nutze `decimal.Decimal` für Prozentsätze und OEE-Berechnungen
+- **Performance**: Bei 100.000 Zeilen < 30 Sekunden
 - **Logging**: Schreibe Statistiken (Anzahl verarbeitete/fehlerhafte Zeilen, Laufzeit)
 
 **Beispiel-Nutzung:**
 ```python
-exportiere_aggregierte_daten("orders.csv", "report_2024_01")
+exportiere_produktionsbericht("produktion_maschinen.csv", "bericht_2024_01_15")
 
 # Erstellt:
-# - report_2024_01_daily_revenue.csv
-# - report_2024_01_top_products.csv
-# - report_2024_01_customer_stats.csv
-# - errors.log
+# - bericht_2024_01_15_schicht_uebersicht.csv
+# - bericht_2024_01_15_top_maschinen.csv
+# - bericht_2024_01_15_problem_bericht.csv
+# - validation_errors.log
 
 # Konsolen-Ausgabe:
 # Verarbeitung gestartet...
-# ✓ 12.543 Bestellungen validiert
-# ✗ 87 fehlerhafte Zeilen (siehe errors.log)
+# ✓ 1.543 Produktionszyklen validiert
+# ✗ 12 fehlerhafte Zeilen (siehe validation_errors.log)
 # ✓ Export abgeschlossen
-# Laufzeit: 2.34 Sekunden
+# Laufzeit: 0.85 Sekunden
+# Durchschnittliche OEE: 96.5%
 ```
 
-**Bonus (+⭐):** Implementiere eine Funktion `inkrementeller_export(input_datei, state_datei, output_prefix)`, die:
-- Merkt sich, welche Bestellungen bereits verarbeitet wurden (via `state_datei`)
-- Bei erneutem Aufruf nur **neue** Bestellungen verarbeitet (inkrementelles Update)
-- Ideal für tägliche Batch-Jobs
+**Bonus (+⭐):** Implementiere eine Funktion `echtzeit_monitoring(dateiname, update_intervall_s=5)`, die:
+- Die Produktionsdatei kontinuierlich überwacht
+- Bei neuen Zeilen automatisch Warnungen ausgibt, wenn:
+  - Ausschussrate > 5%
+  - Zykluszeit > 20% über Durchschnitt
+  - Status = "malfunction"
 
 **Tipp:** Nutze `collections.defaultdict`, `itertools.tee()` und `decimal.Decimal` aus der Standard-Library.
 
