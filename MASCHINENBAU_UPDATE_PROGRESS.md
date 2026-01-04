@@ -15,10 +15,10 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V06 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V07 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
 | V08 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
-| V09 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
+| V09 | ✅ | ✅ | ✅ (3 Dateien) | ✅ Abgeschlossen |
 | V10 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
-| V11 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
-| V12 | ❌ | ❌ | ❌ | Ausstehend |
+| V11 | ✅ | ✅ | ✅ (1 Datei) | ✅ Abgeschlossen |
+| V12 | ✅ | ✅ | ✅ (2 Dateien) | ✅ Abgeschlossen |
 | V13 | ❌ | ❌ | ❌ | Ausstehend |
 | V14 | ❌ | ❌ | ❌ | Ausstehend |
 | V15 | ❌ | ❌ | ❌ | Ausstehend |
@@ -49,9 +49,10 @@ Alle Vorlesungen V01-V15 überarbeiten, sodass Python-Aufgaben einen konkreten M
 - V06: CNC-Drehzahl-Sequenzen, Zahnrad-Übersetzung, G-Code Analyse, Material-Zugversuch, Fertigungslinie-Simulation – ✅ Abgeschlossen
 - V07: CNC-Werkzeugsuche, Hydraulikdruck-Überwachung, Drehmoment-Tabelle, Prüfprotokoll-Generator, Maschinendaten-Analyse – ✅ Abgeschlossen
 - V08: Sensor-Messwerte, Vibrationsdaten-Analyse, NC-Programm-Validator, Materialprüfungs-Datenbank, CNC-Editor mit Undo/Redo – ✅ Abgeschlossen (keine Testdaten nötig)
-- V09: Messwert-Eingabe (Kalibrierung), Maschinen-Logfile-Analyse, CNC-Konfiguration, Material-Validator, Fertigungszellen-Konfigurations-System – ✅ Abgeschlossen (Testdaten: maschine_01.log, fertigungszelle_01.json)
+- V09: Messwert-Eingabe (Kalibrierung), Maschinen-Logfile-Analyse, CNC-Konfiguration, Material-Validator, Fertigungszellen-Konfigurations-System – ✅ Abgeschlossen (Testdaten: maschine_01.log, fertigungszelle_01.json, TESTDATEN_README.md)
 - V10: Maschinenbau-Berechnungen, Werkzeugstandzeit, Werkzeugsuche-Performance, Fibonacci-Drehzahl, Produktionsreihenfolge-Optimierer – ✅ Abgeschlossen (keine Testdaten nötig)
-- V11: CNC-Maschinen-Log, Sensor-Statistik, Werkstoff-Datenbankfilterung, CAD-Dokumentations-Generator, Wartungsprotokoll-Manager – ✅ Abgeschlossen (keine Testdaten nötig)
+- V11: CNC-Maschinen-Log, Sensor-Statistik, Werkstoff-Datenbankfilterung, CAD-Dokumentations-Generator (Template-System), Wartungsprotokoll-Manager – ✅ Abgeschlossen (Testdaten: cad_template_technisch.txt)
+- V12: CNC-Parameter-Extractor, Material-Datenblatt-Zusammenfasser, Fertigungs-Anforderungs-Validator, Technische-Zeichnungs-Beschreibung, Produktionsüberwachungs-Assistent – ✅ Abgeschlossen (Testdaten: produktionsdaten_test.csv, TESTDATEN_README.md)
 
 ## Detaillierter Status V04
 - ✅ P1 Aufgabe: CNC-Kühlmitteltemperatur-Monitor (Bereiche: zu kalt, optimal, zu heiß)
