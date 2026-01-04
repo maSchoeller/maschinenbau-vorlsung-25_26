@@ -126,228 +126,312 @@ Betrachte die drei Sortieralgorithmen **Bubble Sort**, **Quick Sort** und **Merg
 
 ## Teil B: Python-Aufgaben
 
-### Aufgabe P1: Erste eigene Funktionen (Leicht)
+### Aufgabe P1: Berechnungsfunktionen für Maschinenbau (Leicht)
 
 **Schwierigkeit**: ⭐ Leicht  
 **Zeitaufwand**: ca. 10-15 Minuten  
-**Vorkenntnisse**: Funktionsdefinition mit `def`, `return`, Parameter
+**Vorkenntnisse**: Funktionsdefinition mit `def`, `return`, Parameter  
+**Maschinenbau-Kontext**: Grundlegende Berechnungen für Konstruktion und Fertigung
 
-Schreibe drei einfache Funktionen:
+Schreibe drei Funktionen für häufige Maschinenbau-Berechnungen:
 
-**a)** Eine Funktion `berechne_rechteck_flaeche(laenge, breite)`, die die Fläche eines Rechtecks berechnet und zurückgibt.
+> [!NOTE]
+> **Maschinenbau-Berechnungen**: Ingenieure führen täglich Standardberechnungen durch:
+> - **Schnittgeschwindigkeit** (v): Drehzahl und Werkzeugdurchmesser bestimmen Bearbeitungsqualität
+> - **Drehmoment-Leistung**: Motor-Auslegung für Antriebssysteme
+> - **Spannungsberechnung**: Festigkeitsprüfung für Bauteile unter Belastung
 
-**b)** Eine Funktion `ist_gerade(zahl)`, die prüft, ob eine Zahl gerade ist. Die Funktion soll `True` oder `False` zurückgeben.
+**a)** Eine Funktion `berechne_schnittgeschwindigkeit(durchmesser_mm, drehzahl_umin)`, die die Schnittgeschwindigkeit in m/min berechnet.  
+**Formel**: $v_c = \frac{\pi \cdot d \cdot n}{1000}$ (d in mm, n in U/min, v in m/min)
 
-**c)** Eine Funktion `temperatur_umrechnen(celsius)`, die Celsius in Fahrenheit umrechnet nach der Formel: $F = C \cdot 1.8 + 32$
+**b)** Eine Funktion `berechne_leistung(drehmoment_nm, drehzahl_umin)`, die die Leistung in kW berechnet.  
+**Formel**: $P = \frac{M \cdot n}{9550}$ (M in Nm, n in U/min, P in kW)
+
+**c)** Eine Funktion `berechne_zugspannung(kraft_n, querschnitt_mm2)`, die die Zugspannung in MPa berechnet.  
+**Formel**: $\sigma = \frac{F}{A}$ (F in N, A in mm², σ in MPa)
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-# a)
-print(berechne_rechteck_flaeche(5, 3))  # 15
+# a) Schnittgeschwindigkeit für Ø50mm Fräser bei 3000 U/min
+print(berechne_schnittgeschwindigkeit(50, 3000))  # 471.24 m/min
 
-# b)
-print(ist_gerade(4))   # True
-print(ist_gerade(7))   # False
+# b) Leistung bei 100 Nm Drehmoment und 1500 U/min
+print(berechne_leistung(100, 1500))  # 15.71 kW
 
-# c)
-print(temperatur_umrechnen(0))    # 32.0
-print(temperatur_umrechnen(100))  # 212.0
+# c) Zugspannung bei 50000 N Kraft auf 200 mm² Querschnitt
+print(berechne_zugspannung(50000, 200))  # 250.0 MPa
 ```
 
 **Hinweise**:
-- Verwende aussagekräftige Funktionsnamen
-- Füge Docstrings hinzu (optional, aber empfohlen)
-- Teste jede Funktion mit mehreren Werten
+- Verwende `math.pi` für π oder den Wert 3.14159
+- Runde Ergebnisse auf 2 Dezimalstellen mit `round(wert, 2)`
+- Füge Docstrings hinzu mit Beschreibung und Einheiten
 
 ---
 
-### Aufgabe P2: Funktionen mit Default-Parametern (Leicht-Mittel)
+### Aufgabe P2: Werkzeugstandzeit-Berechnung mit Default-Parametern (Leicht-Mittel)
 
 **Schwierigkeit**: ⭐⭐ Leicht-Mittel  
 **Zeitaufwand**: ca. 15-20 Minuten  
-**Vorkenntnisse**: Default-Parameter, Keyword Arguments
+**Vorkenntnisse**: Default-Parameter, Keyword Arguments  
+**Maschinenbau-Kontext**: Werkzeugstandzeit-Kalkulation für Produktionsplanung
 
-Schreibe eine Funktion `berechne_kraftstoffkosten(strecke, verbrauch=7.0, preis=1.80)`, die die Kraftstoffkosten für eine Fahrt berechnet.
+Schreibe eine Funktion `berechne_werkzeugkosten_pro_stueck(stueckzahl, werkzeugkosten=50.0, standzeit=1000, nebenzeiten_min=0.5)`, die die Werkzeugkosten pro Werkstück berechnet.
+
+> [!NOTE]
+> **Werkzeugstandzeit**: Die Standzeit gibt an, wie viele Teile ein Werkzeug fertigen kann, bevor es verschleißt. Typische Werte:
+> - Hartmetall-Fräser: 500-2000 Teile
+> - HSS-Bohrer: 200-800 Teile
+> - Wendeschneidplatten: 1000-5000 Teile
+> 
+> Die Werkzeugkosten pro Stück sind entscheidend für Kalkulation und Wirtschaftlichkeit.
 
 **Parameter**:
-- `strecke`: Zurückgelegte Strecke in Kilometern
-- `verbrauch`: Durchschnittsverbrauch in Litern pro 100 km (Standard: 7.0)
-- `preis`: Kraftstoffpreis pro Liter in Euro (Standard: 1.80)
+- `stueckzahl`: Anzahl zu fertigender Werkstücke
+- `werkzeugkosten`: Kosten pro Werkzeug in Euro (Standard: 50.0)
+- `standzeit`: Anzahl Teile pro Werkzeug (Standard: 1000)
+- `nebenzeiten_min`: Rüstzeit pro Werkzeugwechsel in Minuten (Standard: 0.5)
 
-**Formel**: $\text{Kosten} = \frac{\text{Strecke}}{100} \cdot \text{Verbrauch} \cdot \text{Preis}$
+**Formel**: 
+- Anzahl Werkzeugwechsel: $\text{Wechsel} = \lceil \frac{\text{Stückzahl}}{\text{Standzeit}} \rceil - 1$
+- Werkzeugkosten pro Stück: $\frac{\text{Wechsel} \cdot \text{Werkzeugkosten}}{\text{Stückzahl}}$
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-# Mit Default-Werten
-print(berechne_kraftstoffkosten(200))  # 25.2 (200/100 * 7.0 * 1.80)
+# Mit Default-Werten: 2000 Teile
+print(berechne_werkzeugkosten_pro_stueck(2000))  # 0.025 Euro/Stück (1 Wechsel)
 
-# Mit angepasstem Verbrauch
-print(berechne_kraftstoffkosten(200, verbrauch=5.5))  # 19.8
+# Mit angepasster Standzeit
+print(berechne_werkzeugkosten_pro_stueck(5000, standzeit=500))  # 0.09 Euro/Stück
 
 # Mit allen Parametern
-print(berechne_kraftstoffkosten(300, verbrauch=8.0, preis=2.00))  # 48.0
+print(berechne_werkzeugkosten_pro_stueck(10000, werkzeugkosten=120.0, standzeit=2000))  # 0.048 Euro/Stück
 
-# Keyword Arguments in beliebiger Reihenfolge
-print(berechne_kraftstoffkosten(strecke=150, preis=1.95, verbrauch=6.5))  # 19.0125
+# Keyword Arguments
+print(berechne_werkzeugkosten_pro_stueck(stueckzahl=3000, werkzeugkosten=80.0, standzeit=1500))  # 0.0267 Euro/Stück
 ```
 
 **Hinweise**:
-- Runde das Ergebnis auf 2 Dezimalstellen mit `round(wert, 2)`
-- Teste verschiedene Aufrufvarianten (nur Strecke, mit Keyword Arguments, etc.)
-- Füge einen aussagekräftigen Docstring hinzu
+- Verwende `math.ceil()` für Aufrunden
+- Runde das Ergebnis auf 4 Dezimalstellen
+- Teste Grenzfälle (z.B. Stückzahl < Standzeit)
 
 ---
 
-### Aufgabe P3: Lineare Suche implementieren (Mittel)
+### Aufgabe P3: Werkzeugsuche in Magazin mit Performance-Analyse (Mittel)
 
 **Schwierigkeit**: ⭐⭐ Mittel  
 **Zeitaufwand**: ca. 20-25 Minuten  
-**Vorkenntnisse**: Funktionen, Schleifen, `return`
+**Vorkenntnisse**: Funktionen, Schleifen, `return`  
+**Maschinenbau-Kontext**: CNC-Werkzeugmagazin-Verwaltung mit Suchzeitanalyse
 
-Implementiere eine Funktion `lineare_suche(liste, ziel)`, die ein Element in einer Liste sucht und den Index zurückgibt (oder `-1`, wenn nicht gefunden).
+Implementiere eine Funktion `suche_werkzeug(magazin, werkzeug_id)`, die ein Werkzeug im CNC-Magazin sucht und Statistiken zur Suchzeit liefert.
+
+> [!NOTE]
+> **CNC-Werkzeugmagazin**: Moderne CNC-Maschinen haben Werkzeugmagazine mit 24-120 Plätzen. Die Suchzeit beeinflusst:
+> - Werkzeugwechselzeit (typisch 2-6 Sekunden)
+> - Gesamt-Zykluszeit
+> - Produktivität
+> 
+> Häufig verwendete Werkzeuge sollten auf vorderen Positionen liegen.
 
 **Erweiterte Anforderungen**:
-- Zähle die Anzahl der Vergleiche und gib sie zurück (zusätzlich zum Index)
-- Die Funktion soll zwei Werte zurückgeben: `(index, vergleiche)`
+- Zähle die Anzahl der Vergleiche und gib sie zurück
+- Die Funktion soll drei Werte zurückgeben: `(position, vergleiche, gefunden)`
+- Position ist 1-basiert (erster Platz = 1)
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-zahlen = [3, 7, 2, 9, 5, 1, 8]
+magazin = [101, 205, 310, 405, 210, 115, 320, 208, 412, 505]
+# Werkzeug-IDs: T101 (Bohrer Ø10), T205 (Fräser Ø20), etc.
 
-index, vergleiche = lineare_suche(zahlen, 9)
-print(f"Element gefunden an Index {index} nach {vergleiche} Vergleichen")
-# Element gefunden an Index 3 nach 4 Vergleichen
+position, vergleiche, gefunden = suche_werkzeug(magazin, 405)
+print(f"Werkzeug T{405} an Position {position} nach {vergleiche} Vergleichen (Status: {gefunden})")
+# Werkzeug T405 an Position 4 nach 4 Vergleichen (Status: True)
 
-index, vergleiche = lineare_suche(zahlen, 1)
-print(f"Element gefunden an Index {index} nach {vergleiche} Vergleichen")
-# Element gefunden an Index 5 nach 6 Vergleichen
+position, vergleiche, gefunden = suche_werkzeug(magazin, 505)
+print(f"Werkzeug T{505} an Position {position} nach {vergleiche} Vergleichen (Status: {gefunden})")
+# Werkzeug T505 an Position 10 nach 10 Vergleichen (Status: True)
 
-index, vergleiche = lineare_suche(zahlen, 99)
-print(f"Element gefunden an Index {index} nach {vergleiche} Vergleichen")
-# Element gefunden an Index -1 nach 7 Vergleichen (nicht gefunden)
+position, vergleiche, gefunden = suche_werkzeug(magazin, 999)
+print(f"Werkzeug T{999} nicht gefunden nach {vergleiche} Vergleichen (Status: {gefunden})")
+# Werkzeug T999 nicht gefunden nach 10 Vergleichen (Status: False)
 ```
 
 **Hinweise**:
-- Verwende eine `for`-Schleife mit `enumerate()` für Index-Zugriff
-- Zähle in jedem Schleifendurchlauf den Vergleichszähler hoch
-- Gib zwei Werte als Tupel zurück: `return index, vergleiche`
+- Verwende `enumerate(magazin, start=1)` für 1-basierte Positionen
+- Zähle Vergleiche in jedem Durchlauf
+- Gib `(0, vergleiche, False)` zurück wenn nicht gefunden
+- Best-Case: O(1), Worst-Case: O(n), Average-Case: O(n/2)
 
 ---
 
-### Aufgabe P4: Fibonacci mit und ohne Optimierung (Mittel-Schwer)
+### Aufgabe P4: Fibonacci-Drehzahl-Sequenz mit Performance-Analyse (Mittel-Schwer)
 
 **Schwierigkeit**: ⭐⭐⭐ Mittel-Schwer  
 **Zeitaufwand**: ca. 30-40 Minuten  
-**Vorkenntnisse**: Rekursion, Funktionen, Dictionaries (optional)
+**Vorkenntnisse**: Rekursion, Funktionen, Performance-Messung  
+**Maschinenbau-Kontext**: Spindeldrehzahl-Optimierung mit Fibonacci-Reihe
 
-Implementiere die Fibonacci-Folge auf drei verschiedene Arten und vergleiche die Performance.
+Implementiere Drehzahl-Sequenzen auf Basis der Fibonacci-Folge für Spindeldrehzahl-Tests und vergleiche verschiedene Algorithmen.
 
-**a)** **Naive Rekursion**: `fibonacci_rekursiv(n)`
+> [!NOTE]
+> **Fibonacci in der Fertigung**: Die Fibonacci-Folge wird in der Fertigung für:
+> - **Drehzahl-Tests**: Systematische Variation bei Schnittversuchen (500, 800, 1300, 2100 U/min...)
+> - **Feed-Rate-Optimierung**: Schrittweise Erhöhung der Vorschubgeschwindigkeit
+> - **Golden Ratio Search**: Optimaler Suchbereich für Parameter
+> 
+> Die Folge bietet ausgewogene Schrittweiten ohne zu große Sprünge.
+
+**a)** **Naive Rekursion**: `fibonacci_rekursiv(n)` - bereits implementiert (siehe Aufgabenstellung oben)
+
+**b)** **Iterative Lösung für Drehzahl-Sequenz**: `fibonacci_drehzahl_iterativ(n, basis=500)`
+- Verwende eine Schleife statt Rekursion
+- Berechne Drehzahl-Sequenz: basis × Fibonacci(i)
+- Nutze zwei Variablen für die letzten beiden Werte
+
+**c)** **Performance-Vergleich mit Spindeldrehzahlen**:
 ```python
-def fibonacci_rekursiv(n):
-    """Berechnet die n-te Fibonacci-Zahl (naiv rekursiv)."""
-    if n <= 1:
-        return n
-    return fibonacci_rekursiv(n-1) + fibonacci_rekursiv(n-2)
+import time
+
+# Teste Sequenz-Generierung für 10, 20, 30 Stufen
+for stufen in [10, 20, 30]:
+    start = time.time()
+    drehzahlen = [fibonacci_drehzahl_iterativ(i, 500) for i in range(stufen)]
+    ende = time.time()
+    print(f"{stufen} Stufen: {ende - start:.6f}s - Max. Drehzahl: {max(drehzahlen)} U/min")
 ```
 
-**b)** **Iterative Lösung**: `fibonacci_iterativ(n)`
-- Verwende eine Schleife statt Rekursion
-- Nutze zwei Variablen, um die letzten beiden Fibonacci-Zahlen zu speichern
-
-**c)** **Performance-Vergleich**:
-- Teste beide Funktionen mit `n = 10, 20, 30, 35`
-- Messe die Zeit mit:
-  ```python
-  import time
-  start = time.time()
-  ergebnis = fibonacci_rekursiv(30)
-  ende = time.time()
-  print(f"Zeit: {ende - start:.4f} Sekunden")
-  ```
-
-**d)** **Bonus - Memoization (optional)**:
-Implementiere eine optimierte rekursive Version mit Memoization (Zwischenergebnisse speichern):
+**d)** **Bonus - Memoization für große Sequenzen**:
 ```python
-def fibonacci_memo(n, cache={}):
-    # Deine Implementierung
-    pass
+def fibonacci_memo(n, cache=None):
+    if cache is None:
+        cache = {}
+    if n in cache:
+        return cache[n]
+    if n <= 1:
+        return n
+    cache[n] = fibonacci_memo(n-1, cache) + fibonacci_memo(n-2, cache)
+    return cache[n]
 ```
 
 **Beispiel Ein-/Ausgabe**:
 ```python
-print(fibonacci_rekursiv(10))   # 55
-print(fibonacci_iterativ(10))   # 55
+# Drehzahl-Sequenz (Basis 500 U/min)
+for i in range(1, 11):
+    drehzahl = 500 * fibonacci_rekursiv(i)
+    print(f"Stufe {i}: {drehzahl} U/min")
 
-# Performance-Test:
-# fibonacci_rekursiv(35): ~3-5 Sekunden
-# fibonacci_iterativ(35): < 0.001 Sekunden
+# Output:
+# Stufe 1: 500 U/min
+# Stufe 2: 500 U/min
+# Stufe 3: 1000 U/min
+# Stufe 4: 1500 U/min
+# Stufe 5: 2500 U/min
+# ...
+# Stufe 10: 27500 U/min
+
+# Performance-Vergleich:
+# Rekursiv (n=30): ~2-3 Sekunden
+# Iterativ (n=30): < 0.001 Sekunden
+# Memo (n=30): ~0.001 Sekunden
 ```
 
 **Hinweise**:
-- Die naive rekursive Variante wird ab `n=35` sehr langsam
-- Die iterative Lösung ist deutlich schneller: $O(n)$ statt $O(2^n)$
-- Für Memoization: Prüfe, ob `n` bereits im Cache ist, bevor du rekursiv aufrufst
+- Fibonacci-Drehzahlen eignen sich für systematische Tests
+- Die iterative Lösung ist O(n) vs. rekursiv O(2^n)
+- Memoization reduziert redundante Berechnungen
 
 ---
 
-### Aufgabe P5: Sortieralgorithmus-Visualisierer (Schwer/Komplex)
+### Aufgabe P5: Produktionsreihenfolge-Optimierer mit Sortieralgorithmen (Schwer/Komplex)
 
 **Schwierigkeit**: ⭐⭐⭐⭐ Schwer/Komplex  
 **Zeitaufwand**: ca. 50-60 Minuten  
-**Vorkenntnisse**: Funktionen, Schleifen, Listen, Debugging
+**Vorkenntnisse**: Funktionen, Schleifen, Listen, Algorithmen  
+**Maschinenbau-Kontext**: Fertigungsplanung mit Prioritäts-Sortierung
 
-Implementiere ein Programm, das verschiedene Sortieralgorithmen ausführt und deren Verhalten visualisiert (Konsolenausgabe).
+Implementiere ein Programm, das Fertigungsaufträge nach verschiedenen Kriterien sortiert und die Algorithmen-Performance visualisiert.
+
+> [!NOTE]
+> **Produktionsreihenfolge**: In der Fertigung müssen Aufträge priorisiert werden nach:
+> - **Liefertermin** (Earliest Due Date - EDD)
+> - **Bearbeitungszeit** (Shortest Processing Time - SPT)
+> - **Priorität** (kritische Kunden, Eilaufträge)
+> - **Setup-Zeit** (ähnliche Werkzeuge/Materialien zusammen)
+> 
+> Optimale Reihenfolge minimiert Durchlaufzeit und Terminüberschreitungen.
 
 **Anforderungen**:
 
-**a)** Implementiere folgende Sortieralgorithmen als Funktionen:
-- `bubble_sort(liste)`: Bubble Sort
-- `selection_sort(liste)`: Selection Sort (zusätzlich zu Vorlesung)
-- Eine Hilfsfunktion `tausche(liste, i, j)`, die zwei Elemente vertauscht
+**a)** Implementiere Sortieralgorithmen für Fertigungsaufträge:
+```python
+# Datenstruktur: Auftrag
+auftrag = {
+    "id": "A001",
+    "bearbeitungszeit_min": 45,
+    "prioritaet": 2,  # 1=hoch, 2=mittel, 3=niedrig
+    "liefertermin_tage": 5
+}
+```
 
-**b)** Erweitere die Funktionen um **Tracing**:
-- Gib nach jedem Tausch den aktuellen Zustand der Liste aus
-- Zähle die Anzahl der Vergleiche und Tauschoperationen
-- Gib am Ende Statistiken aus
+- `bubble_sort_auftraege(auftraege, kriterium)`: Sortiert nach Kriterium (z.B. "bearbeitungszeit_min")
+- `selection_sort_auftraege(auftraege, kriterium)`: Alternative Sortierung
+- Hilfsfunktion: `tausche(liste, i, j)`
 
-**c)** Hauptprogramm:
-- Erstelle eine Funktion `vergleiche_sortierung(liste)`, die beide Algorithmen ausführt
-- Verwende dieselbe unsortierte Liste für beide Algorithmen
-- Gib die Anzahl der Operationen aus
+**b)** Erweitere um **Tracing und Statistiken**:
+- Zähle Vergleiche und Tauschoperationen
+- Gib nach jedem Tausch den Zustand aus (Auftrags-IDs)
+- Berechne Gesamt-Durchlaufzeit
+
+**c)** Hauptprogramm mit Produktionsdaten:
+```python
+auftraege = [
+    {"id": "A001", "bearbeitungszeit_min": 64, "prioritaet": 2, "liefertermin_tage": 10},
+    {"id": "A002", "bearbeitungszeit_min": 34, "prioritaet": 1, "liefertermin_tage": 3},
+    {"id": "A003", "bearbeitungszeit_min": 25, "prioritaet": 3, "liefertermin_tage": 15},
+    {"id": "A004", "bearbeitungszeit_min": 12, "prioritaet": 1, "liefertermin_tage": 2},
+    {"id": "A005", "bearbeitungszeit_min": 22, "prioritaet": 2, "liefertermin_tage": 7},
+]
+
+# Sortiere nach Bearbeitungszeit (SPT-Regel)
+sortiert, stats = bubble_sort_auftraege(auftraege.copy(), "bearbeitungszeit_min")
+print(f"SPT-Reihenfolge: {[a['id'] for a in sortiert]}")
+print(f"Statistik: {stats['vergleiche']} Vergleiche, {stats['tausche']} Tauschvorgänge")
+
+# Sortiere nach Liefertermin (EDD-Regel)
+sortiert, stats = selection_sort_auftraege(auftraege.copy(), "liefertermin_tage")
+print(f"EDD-Reihenfolge: {[a['id'] for a in sortiert]}")
+```
 
 **Beispiel Ein-/Ausgabe**:
-```python
-zahlen = [64, 34, 25, 12, 22, 11, 90]
+```
+=== BUBBLE SORT: Bearbeitungszeit (SPT) ===
+Start: [A001, A002, A003, A004, A005]
+Schritt 1: Tausche A001 ↔ A002 → [A002, A001, A003, A004, A005]
+Schritt 2: Tausche A001 ↔ A003 → [A002, A003, A001, A004, A005]
+...
+Sortiert: [A004, A005, A003, A002, A001]
+Gesamt-Durchlaufzeit: 157 Minuten
+Vergleiche: 10, Tauschvorgänge: 6
 
-print("=== BUBBLE SORT ===")
-sortiert, stats = bubble_sort_visualisiert(zahlen.copy())
-print(f"Vergleiche: {stats['vergleiche']}, Tauschvorgänge: {stats['tausche']}")
-
-print("\n=== SELECTION SORT ===")
-sortiert, stats = selection_sort_visualisiert(zahlen.copy())
-print(f"Vergleiche: {stats['vergleiche']}, Tauschvorgänge: {stats['tausche']}")
-
-# Mögliche Ausgabe (verkürzt):
-# === BUBBLE SORT ===
-# Start: [64, 34, 25, 12, 22, 11, 90]
-# Schritt 1: [34, 64, 25, 12, 22, 11, 90]
-# Schritt 2: [34, 25, 64, 12, 22, 11, 90]
-# ...
-# Sortiert: [11, 12, 22, 25, 34, 64, 90]
-# Vergleiche: 21, Tauschvorgänge: 12
+=== SELECTION SORT: Liefertermin (EDD) ===
+Sortiert: [A004, A002, A005, A001, A003]
+Durchlaufzeit: 157 Minuten
+Vergleiche: 10, Tauschvorgänge: 4
 ```
 
 **Bonus-Challenge**:
-- Implementiere zusätzlich **Quick Sort** (rekursiv)
-- Füge eine Option hinzu, um die Visualisierung an/auszuschalten
-- Erstelle eine Funktion, die zufällige Listen generiert: `generiere_liste(groesse, min_wert, max_wert)`
+- Implementiere **Quick Sort** für große Auftragsmengen (>100 Aufträge)
+- Füge Visualisierung mit Gantt-Chart (ASCII-Art) hinzu
+- Berechne Verspätungen: `max(0, durchlaufzeit - liefertermin)`
+- Erstelle Funktion `generiere_auftraege(anzahl)` für Testdaten
 
 **Hinweise**:
-- Verwende `.copy()`, um die Original-Liste nicht zu verändern
-- Selection Sort: Finde in jedem Durchlauf das Minimum und tausche es an die richtige Position
-- Verwende ein Dictionary für Statistiken: `stats = {'vergleiche': 0, 'tausche': 0}`
-- Für Quick Sort: Nutze Rekursion und eine Hilfsfunktion `partition(liste, low, high)`
+- Verwende `.copy()` für Original-Erhaltung
+- Selection Sort: Finde Minimum und tausche
+- Dictionary für Stats: `{"vergleiche": 0, "tausche": 0}`
+- Durchlaufzeit: Summe aller Bearbeitungszeiten
 
 ---
 

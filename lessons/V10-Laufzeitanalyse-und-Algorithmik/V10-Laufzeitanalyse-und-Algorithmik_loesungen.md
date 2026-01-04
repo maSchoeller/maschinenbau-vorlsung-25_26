@@ -329,25 +329,225 @@ def fibonacci_iterativ(n):
 
 ## Teil B: Python-Aufgaben - Lösungen
 
-### Lösung P1: Erste eigene Funktionen
+### Lösung P1: Berechnungsfunktionen für Maschinenbau
 
 **Vollständiger Code**:
 ```python
-def berechne_rechteck_flaeche(laenge, breite):
-    """
-    Berechnet die Fläche eines Rechtecks.
-    
-    Parameter:
-        laenge (float): Länge des Rechtecks
-        breite (float): Breite des Rechtecks
-    
-    Rückgabewert:
-        float: Fläche des Rechtecks (Länge × Breite)
-    """
-    flaeche = laenge * breite
-    return flaeche
+import math
 
+def berechne_schnittgeschwindigkeit(durchmesser_mm, drehzahl_umin):
+    """Berechnet Schnittgeschwindigkeit in m/min."""
+    vc = (math.pi * durchmesser_mm * drehzahl_umin) / 1000
+    return round(vc, 2)
 
+def berechne_leistung(drehmoment_nm, drehzahl_umin):
+    """Berechnet Leistung in kW."""
+    p = (drehmoment_nm * drehzahl_umin) / 9550
+    return round(p, 2)
+
+def berechne_zugspannung(kraft_n, querschnitt_mm2):
+    """Berechnet Zugspannung in MPa."""
+    sigma = kraft_n / querschnitt_mm2
+    return round(sigma, 2)
+
+# Tests
+print(berechne_schnittgeschwindigkeit(50, 3000))  # 471.24 m/min
+print(berechne_leistung(100, 1500))               # 15.71 kW
+print(berechne_zugspannung(50000, 200))           # 250.0 MPa
+```
+
+**Erklärung**:
+
+Formeln aus der Fertigungstechnik und Festigkeitslehre. `math.pi` für präzise π-Werte. `round()` für praxisgerechte Dezimalstellen.
+
+---
+
+### Lösung P2: Werkzeugstandzeit-Berechnung mit Default-Parametern
+
+**Vollständiger Code**:
+```python
+import math
+
+def berechne_werkzeugkosten_pro_stueck(stueckzahl, werkzeugkosten=50.0, 
+                                        standzeit=1000, nebenzeiten_min=0.5):
+    """Berechnet Werkzeugkosten pro Werkstück."""
+    anzahl_werkzeuge = math.ceil(stueckzahl / standzeit)
+    werkzeugwechsel = max(0, anzahl_werkzeuge - 1)
+    kosten_pro_stueck = (werkzeugwechsel * werkzeugkosten) / stueckzahl
+    return round(kosten_pro_stueck, 4)
+
+# Tests
+print(berechne_werkzeugkosten_pro_stueck(2000))                        # 0.025
+print(berechne_werkzeugkosten_pro_stueck(5000, standzeit=500))         # 0.09
+print(berechne_werkzeugkosten_pro_stueck(10000, werkzeugkosten=120.0,
+                                          standzeit=2000))             # 0.048
+print(berechne_werkzeugkosten_pro_stueck(stueckzahl=3000, 
+                                          werkzeugkosten=80.0, 
+                                          standzeit=1500))             # 0.0267
+```
+
+**Erklärung**:
+
+`math.ceil()` rundet Werkzeuganzahl auf. Erste Werkzeug ist Grundausstattung, nur Wechsel kosten extra. Default-Parameter ermöglichen flexible Aufrufe.
+
+---
+
+### Lösung P3: Werkzeugsuche in Magazin mit Performance-Analyse
+
+**Vollständiger Code**:
+```python
+def suche_werkzeug(magazin, werkzeug_id):
+    """Sucht Werkzeug im CNC-Magazin und zählt Vergleiche."""
+    vergleiche = 0
+    
+    for position, werkzeug in enumerate(magazin, start=1):
+        vergleiche += 1
+        if werkzeug == werkzeug_id:
+            return position, vergleiche, True
+    
+    return 0, vergleiche, False
+
+# Tests
+magazin = [101, 205, 310, 405, 210, 115, 320, 208, 412, 505]
+
+position, vergleiche, gefunden = suche_werkzeug(magazin, 405)
+print(f"Werkzeug T{405} an Position {position} nach {vergleiche} Vergleichen")
+
+position, vergleiche, gefunden = suche_werkzeug(magazin, 505)
+print(f"Werkzeug T{505} an Position {position} nach {vergleiche} Vergleichen")
+
+position, vergleiche, gefunden = suche_werkzeug(magazin, 999)
+print(f"Werkzeug T{999} nicht gefunden nach {vergleiche} Vergleichen")
+```
+
+**Erklärung**:
+
+Lineare Suche O(n). `enumerate(start=1)` für 1-basierte Positionen. Drei Rückgabewerte als Tupel. Best-Case O(1), Worst-Case O(n).
+
+---
+
+### Lösung P4: Fibonacci-Drehzahl-Sequenz mit Performance-Analyse
+
+**Vollständiger Code**:
+```python
+import time
+
+def fibonacci_rekursiv(n):
+    if n <= 1:
+        return n
+    return fibonacci_rekursiv(n-1) + fibonacci_rekursiv(n-2)
+
+def fibonacci_drehzahl_iterativ(n, basis=500):
+    """Berechnet Fibonacci-Drehzahl iterativ."""
+    if n <= 1:
+        return basis * n
+    a, b = 0, 1
+    for _ in range(n-1):
+        a, b = b, a + b
+    return basis * b
+
+def fibonacci_memo(n, cache=None):
+    """Fibonacci mit Memoization."""
+    if cache is None:
+        cache = {}
+    if n in cache:
+        return cache[n]
+    if n <= 1:
+        return n
+    cache[n] = fibonacci_memo(n-1, cache) + fibonacci_memo(n-2, cache)
+    return cache[n]
+
+# Drehzahl-Sequenz generieren
+print("Drehzahl-Sequenz (Basis 500 U/min):")
+for i in range(1, 11):
+    drehzahl = 500 * fibonacci_rekursiv(i)
+    print(f"Stufe {i}: {drehzahl} U/min")
+
+# Performance-Vergleich
+print("\nPerformance-Test:")
+for stufen in [10, 20, 30]:
+    start = time.time()
+    drehzahlen = [fibonacci_drehzahl_iterativ(i, 500) for i in range(stufen)]
+    ende = time.time()
+    print(f"{stufen} Stufen: {ende - start:.6f}s - Max: {max(drehzahlen)} U/min")
+```
+
+**Erklärung**:
+
+Rekursiv O(2^n) - exponentiell langsam. Iterativ O(n) - linear, effizient. Memoization O(n) mit Cache. Fibonacci-Reihe bietet ausgewogene Drehzahl-Schritte für Tests.
+
+---
+
+### Lösung P5: Produktionsreihenfolge-Optimierer mit Sortieralgorithmen
+
+**Vollständiger Code**:
+```python
+def tausche(liste, i, j):
+    """Tauscht zwei Elemente in Liste."""
+    liste[i], liste[j] = liste[j], liste[i]
+
+def bubble_sort_auftraege(auftraege, kriterium):
+    """Sortiert Fertigungsaufträge mit Bubble Sort."""
+    n = len(auftraege)
+    stats = {"vergleiche": 0, "tausche": 0}
+    liste = auftraege.copy()
+    
+    for i in range(n):
+        for j in range(n - 1 - i):
+            stats["vergleiche"] += 1
+            if liste[j][kriterium] > liste[j + 1][kriterium]:
+                tausche(liste, j, j + 1)
+                stats["tausche"] += 1
+                print(f"Tausche {liste[j]['id']} ↔ {liste[j+1]['id']}")
+    
+    return liste, stats
+
+def selection_sort_auftraege(auftraege, kriterium):
+    """Sortiert Fertigungsaufträge mit Selection Sort."""
+    n = len(auftraege)
+    stats = {"vergleiche": 0, "tausche": 0}
+    liste = auftraege.copy()
+    
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            stats["vergleiche"] += 1
+            if liste[j][kriterium] < liste[min_idx][kriterium]:
+                min_idx = j
+        
+        if min_idx != i:
+            tausche(liste, i, min_idx)
+            stats["tausche"] += 1
+    
+    return liste, stats
+
+# Testdaten
+auftraege = [
+    {"id": "A001", "bearbeitungszeit_min": 64, "prioritaet": 2, "liefertermin_tage": 10},
+    {"id": "A002", "bearbeitungszeit_min": 34, "prioritaet": 1, "liefertermin_tage": 3},
+    {"id": "A003", "bearbeitungszeit_min": 25, "prioritaet": 3, "liefertermin_tage": 15},
+    {"id": "A004", "bearbeitungszeit_min": 12, "prioritaet": 1, "liefertermin_tage": 2},
+    {"id": "A005", "bearbeitungszeit_min": 22, "prioritaet": 2, "liefertermin_tage": 7},
+]
+
+# SPT-Regel (Shortest Processing Time)
+print("=== BUBBLE SORT: Bearbeitungszeit (SPT) ===")
+sortiert, stats = bubble_sort_auftraege(auftraege, "bearbeitungszeit_min")
+print(f"Reihenfolge: {[a['id'] for a in sortiert]}")
+durchlaufzeit = sum(a["bearbeitungszeit_min"] for a in sortiert)
+print(f"Durchlaufzeit: {durchlaufzeit} min")
+print(f"Stats: {stats['vergleiche']} Vergleiche, {stats['tausche']} Tauschvorgänge\n")
+
+# EDD-Regel (Earliest Due Date)
+print("=== SELECTION SORT: Liefertermin (EDD) ===")
+sortiert, stats = selection_sort_auftraege(auftraege, "liefertermin_tage")
+print(f"Reihenfolge: {[a['id'] for a in sortiert]}")
+print(f"Stats: {stats['vergleiche']} Vergleiche, {stats['tausche']} Tauschvorgänge")
+```
+
+**Erklärung**:
+
+Bubble Sort O(n²) - vergleicht benachbarte Elemente. Selection Sort O(n²) - findet Minimum pro Durchlauf. Dictionary-Zugriff mit `kriterium` für flexible Sortierung. SPT minimiert Durchlaufzeit, EDD minimiert Verspätungen.
 def ist_gerade(zahl):
     """
     Prüft, ob eine Zahl gerade ist.
