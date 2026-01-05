@@ -30,6 +30,7 @@ Diese Datei dient der **Konsistenz** über alle Vorlesungen hinweg: Welche **Pyt
 | V14 | Plots & Grafiken (Matplotlib) – Teil 2 + XML | `plt.hist()`, `plt.boxplot()`, `plt.bar()` (grouped), `plt.barh()`, Polar/Radar Charts (`projection='polar'`), `xml.etree.ElementTree`, `ET.parse()`, `ET.fromstring()`, `.find()`, `.findall()`, `.text`, `pandas.read_csv()`, Multiple Data Formats (CSV, JSON, XML) |
 | V15 | Netzwerktechnik & Industrielle Kommunikation | `socket`, `struct`, `ipaddress`, `socket.socket()`, `socket.bind()`, `socket.listen()`, `socket.accept()`, `socket.connect()`, `socket.send()`, `socket.recv()`, `struct.pack()`, `struct.unpack()`, `ipaddress.ip_address()`, `ipaddress.ip_network()`, Binary Data Processing, Network Protocols, CSV/JSON/XML for Industrial Data |
 | V16 | Pandas & DataFrame-Operationen | `pandas`, `pd.read_csv()`, `pd.read_json()`, `pd.read_xml()`, `pd.DataFrame()`, `.head()`, `.tail()`, `.info()`, `.describe()`, `.shape`, `.columns`, `pd.to_datetime()`, Boolean Indexing, `.loc[]`, `.iloc[]`, `.query()`, `.isin()`, `.sort_values()`, `.groupby()`, `.agg()`, `.apply()`, Vectorization, `.iterrows()` (discouraged), Time Series Analysis |
+| V17 | Kryptografie & Netzwerk-Programmierung Teil 1 | `socket`, `hashlib`, `socket.socket()`, `.bind()`, `.listen()`, `.accept()`, `.connect()`, `.send()`, `.sendall()`, `.recv()`, `.close()`, `.setsockopt()`, `.settimeout()`, `hashlib.sha256()`, `.hexdigest()`, TCP/IP, Client-Server-Architektur, Byte Encoding/Decoding |
 
 ---
 
@@ -4075,5 +4076,290 @@ Diese Datei dient der **Konsistenz** über alle Vorlesungen hinweg: Welche **Pyt
 - `csv.DictReader` gibt seit Python 3.8+ reguläre `dict` zurück (vorher `OrderedDict`)
 - Generator Expressions sind syntaktisch identisch zu List Comprehensions, aber mit `()` statt `[]`
 - Bei sehr großen CSV-Dateien (GB-Bereich): Chunks mit `pandas.read_csv(chunksize=...)` erwägen
+
+---
+
+## V17 (TBD) – Kryptografie & Netzwerk-Programmierung Teil 1
+
+### Neu eingeführt
+
+#### Module: `socket`
+
+- **`socket`-Modul** (Standard Library, Python 1.x+)
+  - Modul für Low-Level Netzwerk-Programmierung mit Sockets
+  - Ermöglicht TCP/IP- und UDP-Kommunikation
+  - Import: `import socket`
+
+#### Socket-Funktionen und Klassen
+
+- **`socket.socket(family=AF_INET, type=SOCK_STREAM, proto=0)`** (Konstruktor)
+  - Erstellt ein Socket-Objekt
+  - Parameter:
+    - `family`: Adressfamilie (Standard: `socket.AF_INET` für IPv4)
+    - `type`: Socket-Typ (Standard: `socket.SOCK_STREAM` für TCP)
+    - `proto`: Protokoll (Standard: 0, automatische Auswahl)
+  - Signatur: `socket.socket(family, type, proto)` → `socket object`
+  - Beispiel: `server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)`
+  - Muss mit `.close()` geschlossen werden oder via `with`-Statement
+
+#### Socket-Konstanten
+
+- **`socket.AF_INET`** (Konstante)
+  - Adressfamilie für IPv4
+  - Verwendet als `family`-Parameter in `socket.socket()`
+  - Beispiel: `socket.socket(socket.AF_INET, socket.SOCK_STREAM)`
+
+- **`socket.AF_INET6`** (Konstante, erwähnt)
+  - Adressfamilie für IPv6
+  - Beispiel: `socket.socket(socket.AF_INET6, socket.SOCK_STREAM)`
+
+- **`socket.SOCK_STREAM`** (Konstante)
+  - Socket-Typ für TCP (verbindungsorientiert, zuverlässig)
+  - Verwendet als `type`-Parameter
+  - Garantiert Reihenfolge und Zustellung der Pakete
+
+- **`socket.SOCK_DGRAM`** (Konstante, erwähnt)
+  - Socket-Typ für UDP (verbindungslos, unzuverlässig)
+  - Beispiel: `socket.socket(socket.AF_INET, socket.SOCK_DGRAM)`
+
+- **`socket.SOL_SOCKET`** (Konstante)
+  - Socket-Level für `.setsockopt()`
+  - Bezeichnet Socket-Ebene (nicht Protokoll-Ebene)
+  - Beispiel: `socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)`
+
+- **`socket.SO_REUSEADDR`** (Konstante)
+  - Option zum Wiederverwenden von Adressen
+  - Verhindert "Address already in use"-Fehler nach Server-Neustart
+  - Beispiel: `server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)`
+
+#### Server-Socket-Methoden
+
+- **`socket.bind(address)`** (Methode)
+  - Bindet Socket an eine Adresse (IP, Port)
+  - Nur für Server-Sockets erforderlich
+  - Parameter: `address` ist Tupel `(host, port)`
+  - Signatur: `socket.bind((host, port))` → `None`
+  - Beispiel: `server_socket.bind(("localhost", 8000))`
+  - Wirft `OSError` bei bereits belegtem Port
+
+- **`socket.listen(backlog)`** (Methode)
+  - Aktiviert Server-Modus und wartet auf eingehende Verbindungen
+  - Parameter: `backlog` = Max. Anzahl wartender Verbindungen in Queue
+  - Signatur: `socket.listen(backlog)` → `None`
+  - Beispiel: `server_socket.listen(5)`
+  - Muss nach `.bind()` und vor `.accept()` aufgerufen werden
+
+- **`socket.accept()`** (Methode)
+  - Wartet auf eingehende Client-Verbindung (blockierend)
+  - Gibt Tupel zurück: `(client_socket, client_address)`
+  - Signatur: `socket.accept()` → `(socket object, address info)`
+  - Beispiel:
+    ```python
+    client_socket, client_address = server_socket.accept()
+    print(f"Verbunden mit {client_address}")
+    ```
+  - **Wichtig**: Blockiert, bis Client verbindet (oder Timeout gesetzt)
+
+#### Client-Socket-Methoden
+
+- **`socket.connect(address)`** (Methode)
+  - Verbindet zu einem Server (nur Client-Sockets)
+  - Parameter: `address` ist Tupel `(host, port)`
+  - Signatur: `socket.connect((host, port))` → `None`
+  - Beispiel: `client_socket.connect(("localhost", 8000))`
+  - Wirft `ConnectionRefusedError` wenn Server nicht erreichbar
+  - Wirft `socket.timeout` bei gesetztem Timeout
+
+#### Datenübertragung
+
+- **`socket.send(bytes)`** (Methode)
+  - Sendet Daten über Socket
+  - Gibt Anzahl **tatsächlich gesendeter** Bytes zurück (kann weniger sein!)
+  - Signatur: `socket.send(bytes)` → `int`
+  - Beispiel:
+    ```python
+    nachricht = "Hallo"
+    bytes_gesendet = client_socket.send(nachricht.encode("utf-8"))
+    ```
+  - **Wichtig**: Kann weniger Bytes senden als übergeben (z.B. bei vollem Buffer)
+
+- **`socket.sendall(bytes)`** (Methode)
+  - Sendet alle Daten über Socket (wiederholt `.send()` intern)
+  - Garantiert Versand aller Bytes (oder Exception)
+  - Gibt `None` zurück
+  - Signatur: `socket.sendall(bytes)` → `None`
+  - Beispiel: `client_socket.sendall("Hallo Server".encode("utf-8"))`
+  - **Best Practice**: Bevorzuge `.sendall()` statt `.send()` für vollständigen Versand
+
+- **`socket.recv(bufsize)`** (Methode)
+  - Empfängt Daten vom Socket (max. `bufsize` Bytes)
+  - Blockiert, bis Daten verfügbar oder Verbindung geschlossen
+  - Gibt leeren Byte-String `b''` zurück bei geschlossener Verbindung
+  - Signatur: `socket.recv(bufsize)` → `bytes`
+  - Beispiel:
+    ```python
+    daten = client_socket.recv(1024)  # Max. 1024 Bytes
+    if daten:
+        nachricht = daten.decode("utf-8")
+    ```
+  - **Wichtig**: Gibt möglicherweise weniger als `bufsize` Bytes zurück
+  - **Typischer Wert**: 1024, 4096 oder 8192 Bytes
+
+#### Socket-Verwaltung
+
+- **`socket.close()`** (Methode)
+  - Schließt Socket und gibt Ressourcen frei
+  - Signatur: `socket.close()` → `None`
+  - Beispiel: `client_socket.close()`
+  - **Best Practice**: Immer in `finally`-Block oder via `with`-Statement
+
+- **`socket.setsockopt(level, optname, value)`** (Methode)
+  - Setzt Socket-Optionen
+  - Parameter:
+    - `level`: `socket.SOL_SOCKET` (Socket-Ebene)
+    - `optname`: Option (z.B. `socket.SO_REUSEADDR`)
+    - `value`: Wert (1 für aktivieren, 0 für deaktivieren)
+  - Signatur: `socket.setsockopt(level, optname, value)` → `None`
+  - Beispiel: `server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)`
+  - **Verwendung**: `SO_REUSEADDR` verhindert "Address already in use" nach Server-Neustart
+
+- **`socket.settimeout(value)`** (Methode)
+  - Setzt Timeout für blockierende Operationen
+  - Parameter: `value` in Sekunden (float), `None` für unendlich
+  - Signatur: `socket.settimeout(value)` → `None`
+  - Beispiel: `client_socket.settimeout(5.0)`  # 5 Sekunden Timeout
+  - Wirft `socket.timeout` Exception bei Timeout
+
+#### Exceptions
+
+- **`socket.timeout`** (Exception)
+  - Wird geworfen bei Timeout während Socket-Operationen
+  - Tritt auf bei `.recv()`, `.accept()`, `.connect()` mit gesetztem Timeout
+  - Unterklasse von `OSError`
+  - Beispiel:
+    ```python
+    try:
+        daten = client_socket.recv(1024)
+    except socket.timeout:
+        print("Timeout beim Empfang")
+    ```
+
+- **`ConnectionRefusedError`** (Built-in Exception, erwähnt)
+  - Wird bei `.connect()` geworfen, wenn Server nicht erreichbar
+  - Beispiel: `client_socket.connect(("localhost", 9999))`  # Port nicht offen
+
+- **`OSError`** (erwähnt im Kontext von Sockets)
+  - Basis-Exception für Socket-Fehler (z.B. "Address already in use")
+  - Viele Socket-Exceptions sind Unterklassen von `OSError`
+
+#### Module: `hashlib`
+
+- **`hashlib`-Modul** (Standard Library, Python 2.5+)
+  - Modul für kryptografische Hash-Funktionen
+  - Import: `import hashlib`
+  - Unterstützt SHA-1, SHA-256, SHA-512, MD5, etc.
+
+- **`hashlib.sha256(data=b'')`** (Konstruktor)
+  - Erstellt SHA-256 Hash-Objekt
+  - Parameter: `data` optional (Byte-String zum initialen Hashen)
+  - Signatur: `hashlib.sha256(data)` → `hash object`
+  - Beispiel:
+    ```python
+    hash_object = hashlib.sha256("Hallo".encode("utf-8"))
+    hash_hex = hash_object.hexdigest()
+    ```
+  - **Wichtig**: Input muss Byte-String sein (`.encode()` verwenden)
+
+- **`hash_object.hexdigest()`** (Methode)
+  - Gibt Hash als Hexadezimal-String zurück
+  - Signatur: `hash.hexdigest()` → `str`
+  - Beispiel: `hash_object.hexdigest()` → `"3a7bd..."`
+  - **Verwendung**: Für Menschen-lesbare Hash-Repräsentation
+
+- **`hash_object.digest()`** (Methode, erwähnt)
+  - Gibt Hash als Byte-String zurück
+  - Signatur: `hash.digest()` → `bytes`
+  - Beispiel: `hash_object.digest()` → `b'\x3a\x7b...'`
+  - **Verwendung**: Für binäre Weiterverarbeitung
+
+#### Konzepte und Sprachmerkmale
+
+- **TCP/IP Client-Server-Architektur**
+  - **Server**: Bindet an Port, hört auf Verbindungen, akzeptiert Clients
+  - **Client**: Verbindet zu Server-IP/Port
+  - Ablauf:
+    1. Server: `socket()` → `.bind()` → `.listen()` → `.accept()` (wartet)
+    2. Client: `socket()` → `.connect()` (verbindet)
+    3. Server: `.accept()` gibt Client-Socket zurück
+    4. Beide: `.send()` / `.recv()` für Datenaustausch
+    5. Beide: `.close()` zum Beenden
+
+- **Byte Encoding/Decoding**
+  - Sockets übertragen **nur Bytes**, keine Strings
+  - **Encoding**: String → Bytes mit `.encode("utf-8")`
+  - **Decoding**: Bytes → String mit `.decode("utf-8")`
+  - Beispiel:
+    ```python
+    # Senden:
+    socket.sendall("Hallo".encode("utf-8"))
+    
+    # Empfangen:
+    daten = socket.recv(1024)
+    text = daten.decode("utf-8")
+    ```
+  - **Standard-Encoding**: UTF-8 (unterstützt alle Unicode-Zeichen)
+
+- **Multi-Client-Server**
+  - Einfacher Server kann nur einen Client gleichzeitig bedienen
+  - **Lösungen**:
+    - **Sequenziell**: `.accept()` in Schleife (ein Client nach dem anderen)
+    - **Threading**: Jeder Client bekommt eigenen Thread (wird in V17 verwendet)
+    - **Asynchron**: `asyncio` (wird in späteren Vorlesungen behandelt)
+  - Beispiel (sequenziell):
+    ```python
+    while True:
+        client_socket, _ = server_socket.accept()
+        # Bearbeite Client
+        client_socket.close()
+    ```
+
+- **HMAC-ähnliche Authentifizierung**
+  - **Konzept**: Nachricht + Secret Key → Hash
+  - **Verwendung**: Integrität und Authentizität sicherstellen
+  - **Ablauf**:
+    1. Client berechnet Hash aus Daten + Secret Key
+    2. Client sendet Daten + Hash
+    3. Server berechnet erwarteten Hash aus empfangenen Daten + Secret Key
+    4. Server vergleicht: Empfangener Hash == Erwarteter Hash?
+  - **Sicherheit**: Ohne Secret Key kann Hash nicht gefälscht werden
+  - Beispiel:
+    ```python
+    data_string = f"{befehl}|{maschine_id}|{SECRET_KEY}"
+    hash_value = hashlib.sha256(data_string.encode()).hexdigest()
+    ```
+
+### Konzepte und Best Practices
+
+- **`.sendall()` bevorzugen**: Garantiert vollständigen Versand, `.send()` kann partiell senden
+- **SO_REUSEADDR für Server**: Verhindert "Address already in use" nach Neustart
+- **Immer `.close()` aufrufen**: Sockets sind Systemressourcen, müssen freigegeben werden
+- **Timeouts setzen**: Verhindert unendliches Warten (z.B. bei nicht-reagierendem Client)
+- **UTF-8 für Encoding**: Standard für Textübertragung, unterstützt alle Unicode-Zeichen
+- **JSON für strukturierte Daten**: Besser als eigenes Protokoll (siehe P2-P5 in V17)
+- **Leere Bytes `b''` bedeuten geschlossene Verbindung**: Prüfung mit `if not daten:`
+- **Buffer-Größe 1024/4096**: Übliche Werte für `.recv()`, abhängig von Nachrichtengröße
+
+### Notizen
+
+- `socket`-Modul existiert seit Python 1.x (sehr alt, grundlegend)
+- `hashlib` wurde in Python 2.5 eingeführt (ersetzt altes `md5`/`sha` Module)
+- Socket-Programmierung ist plattformübergreifend (Windows, Linux, macOS)
+- Für echte HMAC-Authentifizierung: `hmac`-Modul verwenden (standardisierter)
+- `socket` ist Low-Level; für HTTP: `requests`, `urllib`, `http.server` bevorzugen
+- TCP garantiert Reihenfolge und Zustellung, UDP nicht (UDP ist schneller)
+- `.recv()` kann weniger Bytes zurückgeben als angefordert (bei großen Daten mehrfach aufrufen)
+- Für produktive Server: Frameworks wie Flask, FastAPI statt raw Sockets
+- SHA-256 ist kryptografisch sicher (Kollisionsresistenz, One-Way)
+- Mit-Statement für Sockets: `with socket.socket() as s:` automatisches `.close()`
 
 ---

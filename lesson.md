@@ -25,7 +25,7 @@
 | V14 | Betriebssysteme & Rechnerarchitektur – Teil 2 | Plots & Grafiken (Matplotlib) – Teil 2 | ✅ [Verfügbar](lessons/V14-Betriebssysteme-Rechnerarchitektur-Teil2/) |
 | V15 | Netzwerktechnik Grundlagen & Protokolle – Teil 1 | Große Datenmengen verarbeiten – Teil 1 | ✅ [Verfügbar](lessons/V15-Netzwerktechnik-Grundlagen-Protokolle-Teil1/) |
 | V16 | Netzwerktechnik Grundlagen & Protokolle – Teil 2 | Große Datenmengen verarbeiten – Teil 2 | 🔄 In Planung |
-| V17 | Kryptografie – Teil 1 | Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 1 | 🔄 In Planung |
+| V17 | Kryptografie – Teil 1 | Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 1 | ✅ [Verfügbar](lessons/V17-Kryptografie-Teil1/) |
 | V18 | Kryptografie – Teil 2 | Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 2 | 🔄 In Planung |
 | V19 | Datenbanken – Teil 1 | Datenbankverbindung & SQL – Teil 1 | 🔄 In Planung |
 | V20 | Datenbanken – Teil 2 | Datenbankverbindung & SQL – Teil 2 | 🔄 In Planung |
@@ -167,11 +167,14 @@
    - DNS: Name Resolution und Hierarchie
    - Ports und Socket-Kommunikation
 
-12. **Kryptografie – Teil 1** (V17)
-    - Symmetrische Verschlüsselung (AES, DES)
-    - Asymmetrische Verschlüsselung (RSA)
-    - Public-Key und Private-Key Konzept
-    - Schlüsselaustausch-Problematik
+12. **Kryptografie – Teil 1** (V17) ✅
+    - Kryptografie-Grundlagen: Geschichte (Caesar-Chiffre), Kerckhoffs' Prinzip
+    - Symmetrische Verschlüsselung: DES (Data Encryption Standard), AES (Advanced Encryption Standard)
+    - Asymmetrische Verschlüsselung: RSA (Rivest-Shamir-Adleman) mit mathematischen Details
+    - RSA-Workflow: Schlüsselerzeugung, Verschlüsselung, Entschlüsselung
+    - Hybrid-Verschlüsselung: Kombination von symmetrisch + asymmetrisch für große Datenmengen
+    - Schlüsselaustausch-Problematik und Lösungsansätze
+    - Anwendungsbeispiele: HTTPS, E-Mail-Verschlüsselung, VPN
     
     **Kryptografie – Teil 2** (V18)
     - Hash-Funktionen und deren Eigenschaften (SHA-256, MD5)
@@ -347,11 +350,16 @@
     - Performance-Tipps: Vektorisierung statt Schleifen
     - Praktische Übung: Analyse eines Datensatzes
 
-13. **Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 1** (V17)
-    - Socket-Grundlagen: Client und Server
-    - TCP-Verbindungen aufbauen
-    - Einfacher Echo-Server und Client
-    - Daten senden und empfangen
+13. **Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 1** (V17) ✅
+    - Socket-Modul: socket.socket(), Konstanten (AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR)
+    - Server-Socket-Methoden: .bind(), .listen(), .accept()
+    - Client-Socket-Methoden: .connect()
+    - Datenübertragung: .send(), .sendall(), .recv() mit Byte-Encoding/Decoding
+    - Socket-Verwaltung: .close(), .setsockopt(), .settimeout()
+    - TCP/IP Client-Server-Architektur: Ablauf und Best Practices
+    - Multi-Client-Server: Sequenzielle Verarbeitung, Threading (Vorschau)
+    - HMAC-ähnliche Authentifizierung: hashlib.sha256(), .hexdigest(), Message Authentication Codes
+    - Praktische Übungen: Echo-Server, CNC-Temperatur-Monitor (JSON), Multi-Client Sensor-Server, Roboter-Steuerung, Sichere Maschinen-Kommunikation
     
     **Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 2** (V18)
     - HTTP-Protokoll verstehen

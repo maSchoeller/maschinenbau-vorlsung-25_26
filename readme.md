@@ -142,9 +142,10 @@ eitung
 
 ### ✅ Semester 2 (fortgesetzt)
 - **[V15: Netzwerktechnik Grundlagen & Protokolle – Teil 1](lessons/V15-Netzwerktechnik-Grundlagen-Protokolle-Teil1/)** - OSI-Modell (7 Schichten: Physical, Data Link, Network, Transport, Session, Presentation, Application), TCP/IP-Modell (4 Schichten), Protokoll-Zuordnung, Encapsulation, IPv4 (32-bit, private/public Ranges, spezielle Adressen), IPv6 (128-bit, Shortening-Regeln, Adresstypen), Subnetting mit CIDR-Notation (Netzwerk-/Host-Bits, praktische Berechnungen) | Python: Generator-Konzept (yield-Keyword, Lazy Evaluation, Memory-Effizienz O(1)), Generator-Funktionen & -Pipelines (Verkettung für ETL), Iterator-Protokoll (__iter__, __next__), Iterator vs. Iterable (Exhaustion, mehrfache Iteration), CSV-Modul (csv.reader, csv.writer, csv.DictReader, csv.DictWriter, newline=''-Parameter), Built-in-Funktionen (iter, next), itertools.tee (Generator klonen), Anwendungen: Log-Analyse mit Generator-Pipeline, E-Commerce ETL mit decimal.Decimal
+- **[V17: Kryptografie – Teil 1](lessons/V17-Kryptografie-Teil1/)** - Kryptografie-Grundlagen (Caesar, Kerckhoffs' Prinzip), Symmetrische Verschlüsselung (DES, AES), Asymmetrische Verschlüsselung (RSA mit mathematischen Details), RSA-Workflow (Schlüsselerzeugung, Ver-/Entschlüsselung), Hybrid-Verschlüsselung (Kombination symmetrisch + asymmetrisch), Schlüsselaustausch-Problem, Anwendungen (HTTPS, E-Mail, VPN) | Python: Socket-Programmierung (socket-Modul), Server-/Client-Socket-Methoden (bind, listen, accept, connect), Datenübertragung (send, sendall, recv), Byte-Encoding/Decoding, Socket-Verwaltung (close, setsockopt, settimeout), TCP/IP Client-Server-Architektur, Multi-Client-Server (sequenziell, Threading-Vorschau), HMAC-ähnliche Authentifizierung (hashlib.sha256, hexdigest), Praxis: Echo-Server, CNC-Temp-Monitor (JSON), Multi-Client Sensor-Server, Roboter-Steuerung, Sichere Maschinen-Kommunikation
 
 ### 🔄 In Planung
-- V16-V22 folgen schrittweise
+- V16, V18-V22 folgen schrittweise
 
 ## Prüfungsformat & Bewertung
 

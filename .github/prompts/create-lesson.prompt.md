@@ -11,13 +11,17 @@ tools: ['edit', 'read/readFile', 'search']
 Erstelle eine vollständige Vorlesungslektion für das Modul "Informatik Grundlagen" im Bachelor Maschinenbau. Die Lektion soll didaktisch aufbereitet sein und alle erforderlichen Markdown-Dateien im `lessons/` Ordner strukturiert ablegen.
 
 > [!CRITICAL]
-> **Maschinenbau-Kontext ist PFLICHT**: Alle Aufgaben, Beispiele und Testdaten MÜSSEN einen konkreten Bezug zum Maschinenbau-Studium haben! Nutze realistische Szenarien aus:
+> **Maschinenbau-Kontext ist PFLICHT für Python-Aufgaben**: Alle **Python-Aufgaben** (P1-P5), deren Beispiele und Testdaten MÜSSEN einen konkreten Bezug zum Maschinenbau-Studium haben! Die Theorie-Aufgaben (T1-T3) können rein theoretisch bleiben.
+> 
+> **Nutze realistische Szenarien aus**:
 > - Sensordatenanalyse (Temperatur, Druck, Vibration, Drehzahl)
 > - Materialeigenschaften (Zugfestigkeit, E-Modul, Dichte)
 > - Fertigungsdaten (CNC, Qualitätskontrolle, Produktionsmetriken)
 > - CAD/Simulation (Geometriedaten, FEM-Ergebnisse)
 > - Prüfprotokolle und Messungen
 > - Maschinenüberwachung und Wartung
+> 
+> **Vermeide Monotonie**: Prüfe vor der Aufgabenerstellung die Datei [MASCHINENBAU_UPDATE_PROGRESS.md](../../MASCHINENBAU_UPDATE_PROGRESS.md) im Abschnitt "Notizen", um zu sehen, welche Maschinenbau-Szenarien in vorherigen Lektionen bereits verwendet wurden. Wähle NEUE, abwechslungsreiche Szenarien für deine Aufgaben!
 
 ## Eingabeparameter
 
@@ -56,12 +60,17 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 1. **Vorlesungsplan**: [lesson.md](../../lesson.md) - Enthält die komplette Übersicht aller 22 Lektionen
 2. **Python-Tracking**: [python_topics.md](../../python_topics.md) - Liste aller bereits eingeführten Python-Konzepte
 3. **Bestehende Lektionen**: Prüfe `lessons/` Ordner auf bereits vorhandene Lektionen
+4. **Layout-Referenz**: Lies stichprobenartig 1-2 Skript-Dateien aus bestehenden Lektionen (z.B. `lessons/V01-*/V01-*_skript.md`, `lessons/V05-*/V05-*_skript.md`), um Layout, Formatierung und Stil zu übernehmen. Achte auf: Markdown-Struktur, Verwendung von NOTE/TIP/WARNING-Blöcken, Code-Formatierung, Überschriften-Hierarchie, Mermaid-Diagramme.
+
+> [!TIP]
+> Das Layout und die Formatierung sollen sich über alle Lektionen gleich anfühlen! Orientiere dich an den bestehenden Skripten.
 
 **Ausgabe**: 
 - Zeige die gewählte Lektionsnummer (V{XX})
 - Zeige das Theorie-Thema
 - Zeige das Python-Praxis-Thema
 - Status: Lektion existiert bereits? (Ja/Nein)
+- Layout-Referenz: Welche 1-2 Skripte wurden gelesen?
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 2 fortfahren.
 
@@ -163,15 +172,18 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 ### Schritt 5: Aufgaben-Datei erstellen - Grundgerüst + T1-T2
 
+> [!IMPORTANT]
+> **Vor der Aufgabenerstellung**: Lies [MASCHINENBAU_UPDATE_PROGRESS.md](../../MASCHINENBAU_UPDATE_PROGRESS.md) Abschnitt "Notizen" und prüfe, welche Maschinenbau-Szenarien bereits in V01-V16 verwendet wurden. Wähle für deine Python-Aufgaben NEUE, abwechslungsreiche Szenarien, um Monotonie zu vermeiden!
+
 **Aktion**: Erstelle `V{XX}-{Theorie-Titel}_aufgaben.md` mit:
 
 1. Kopfbereich und NOTE-Block mit Einleitung
 2. Überschrift "Teil A: Theorie-Aufgaben"
-3. Aufgabe T1 (Leicht) - vollständig
-4. Aufgabe T2 (Mittel) - vollständig
+3. Aufgabe T1 (Leicht) - vollständig (rein theoretisch, kein Maschinenbau-Bezug nötig)
+4. Aufgabe T2 (Mittel) - vollständig (rein theoretisch, kein Maschinenbau-Bezug nötig)
 
 > [!NOTE]
-> NUR T1 und T2! T3 kommt im nächsten Schritt.
+> NUR T1 und T2! T3 kommt im nächsten Schritt. Theorie-Aufgaben benötigen KEINEN Maschinenbau-Bezug.
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 5b fortfahren.
 
@@ -181,14 +193,15 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Aufgaben-Datei um:
 
-1. Aufgabe T3 (Schwer) - vollständig
+1. Aufgabe T3 (Schwer) - vollständig (rein theoretisch, kein Maschinenbau-Bezug nötig)
 2. Trennlinie `---`
 3. Überschrift "Teil B: Python-Aufgaben"
 4. Aufgabe P1 (Leicht) - vollständig
 
 > [!IMPORTANT]
-> Bei ALLEN Python-Aufgaben:
+> Bei ALLEN Python-Aufgaben (P1-P5):
 > - Stelle sicher, dass die Aufgabe einen **konkreten Maschinenbau-Bezug** hat!
+> - Vermeide Wiederholungen: Wähle ein NEUES Szenario, das sich von V01-V{XX-1} unterscheidet (siehe MASCHINENBAU_UPDATE_PROGRESS.md)
 > - Falls externe Daten benötigt werden (CSV, DB, TXT, JSON, etc.), notiere welche Testdaten später in Schritt 6d erstellt werden müssen
 > - Bei API-Aufgaben: Wähle maschinenbau-relevante APIs oder erstelle Mock-Daten
 
@@ -208,6 +221,7 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 > [!IMPORTANT]
 > Notiere weiterhin, welche Testdaten für P2 und P3 benötigt werden!
+> Achte darauf, dass P2 und P3 ANDERE Maschinenbau-Szenarien als P1 verwenden!
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 6b fortfahren.
 
@@ -912,8 +926,9 @@ Stelle sicher, dass alle Inhalte:
 ✅ **Formatierung korrekt**: Fachbegriffe **fett**, NOTE/TIP/WARNING Blöcke eingesetzt  
 ✅ **Code-Beispiele**: Vollständig, ausführbar, kommentiert  
 ✅ **Keine Duplikation**: Python-Konzepte nur einmal einführen (siehe python_topics.md)  
-✅ **Praxisbezug Maschinenbau**: ALLE Aufgaben haben konkreten Bezug zum Maschinenbau-Studium! Nutze Szenarien wie: Sensordaten, CAD-Parameter, Materialeigenschaften, Fertigungsdaten, Prüfprotokolle, Messwerte, Simulationsergebnisse, etc.  
-✅ **Übungen**: 3 Theorie-Aufgaben (⭐ → ⭐⭐ → ⭐⭐⭐) + 5 Python-Aufgaben (⭐ → ⭐⭐⭐⭐) - IMMER mit Maschinenbau-Kontext!  
+✅ **Praxisbezug Maschinenbau**: ALLE **Python-Aufgaben (P1-P5)** haben konkreten Bezug zum Maschinenbau-Studium! Theorie-Aufgaben (T1-T3) können rein theoretisch bleiben. Nutze Szenarien wie: Sensordaten, CAD-Parameter, Materialeigenschaften, Fertigungsdaten, Prüfprotokolle, Messwerte, Simulationsergebnisse, etc.  
+✅ **Keine monotonen Aufgaben**: Prüfe MASCHINENBAU_UPDATE_PROGRESS.md vor der Aufgabenerstellung! Wähle für jede Lektion NEUE, abwechslungsreiche Maschinenbau-Szenarien. Vermeide Wiederholungen aus V01-V16!  
+✅ **Übungen**: 3 Theorie-Aufgaben (⭐ → ⭐⭐ → ⭐⭐⭐) + 5 Python-Aufgaben (⭐ → ⭐⭐⭐⭐) - Python-Aufgaben IMMER mit Maschinenbau-Kontext!  
 ✅ **Lösungen**: Ausführliche Erklärungen, Schritt-für-Schritt, häufige Fehler adressiert  
 ✅ **Testdaten vorhanden**: ALLE Python-Aufgaben, die externe Daten benötigen, haben entsprechende Testdateien im `testdaten/` Ordner. Keine Aufgabe soll scheitern, weil Dateien fehlen!  
 ✅ **Testdaten-Qualität**: Realistische, gut strukturierte, ausreichend umfangreiche Daten (min. 10-20 Datensätze bei CSV/DB), mit Varianz und Edge-Cases  
