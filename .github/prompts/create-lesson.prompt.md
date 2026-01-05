@@ -309,12 +309,22 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 ### Schritt 7: Lösungen erstellen - Grundgerüst + Lösung T1
 
+> [!WARNING]
+> **Maximale Dateigröße beachten**: Die gesamte Lösungsdatei (T1-T3 + P1-P5) darf MAXIMAL 1200 Zeilen haben!
+> 
+> **Tipps für kompakte Lösungen**:
+> - Fokussiere auf das Wesentliche - keine unnötigen Wiederholungen
+> - Code-Kommentare im Code selbst (nicht nochmal im Text wiederholen)
+> - Erklärungen prägnant und präzise formulieren
+> - Häufige Fehler: max. 2-3 pro Aufgabe
+> - Bei komplexen Lösungen: Kompaktere Erklärungen, aber trotzdem verständlich
+
 **Aktion**: Erstelle `V{XX}-{Theorie-Titel}_loesungen.md` mit:
 
 1. Kopfbereich mit WARNING-Block ("Versuche die Aufgaben zuerst selbstständig...")
 2. Trennlinie `---`
 3. Überschrift "Teil A: Theorie-Aufgaben - Lösungen"
-4. Lösung T1 - vollständig (Lösung, Erklärung, Häufige Fehler)
+4. Lösung T1 - vollständig aber kompakt (ca. 30-40 Zeilen: Lösung, Erklärung, max. 2 Häufige Fehler)
 
 > [!NOTE]
 > NUR T1! T2 und T3 folgen in den nächsten Schritten.
@@ -327,7 +337,7 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung T2 - vollständig (Lösung, Erklärung, Lösungsweg Schritt-für-Schritt, Häufige Fehler)
+1. Lösung T2 - vollständig aber kompakt (ca. 40-50 Zeilen: Lösung, prägnante Erklärung, Lösungsweg in max. 3-5 Schritten, max. 2 Häufige Fehler)
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 7c fortfahren.
 
@@ -337,7 +347,7 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung T3 - vollständig (Lösung, Sehr detaillierte Erklärung, Lösungsweg Schritt-für-Schritt, Alternative Lösungsansätze, Häufige Fehler)
+1. Lösung T3 - vollständig aber kompakt (ca. 50-70 Zeilen: Lösung, fokussierte Erklärung, Lösungsweg in max. 5-7 Schritten, max. 2 Alternative Lösungsansätze kurz beschrieben, max. 2 Häufige Fehler)
 2. Trennlinie `---` vor Teil B
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 8 fortfahren.
@@ -349,10 +359,10 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 **Aktion**: Ergänze die Lösungen-Datei um:
 
 1. Überschrift "Teil B: Python-Aufgaben - Lösungen"
-2. Lösung P1 - vollständig (Code, Erklärung, "Warum diese Lösung?", Häufige Fehler)
+2. Lösung P1 - vollständig aber kompakt (ca. 50-70 Zeilen: Code mit Inline-Kommentaren, kurze Erklärung, "Warum diese Lösung?" in 2-3 Sätzen, max. 2 Häufige Fehler)
 
 > [!NOTE]
-> NUR P1! Weitere Lösungen folgen einzeln.
+> NUR P1! Weitere Lösungen folgen einzeln. Achte auf die 1200-Zeilen-Grenze für die gesamte Datei!
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 8b fortfahren.
 
@@ -362,7 +372,7 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung P2 - vollständig (Code, Erklärung, Schritt-für-Schritt Durchlauf)
+1. Lösung P2 - vollständig aber kompakt (ca. 70-90 Zeilen: Code mit Inline-Kommentaren, prägnante Erklärung, Schritt-für-Schritt Durchlauf mit max. 4-6 Schritten)
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 8c fortfahren.
 
@@ -372,7 +382,7 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung P3 - vollständig (Code, Erklärung, "Konzepte in dieser Lösung")
+1. Lösung P3 - vollständig aber kompakt (ca. 90-120 Zeilen: Code mit Inline-Kommentaren, fokussierte Erklärung, "Konzepte in dieser Lösung" mit max. 3-4 Konzepten kurz beschrieben)
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 9 fortfahren.
 
@@ -382,10 +392,10 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung P4 - vollständig (Code mit ausführlichen Kommentaren, Sehr detaillierte Erklärung, Design-Entscheidungen, Komplexitätsanalyse)
+1. Lösung P4 - vollständig aber kompakt (ca. 150-200 Zeilen: Code mit Inline-Kommentaren, fokussierte Erklärung der wichtigsten Aspekte, Design-Entscheidungen in 3-5 Punkten, kurze Komplexitätsanalyse)
 
 > [!NOTE]
-> P4 ist komplex - nimm dir Zeit für ausführliche Erklärungen.
+> P4 ist komplex - trotzdem kompakt bleiben! Fokussiere auf die wichtigsten Erklärungen. Prüfe: Bisherige Datei + P4 sollte max. 900 Zeilen haben!
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 9b fortfahren.
 
@@ -395,11 +405,22 @@ Der Benutzer kann folgende Parameter angeben (alle optional):
 
 **Aktion**: Ergänze die Lösungen-Datei um:
 
-1. Lösung P5 - vollständig (Umfangreicher Code, Sehr ausführliche Erklärung, Architektur-Überblick, Schritt-für-Schritt Erklärung, Alternative Lösungsansätze)
-2. Optional: Bonus-Challenge Lösung falls vorhanden
+1. Lösung P5 - vollständig aber kompakt (ca. 200-250 Zeilen: Code mit guten Inline-Kommentaren, kompakte Erklärung der Kernaspekte, kurzer Architektur-Überblick, Schritt-für-Schritt Erklärung in max. 5-7 Schritten, max. 2 Alternative Lösungsansätze sehr kurz beschrieben)
+2. Optional: Bonus-Challenge Lösung falls vorhanden (max. 50 Zeilen)
+
+> [!WARNING]
+> **FINALE PRÜFUNG**: Nach P5 MUSS die gesamte Lösungsdatei unter 1200 Zeilen bleiben!
+> 
+> Falls die Datei zu lang wird:
+> - Kürze Erklärungen auf das Wesentliche
+> - Entferne redundante Informationen
+> - Setze mehr auf Inline-Kommentare im Code statt separater Erklärungen
+> - Fasse "Alternative Lösungsansätze" kompakter zusammen
+> 
+> Gib am Ende die Gesamtzeilenzahl der Lösungsdatei an!
 
 > [!NOTE]
-> P5 ist die komplexeste Aufgabe - gib detaillierte, didaktisch wertvolle Erklärungen.
+> P5 ist die komplexeste Aufgabe - trotzdem kompakt und präzise bleiben! Qualität vor Quantität.
 
 **Weiter**: Nach der kurzen Ausgabe automatisch mit Schritt 10 fortfahren.
 
@@ -929,7 +950,7 @@ Stelle sicher, dass alle Inhalte:
 ✅ **Praxisbezug Maschinenbau**: ALLE **Python-Aufgaben (P1-P5)** haben konkreten Bezug zum Maschinenbau-Studium! Theorie-Aufgaben (T1-T3) können rein theoretisch bleiben. Nutze Szenarien wie: Sensordaten, CAD-Parameter, Materialeigenschaften, Fertigungsdaten, Prüfprotokolle, Messwerte, Simulationsergebnisse, etc.  
 ✅ **Keine monotonen Aufgaben**: Prüfe MASCHINENBAU_UPDATE_PROGRESS.md vor der Aufgabenerstellung! Wähle für jede Lektion NEUE, abwechslungsreiche Maschinenbau-Szenarien. Vermeide Wiederholungen aus V01-V16!  
 ✅ **Übungen**: 3 Theorie-Aufgaben (⭐ → ⭐⭐ → ⭐⭐⭐) + 5 Python-Aufgaben (⭐ → ⭐⭐⭐⭐) - Python-Aufgaben IMMER mit Maschinenbau-Kontext!  
-✅ **Lösungen**: Ausführliche Erklärungen, Schritt-für-Schritt, häufige Fehler adressiert  
+✅ **Lösungen**: Prägnante aber verständliche Erklärungen, Schritt-für-Schritt, häufige Fehler adressiert. **MAXIMAL 1200 Zeilen für die gesamte Lösungsdatei!**  
 ✅ **Testdaten vorhanden**: ALLE Python-Aufgaben, die externe Daten benötigen, haben entsprechende Testdateien im `testdaten/` Ordner. Keine Aufgabe soll scheitern, weil Dateien fehlen!  
 ✅ **Testdaten-Qualität**: Realistische, gut strukturierte, ausreichend umfangreiche Daten (min. 10-20 Datensätze bei CSV/DB), mit Varianz und Edge-Cases  
 ✅ **Testdaten dokumentiert**: `testdaten/README.md` erklärt Struktur und Verwendung aller Dateien  
@@ -946,10 +967,11 @@ Nach erfolgreicher Erstellung gib eine kurze Zusammenfassung:
    lessons/V{XX}-{Theorie-Titel}/
    ├── V{XX}-{Theorie-Titel}_skript.md (Theorie + Python kombiniert)
    ├── V{XX}-{Theorie-Titel}_aufgaben.md (3 Theorie + 5 Python Aufgaben)
-   ├── V{XX}-{Theorie-Titel}_loesungen.md (Ausführliche Lösungen)
+   ├── V{XX}-{Theorie-Titel}_loesungen.md ([XXX] Zeilen - max. 1200 Zeilen!)
    └── testdaten/ ([X] Dateien: CSV, DB, TXT, etc.)
 📝 Python-Tracking aktualisiert: [X neue Konzepte]
 🗂️ Testdaten: [X] Dateien erstellt (z.B. students.csv, sensor.db, log.txt)
+📏 Lösungsdatei: [XXX]/1200 Zeilen ✅
 ```
 
 ## Beispielaufruf im Chat

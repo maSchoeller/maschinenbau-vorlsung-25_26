@@ -31,6 +31,8 @@ Diese Datei dient der **Konsistenz** über alle Vorlesungen hinweg: Welche **Pyt
 | V15 | Netzwerktechnik & Industrielle Kommunikation | `socket`, `struct`, `ipaddress`, `socket.socket()`, `socket.bind()`, `socket.listen()`, `socket.accept()`, `socket.connect()`, `socket.send()`, `socket.recv()`, `struct.pack()`, `struct.unpack()`, `ipaddress.ip_address()`, `ipaddress.ip_network()`, Binary Data Processing, Network Protocols, CSV/JSON/XML for Industrial Data |
 | V16 | Pandas & DataFrame-Operationen | `pandas`, `pd.read_csv()`, `pd.read_json()`, `pd.read_xml()`, `pd.DataFrame()`, `.head()`, `.tail()`, `.info()`, `.describe()`, `.shape`, `.columns`, `pd.to_datetime()`, Boolean Indexing, `.loc[]`, `.iloc[]`, `.query()`, `.isin()`, `.sort_values()`, `.groupby()`, `.agg()`, `.apply()`, Vectorization, `.iterrows()` (discouraged), Time Series Analysis |
 | V17 | Kryptografie & Netzwerk-Programmierung Teil 1 | `socket`, `hashlib`, `socket.socket()`, `.bind()`, `.listen()`, `.accept()`, `.connect()`, `.send()`, `.sendall()`, `.recv()`, `.close()`, `.setsockopt()`, `.settimeout()`, `hashlib.sha256()`, `.hexdigest()`, TCP/IP, Client-Server-Architektur, Byte Encoding/Decoding |
+| V19 | Datenbanken – Teil 1 | `sqlite3`, `sqlite3.connect()`, `.cursor()`, `.execute()`, `.executemany()`, `.fetchall()`, `.fetchone()`, `.fetchmany()`, `.commit()`, `.rollback()`, `.close()`, `row_factory`, `sqlite3.Row`, `sqlite3.IntegrityError`, `sqlite3.OperationalError`, Prepared Statements (`?`), Transactions (BEGIN/COMMIT/ROLLBACK), Context Managers (`with`), SQL (CREATE TABLE, INSERT, SELECT, UPDATE, DELETE, JOIN, GROUP BY, HAVING, Subqueries) |
+| V20 | Datenbanken – Teil 2 | Prepared Statements (Named Placeholders `:name`), `cursor.rowcount`, UPDATE (SET WHERE), DELETE (WHERE CASCADE), Transaktionen (try/except/finally), SAVEPOINT, ROLLBACK TO, `cursor.description`, Aggregationen (COUNT/SUM/AVG/MIN/MAX mit GROUP BY, HAVING), JOINs (INNER, LEFT, mehrfach), Subqueries (WHERE IN, nested SELECT), Best Practices (Indizes auf FK, Error Handling, executemany, PRAGMA foreign_keys ON, LIMIT), `pd.pivot_table()`, `pd.to_excel()`, Context Manager (`__enter__`, `__exit__`), strftime Quartal-Extraktion |
 
 ---
 
@@ -4361,5 +4363,956 @@ Diese Datei dient der **Konsistenz** über alle Vorlesungen hinweg: Welche **Pyt
 - Für produktive Server: Frameworks wie Flask, FastAPI statt raw Sockets
 - SHA-256 ist kryptografisch sicher (Kollisionsresistenz, One-Way)
 - Mit-Statement für Sockets: `with socket.socket() as s:` automatisches `.close()`
+
+---
+
+## V18 (2026-01-05) – Kryptografie Teil 2 & Netzwerk-Programmierung Teil 2
+
+### Neu eingeführt
+
+#### `hashlib`-Modul (Ergänzung zu V17)
+
+- **`hashlib.sha256()`** (bereits in V17 erwähnt, hier vollständig eingeführt)
+  - Erstellt SHA-256-Hash-Objekt
+  - Signatur: `hashlib.sha256([data])` → Hash-Objekt
+  - Verwendung: Hash-Objekt mit `.update(data)` füttern, `.hexdigest()` für finalen Hash
+
+- **Hash-Objekt-Methoden**:
+  - **`.update(data)`**: Fügt Daten zum Hash hinzu (für blockweises Hashen großer Dateien)
+  - **`.hexdigest()`**: Gibt Hash als Hexadezimal-String zurück
+  - **`.digest()`**: Gibt Hash als Bytes zurück
+
+#### `requests`-Bibliothek (Drittanbieter-Bibliothek)
+
+- **Installation**: `pip install requests`
+- **Import**: `import requests`
+
+**HTTP-Request-Methoden**:
+
+- **`requests.get(url, params=None, headers=None, timeout=None, verify=True)`**
+  - Sendet HTTP-GET-Request
+  - Signatur: `requests.get(url, **kwargs)` → `Response`
+  - Beispiel: `response = requests.get("https://api.example.com", params={"key": "value"}, timeout=5)`
+
+- **`requests.post(url, data=None, json=None, headers=None, timeout=None, verify=True)`**
+  - Sendet HTTP-POST-Request mit Daten im Body
+  - `json=`-Parameter für JSON-Daten (automatische Serialisierung)
+  - Signatur: `requests.post(url, **kwargs)` → `Response`
+  - Beispiel: `response = requests.post("https://api.example.com", json={"sensor": "temp_01", "value": 75.3}, timeout=5)`
+
+- **`requests.put(url, data=None, json=None, headers=None, timeout=None)`**
+  - Sendet HTTP-PUT-Request (Ressource ersetzen)
+  - Signatur: `requests.put(url, **kwargs)` → `Response`
+
+- **`requests.patch(url, data=None, json=None, headers=None, timeout=None)`**
+  - Sendet HTTP-PATCH-Request (Ressource teilweise aktualisieren)
+  - Signatur: `requests.patch(url, **kwargs)` → `Response`
+
+- **`requests.delete(url, headers=None, timeout=None)`**
+  - Sendet HTTP-DELETE-Request (Ressource löschen)
+  - Signatur: `requests.delete(url, **kwargs)` → `Response`
+
+- **`requests.head(url, headers=None, timeout=None)`**
+  - Sendet HTTP-HEAD-Request (nur Header abrufen, kein Body)
+  - Signatur: `requests.head(url, **kwargs)` → `Response`
+
+**Response-Objekt-Attribute und -Methoden**:
+
+- **`response.status_code`** (Attribut)
+  - HTTP-Status-Code als Integer (z.B. 200, 404, 500)
+  - Typ: `int`
+
+- **`response.text`** (Attribut)
+  - Response-Body als String (automatische Dekodierung)
+  - Typ: `str`
+
+- **`response.content`** (Attribut)
+  - Response-Body als Bytes (für binäre Daten wie Bilder, PDFs)
+  - Typ: `bytes`
+
+- **`response.json()`** (Methode)
+  - Parst Response-Body als JSON und gibt Python-Dictionary/Liste zurück
+  - Wirft `JSONDecodeError` bei ungültigem JSON
+  - Signatur: `response.json()` → `dict | list`
+
+- **`response.headers`** (Attribut)
+  - Response-Header als Dictionary-ähnliches Objekt (case-insensitive)
+  - Typ: `CaseInsensitiveDict`
+
+- **`response.url`** (Attribut)
+  - Finale URL nach Redirects
+  - Typ: `str`
+
+- **`response.ok`** (Attribut)
+  - Boolean, `True` wenn Status-Code 200-399, sonst `False`
+  - Typ: `bool`
+
+- **`response.raise_for_status()`** (Methode)
+  - Wirft `HTTPError`-Exception bei Status-Codes 4xx oder 5xx
+  - Keine Aktion bei 2xx/3xx
+  - Signatur: `response.raise_for_status()` → `None`
+
+- **`response.elapsed`** (Attribut)
+  - Dauer der Request als `timedelta`-Objekt
+  - Typ: `datetime.timedelta`
+
+- **`response.encoding`** (Attribut)
+  - Zeichenkodierung der Response (z.B. `"utf-8"`)
+  - Kann gesetzt werden, um Dekodierung zu beeinflussen
+  - Typ: `str`
+
+**Exception-Typen (requests.exceptions)**:
+
+- **`requests.exceptions.Timeout`**
+  - Exception bei Timeout (Connection- oder Read-Timeout überschritten)
+
+- **`requests.exceptions.ConnectionError`**
+  - Exception bei Verbindungsfehlern (z.B. keine Netzwerkverbindung, DNS-Fehler)
+
+- **`requests.exceptions.HTTPError`**
+  - Exception bei 4xx/5xx Status-Codes (nur wenn `.raise_for_status()` aufgerufen wurde)
+
+- **`requests.exceptions.TooManyRedirects`**
+  - Exception bei zu vielen Redirects (Standard-Limit: 30)
+
+- **`requests.exceptions.RequestException`**
+  - Basis-Exception für alle `requests`-Fehler (kann als Catch-All verwendet werden)
+
+- **`requests.exceptions.JSONDecodeError`**
+  - Exception bei ungültigem JSON in `.json()` (erbt von `json.JSONDecodeError`)
+
+#### `bcrypt`-Bibliothek (Drittanbieter-Bibliothek, für Passwort-Hashing)
+
+- **Installation**: `pip install bcrypt`
+- **Import**: `import bcrypt`
+
+- **`bcrypt.hashpw(password, salt)`**
+  - Erstellt bcrypt-Hash für Passwort
+  - `password` muss als Bytes vorliegen (`.encode("utf-8")`)
+  - `salt` wird mit `bcrypt.gensalt()` generiert
+  - Signatur: `bcrypt.hashpw(password: bytes, salt: bytes)` → `bytes`
+  - Beispiel: `hashed = bcrypt.hashpw("Passwort123".encode("utf-8"), bcrypt.gensalt())`
+
+- **`bcrypt.gensalt(rounds=12)`**
+  - Generiert neuen zufälligen Salt
+  - `rounds` bestimmt Rechenaufwand (höher = langsamer = sicherer, Standard: 12)
+  - Signatur: `bcrypt.gensalt(rounds=12)` → `bytes`
+
+- **`bcrypt.checkpw(password, hashed)`**
+  - Prüft, ob Passwort mit Hash übereinstimmt
+  - Beide Argumente müssen Bytes sein
+  - Signatur: `bcrypt.checkpw(password: bytes, hashed: bytes)` → `bool`
+  - Beispiel: `if bcrypt.checkpw("Passwort123".encode("utf-8"), hashed): print("Korrekt")`
+
+#### `os.environ`-Zugriff (Standard Library, für Umgebungsvariablen)
+
+- **`os.environ.get(key, default=None)`**
+  - Liest Umgebungsvariable
+  - Gibt `default` zurück, wenn Variable nicht existiert
+  - Signatur: `os.environ.get(key, default=None)` → `str | None`
+  - Beispiel: `api_key = os.environ.get("API_KEY", "default_key")`
+
+### Konzepte und Sprachmerkmale
+
+- **HTTP-Protokoll**: Request-Response-Modell, Methoden (GET, POST, PUT, DELETE), Status-Codes (2xx Erfolg, 4xx Client-Fehler, 5xx Server-Fehler)
+- **REST-APIs**: Representational State Transfer, standardisiertes API-Design mit HTTP-Methoden und JSON
+- **JSON-Verarbeitung**: `.json()` konvertiert Response automatisch zu Python-Dictionary/Liste
+- **Timeout**: Immer Timeout setzen bei `requests` (z.B. `timeout=5`), sonst kann Request unendlich warten
+- **Status-Code-Prüfung**: `.raise_for_status()` wirft Exception bei 4xx/5xx, oder manuelle Prüfung mit `.status_code`
+- **Error Handling**: `Timeout`, `ConnectionError`, `HTTPError`, `JSONDecodeError` abfangen
+- **Header**: Metadaten wie `User-Agent`, `Accept`, `Authorization`, `Content-Type`
+- **Query-Parameter**: `params={"key": "value"}` erzeugt URL mit `?key=value`
+- **POST mit JSON**: `json=`-Parameter für automatische JSON-Serialisierung + `Content-Type: application/json`
+- **Pagination**: Große Datensätze in Seiten abrufen (Loop über `page`-Parameter)
+- **Umgebungsvariablen**: API-Keys nie im Code hardcoden, sondern aus `os.environ` lesen
+- **TLS-Zertifikate**: `verify=True` (Standard) prüft Zertifikate, `verify=False` deaktiviert (nur für Entwicklung!)
+
+### Best Practices
+
+- **Immer Timeout setzen**: `requests.get(url, timeout=5)` verhindert hängende Requests
+- **Status-Codes prüfen**: `.raise_for_status()` oder manuell `.status_code` prüfen
+- **JSONDecodeError abfangen**: `.json()` kann fehlschlagen bei ungültigem JSON
+- **API-Keys aus Umgebung**: `os.environ.get("API_KEY")` statt Hardcoding
+- **TLS verifizieren**: `verify=True` in Produktion, niemals deaktivieren
+- **User-Agent setzen**: Manche APIs blocken Requests ohne User-Agent
+- **`json=`-Parameter für POST**: Automatische Serialisierung + Content-Type-Header
+
+### Notizen
+
+- `requests` ist nicht Teil der Standard Library (Drittanbieter-Bibliothek)
+- `bcrypt` ist nicht Teil der Standard Library (Drittanbieter-Bibliothek)
+- `hashlib` ist Teil der Standard Library seit Python 2.5
+- `requests` ist der de-facto Standard für HTTP in Python (Kenneth Reitz, 2011)
+- `bcrypt` implementiert den Blowfish-basierten Passwort-Hashing-Algorithmus
+- SHA-256 alleine ist zu schnell für Passwort-Hashing (bcrypt ist absichtlich langsam)
+- HTTP ist zustandslos (jede Request ist unabhängig)
+- HTTPS = HTTP über TLS (Port 443 statt Port 80)
+- Status-Codes: 2xx Erfolg, 3xx Redirect, 4xx Client-Fehler, 5xx Server-Fehler
+- GET ist idempotent und safe, POST ist weder idempotent noch safe
+- JSON ist leichtgewichtiger als XML (modernes Standard-Datenformat für APIs)
+- Forward Secrecy (TLS 1.2+): Vergangene Verbindungen bleiben auch bei kompromittiertem Server-Key sicher
+- PKI: Certificate Authorities (CAs) bilden Vertrauenskette für TLS-Zertifikate
+
+---
+
+## V19 (2026-01-04) – Datenbanken – Teil 1 / Datenbankverbindung & SQL – Teil 1
+
+### Neu eingeführt
+
+#### Module: `sqlite3`
+
+- **`sqlite3`-Modul** (Standard Library, Python 2.5+)
+  - Modul für SQLite-Datenbankverwaltung (serverlose, dateibasierte SQL-Datenbank)
+  - Implementiert DB-API 2.0 (PEP 249)
+  - Import: `import sqlite3`
+  - **SQLite-Version**: In Python integriert (keine separate Installation)
+
+#### Datenbankverbindung
+
+- **`sqlite3.connect(database, timeout=5.0, isolation_level='DEFERRED', **kwargs)`** (Funktion)
+  - Erstellt Verbindung zu SQLite-Datenbank (erzeugt Datei, falls nicht vorhanden)
+  - Parameter:
+    - `database`: Dateiname (z.B. `'maschinen.db'`) oder `':memory:'` für In-Memory-DB
+    - `timeout`: Wartezeit in Sekunden bei Locked Database
+    - `isolation_level`: Transaktionsverhalten (`'DEFERRED'`, `'IMMEDIATE'`, `'EXCLUSIVE'`, `None` für Autocommit)
+  - Signatur: `sqlite3.connect(database, **kwargs)` → `Connection`
+  - Beispiel: `conn = sqlite3.connect('produktionsdb.db')`
+  - **Wichtig**: Connection muss mit `.close()` geschlossen werden oder via `with`-Statement
+
+#### Connection-Methoden
+
+- **`connection.cursor()`** (Methode)
+  - Erstellt Cursor-Objekt für SQL-Ausführung
+  - Signatur: `connection.cursor()` → `Cursor`
+  - Beispiel: `cursor = conn.cursor()`
+  - **Wichtig**: Ein Cursor ist notwendig für alle SQL-Operationen
+
+- **`connection.commit()`** (Methode)
+  - Speichert (committed) alle Änderungen seit letztem Commit
+  - Signatur: `connection.commit()` → `None`
+  - Beispiel: `conn.commit()`
+  - **Nur nötig bei**: INSERT, UPDATE, DELETE (nicht bei SELECT)
+
+- **`connection.rollback()`** (Methode)
+  - Macht alle Änderungen seit letztem Commit rückgängig
+  - Signatur: `connection.rollback()` → `None`
+  - Beispiel: `conn.rollback()`
+  - **Verwendung**: Bei Fehlern in Transaktionen
+
+- **`connection.close()`** (Methode)
+  - Schließt Datenbankverbindung und gibt Ressourcen frei
+  - Signatur: `connection.close()` → `None`
+  - Beispiel: `conn.close()`
+  - **Best Practice**: Immer in `finally`-Block oder via `with`-Statement
+
+- **`connection.row_factory`** (Attribut)
+  - Bestimmt, wie Zeilen von `fetchall()` zurückgegeben werden
+  - Standard: `None` (Tupel)
+  - Mit `sqlite3.Row`: Dictionary-ähnlicher Zugriff nach Spaltennamen
+  - Signatur: `connection.row_factory = sqlite3.Row`
+  - Beispiel:
+    ```python
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT Name, Alter FROM Mitarbeiter')
+    row = cursor.fetchone()
+    print(row['Name'])  # Zugriff nach Spaltenname
+    ```
+
+#### Cursor-Methoden
+
+- **`cursor.execute(sql, parameters=())`** (Methode)
+  - Führt einzelne SQL-Anweisung aus
+  - Parameter werden mit `?` Platzhaltern übergeben (Prepared Statement)
+  - Signatur: `cursor.execute(sql, parameters)` → `Cursor`
+  - Beispiel:
+    ```python
+    cursor.execute('INSERT INTO Maschinen (Name, Baujahr) VALUES (?, ?)', ('CNC-01', 2020))
+    cursor.execute('SELECT * FROM Maschinen WHERE Baujahr > ?', (2015,))
+    ```
+  - **Wichtig**: NIEMALS String-Formatierung für SQL verwenden (SQL-Injection!)
+
+- **`cursor.executemany(sql, seq_of_parameters)`** (Methode)
+  - Führt SQL-Anweisung für jede Zeile in Sequenz aus (Batch-Insert)
+  - Signatur: `cursor.executemany(sql, seq_of_parameters)` → `Cursor`
+  - Beispiel:
+    ```python
+    daten = [('CNC-01', 2020), ('Drehbank-02', 2018), ('Fräse-03', 2022)]
+    cursor.executemany('INSERT INTO Maschinen (Name, Baujahr) VALUES (?, ?)', daten)
+    ```
+  - **Performance**: Deutlich schneller als einzelne `.execute()` in Schleife
+
+- **`cursor.fetchall()`** (Methode)
+  - Gibt alle Zeilen des Result Sets als Liste zurück
+  - Signatur: `cursor.fetchall()` → `list` (von Tupeln oder `sqlite3.Row`)
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT * FROM Maschinen')
+    zeilen = cursor.fetchall()
+    for zeile in zeilen:
+        print(zeile)
+    ```
+  - **Warnung**: Lädt alle Zeilen in Speicher (bei großen Result Sets: `.fetchmany()` oder Iteration)
+
+- **`cursor.fetchone()`** (Methode)
+  - Gibt nächste Zeile des Result Sets zurück oder `None` bei Ende
+  - Signatur: `cursor.fetchone()` → `tuple` / `sqlite3.Row` / `None`
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT * FROM Maschinen WHERE ID = ?', (5,))
+    zeile = cursor.fetchone()
+    if zeile:
+        print(zeile)
+    ```
+
+- **`cursor.fetchmany(size=cursor.arraysize)`** (Methode)
+  - Gibt bis zu `size` Zeilen des Result Sets zurück
+  - Signatur: `cursor.fetchmany(size)` → `list`
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT * FROM Messdaten')
+    while True:
+        zeilen = cursor.fetchmany(1000)
+        if not zeilen:
+            break
+        verarbeite(zeilen)
+    ```
+  - **Verwendung**: Memory-effiziente Verarbeitung großer Result Sets
+
+- **`cursor.close()`** (Methode)
+  - Schließt Cursor und gibt Ressourcen frei
+  - Signatur: `cursor.close()` → `None`
+  - Beispiel: `cursor.close()`
+
+#### Exception-Typen (sqlite3)
+
+- **`sqlite3.Error`** (Exception)
+  - Basis-Exception für alle sqlite3-Fehler
+  - Beispiel:
+    ```python
+    try:
+        cursor.execute('SELECT * FROM NichtVorhandenTabelle')
+    except sqlite3.Error as e:
+        print(f"Datenbankfehler: {e}")
+    ```
+
+- **`sqlite3.IntegrityError`** (Exception)
+  - Wird geworfen bei Verletzung von Constraints (PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK)
+  - Unterklasse von `sqlite3.Error`
+  - Beispiel:
+    ```python
+    try:
+        cursor.execute('INSERT INTO Maschinen (ID, Name) VALUES (1, "CNC")')
+        cursor.execute('INSERT INTO Maschinen (ID, Name) VALUES (1, "Drehbank")')  # Duplikat!
+    except sqlite3.IntegrityError:
+        print("Constraint-Verletzung: ID bereits vorhanden")
+    ```
+
+- **`sqlite3.OperationalError`** (Exception)
+  - Wird geworfen bei operationalen Fehlern (Tabelle existiert nicht, Syntax-Fehler, Locked Database)
+  - Unterklasse von `sqlite3.Error`
+  - Beispiel:
+    ```python
+    try:
+        cursor.execute('SELECT * FROM NichtVorhandenTabelle')
+    except sqlite3.OperationalError as e:
+        print(f"SQL-Fehler: {e}")
+    ```
+
+#### Konzepte und Sprachmerkmale
+
+- **Prepared Statements mit `?` Platzhaltern**
+  - **Syntax**: `cursor.execute('SELECT * FROM Tabelle WHERE Spalte = ?', (wert,))`
+  - **Vorteile**:
+    - Verhindert SQL-Injection (automatisches Escaping)
+    - Performance-Vorteil bei wiederholter Ausführung (Query Plan Caching)
+  - **NIEMALS**: String-Formatierung verwenden (`f"SELECT * FROM Tabelle WHERE Spalte = '{wert}'"` ist unsicher!)
+  - Beispiel:
+    ```python
+    # FALSCH (SQL-Injection!):
+    name = input("Name: ")
+    cursor.execute(f"SELECT * FROM Maschinen WHERE Name = '{name}'")
+    
+    # RICHTIG:
+    cursor.execute('SELECT * FROM Maschinen WHERE Name = ?', (name,))
+    ```
+
+- **Transaktionen mit BEGIN/COMMIT/ROLLBACK**
+  - **BEGIN**: Startet Transaktion (implizit bei erstem INSERT/UPDATE/DELETE)
+  - **COMMIT**: Speichert Änderungen dauerhaft (`.commit()`)
+  - **ROLLBACK**: Macht Änderungen rückgängig (`.rollback()`)
+  - **ACID-Eigenschaften**:
+    - **Atomicity** (Atomarität): Alles oder nichts
+    - **Consistency** (Konsistenz): Nur gültige Zustände
+    - **Isolation** (Isolierung): Transaktionen beeinflussen sich nicht
+    - **Durability** (Dauerhaftigkeit): Committed Daten überleben Crash
+  - Beispiel:
+    ```python
+    try:
+        cursor.execute('UPDATE Lagerbestand SET Menge = Menge - 10 WHERE ID = 5')
+        cursor.execute('INSERT INTO Buchungen (Artikel_ID, Menge) VALUES (5, -10)')
+        conn.commit()  # Beide Operationen erfolgreich
+    except sqlite3.Error:
+        conn.rollback()  # Bei Fehler: Beide zurückrollen
+    ```
+
+- **Context Manager (`with`-Statement für Connections)**
+  - **Syntax**: `with sqlite3.connect('db.db') as conn:`
+  - **Vorteil**: Automatisches `.commit()` bei Erfolg und `.close()` am Ende
+  - **Bei Exception**: Automatisches `.rollback()`
+  - Beispiel:
+    ```python
+    with sqlite3.connect('maschinen.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO Maschinen (Name) VALUES (?)', ('CNC-07',))
+        # Kein manuelles conn.commit() nötig
+    # Connection wird automatisch geschlossen
+    ```
+
+- **`sqlite3.Row` für Dictionary-ähnlichen Zugriff**
+  - Ermöglicht Zugriff nach Spaltennamen statt Index
+  - **Setup**: `conn.row_factory = sqlite3.Row`
+  - Beispiel:
+    ```python
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT Name, Alter FROM Mitarbeiter')
+    row = cursor.fetchone()
+    print(row['Name'])  # Statt row[0]
+    print(dict(row))    # Konvertierung zu echtem Dictionary
+    ```
+
+#### SQL-Statements (DDL, DML, DQL)
+
+- **CREATE TABLE** (SQL DDL – Data Definition Language)
+  - Erstellt neue Tabelle mit Spalten und Constraints
+  - Syntax:
+    ```sql
+    CREATE TABLE IF NOT EXISTS Tabellenname (
+        Spalte1 TYP CONSTRAINTS,
+        Spalte2 TYP CONSTRAINTS,
+        ...,
+        PRIMARY KEY (Spalte1),
+        FOREIGN KEY (Spalte2) REFERENCES AndereTabelle(Spalte)
+    );
+    ```
+  - **Datentypen**: `INTEGER`, `REAL`, `TEXT`, `BLOB` (SQLite hat nur diese 4 + `NULL`)
+  - **Constraints**:
+    - `PRIMARY KEY`: Primärschlüssel (eindeutig, NOT NULL)
+    - `AUTOINCREMENT`: Auto-inkrementierende Integer-ID
+    - `NOT NULL`: Wert muss angegeben werden
+    - `UNIQUE`: Wert muss eindeutig sein
+    - `CHECK (bedingung)`: Validierungsbedingung
+    - `DEFAULT wert`: Standardwert bei fehlendem Wert
+    - `FOREIGN KEY`: Fremdschlüssel-Beziehung
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Maschinen (
+            Maschinen_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Name TEXT NOT NULL,
+            Typ TEXT NOT NULL,
+            Baujahr INTEGER CHECK (Baujahr >= 1900),
+            Aktiv INTEGER DEFAULT 1
+        )
+    ''')
+    ```
+
+- **INSERT** (SQL DML – Data Manipulation Language)
+  - Fügt neue Zeile(n) in Tabelle ein
+  - Syntax: `INSERT INTO Tabelle (Spalte1, Spalte2) VALUES (?, ?)`
+  - Beispiel:
+    ```python
+    cursor.execute('INSERT INTO Maschinen (Name, Typ, Baujahr) VALUES (?, ?, ?)', ('CNC-01', 'Fräse', 2020))
+    ```
+
+- **SELECT** (SQL DQL – Data Query Language)
+  - Ruft Daten aus Tabelle(n) ab
+  - **Basis-Syntax**: `SELECT Spalte1, Spalte2 FROM Tabelle WHERE Bedingung`
+  - **Klauseln**:
+    - `WHERE`: Filtert Zeilen nach Bedingung
+    - `ORDER BY Spalte ASC/DESC`: Sortiert Ergebnisse
+    - `LIMIT n`: Begrenzt Anzahl Ergebnisse
+    - `GROUP BY Spalte`: Gruppiert für Aggregationen
+    - `HAVING Bedingung`: Filtert Gruppen (nach GROUP BY)
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT Name, Baujahr FROM Maschinen WHERE Baujahr > ? ORDER BY Baujahr DESC', (2015,))
+    ```
+
+- **UPDATE** (SQL DML)
+  - Ändert existierende Zeilen
+  - Syntax: `UPDATE Tabelle SET Spalte = ? WHERE Bedingung`
+  - Beispiel:
+    ```python
+    cursor.execute('UPDATE Maschinen SET Aktiv = 0 WHERE Maschinen_ID = ?', (5,))
+    ```
+
+- **DELETE** (SQL DML)
+  - Löscht Zeilen aus Tabelle
+  - Syntax: `DELETE FROM Tabelle WHERE Bedingung`
+  - Beispiel:
+    ```python
+    cursor.execute('DELETE FROM Maschinen WHERE Aktiv = 0')
+    ```
+
+- **JOINs** (SQL DQL)
+  - Verknüpft Daten aus mehreren Tabellen
+  - **INNER JOIN**: Nur Zeilen mit Übereinstimmung in beiden Tabellen
+  - **LEFT JOIN**: Alle Zeilen aus linker Tabelle + Übereinstimmungen aus rechter
+  - Syntax:
+    ```sql
+    SELECT m.Name, w.Datum, w.Beschreibung
+    FROM Maschinen m
+    INNER JOIN Wartungen w ON m.Maschinen_ID = w.Maschinen_ID
+    WHERE m.Typ = 'Fräse'
+    ```
+
+- **GROUP BY + HAVING** (SQL DQL – Aggregation)
+  - `GROUP BY`: Gruppiert Zeilen für Aggregat-Funktionen
+  - `HAVING`: Filtert Gruppen (ähnlich zu WHERE, aber nach Gruppierung)
+  - **Aggregat-Funktionen**: `COUNT()`, `SUM()`, `AVG()`, `MIN()`, `MAX()`
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT Typ, COUNT(*) AS Anzahl, AVG(Baujahr) AS Durchschnitt_Baujahr
+        FROM Maschinen
+        GROUP BY Typ
+        HAVING COUNT(*) > 2
+        ORDER BY Anzahl DESC
+    ''')
+    ```
+
+- **Subqueries (Unterabfragen)** (SQL DQL)
+  - Query innerhalb einer Query
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT Name FROM Maschinen
+        WHERE Baujahr > (SELECT AVG(Baujahr) FROM Maschinen)
+    ''')
+    ```
+
+- **Indexes** (Performance-Optimierung)
+  - Erstellt Index für schnellere Abfragen
+  - Syntax: `CREATE INDEX index_name ON Tabelle(Spalte)`
+  - Beispiel:
+    ```python
+    cursor.execute('CREATE INDEX idx_maschinen_typ ON Maschinen(Typ)')
+    ```
+  - **Trade-off**: Schnellere SELECTs vs. langsamere INSERTs/UPDATEs
+
+### Konzepte und Best Practices
+
+- **Immer Prepared Statements verwenden**: `?` Platzhalter statt String-Formatierung (verhindert SQL-Injection)
+- **Transaktionen für kritische Operationen**: `.commit()` bei Erfolg, `.rollback()` bei Fehler
+- **`with`-Statement für Connections**: Automatisches Cleanup und Rollback bei Exceptions
+- **`row_factory = sqlite3.Row`**: Macht Code lesbarer (Zugriff nach Spaltennamen)
+- **Constraints in Schema definieren**: NOT NULL, UNIQUE, CHECK statt Python-Validierung
+- **`.executemany()` für Batch-Inserts**: Deutlich schneller als Schleife mit `.execute()`
+- **`.fetchmany()` für große Result Sets**: Verhindert Speicherprobleme
+- **Indexes sparsam verwenden**: Nur auf häufig gefilterte Spalten (WHERE, JOIN)
+
+### Notizen
+
+- `sqlite3` ist seit Python 2.5 Teil der Standard Library
+- SQLite ist serverlos (Datenbank = einzelne Datei auf Festplatte)
+- SQLite eignet sich für: Embedded Systems, Desktop-Anwendungen, kleine bis mittlere Webanwendungen
+- SQLite ist NICHT geeignet für: Hochfrequente Writes von vielen Clients, sehr große Datenmengen (>100 GB)
+- `:memory:` als Datenbanknamen erstellt In-Memory-DB (verloren nach Programm-Ende)
+- Foreign Key Constraints sind standardmäßig DEAKTIVIERT in SQLite (aktivieren mit `PRAGMA foreign_keys = ON;`)
+- SQLite hat keine echten Datentypen: INTEGER, REAL, TEXT, BLOB sind "Type Affinities" (flexibler als echte Typen)
+- `AUTOINCREMENT` sollte nur bei PRIMARY KEY INTEGER verwendet werden (hat Performance-Overhead)
+- Alternativen zu SQLite: PostgreSQL, MySQL, MariaDB (für größere Anwendungen)
+
+---
+## V20 (2026-01-04) – Datenbanken – Teil 2 / Datenbankverbindung & SQL – Teil 2
+
+### Neu eingeführt
+
+#### sqlite3-Modul (Erweitert)
+
+- **Named Placeholders** (`:name`-Syntax für Prepared Statements)
+  - Alternative zu `?` Platzhaltern mit benannten Parametern
+  - Syntax: `:parametername` im SQL-String, Dictionary als Parameter
+  - Signatur: `cursor.execute(sql, {"name": wert})` → `Cursor`
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        UPDATE Maschinen 
+        SET Status = :status 
+        WHERE Name = :name
+    ''', {"status": "Wartung", "name": "CNC-01"})
+    ```
+  - **Vorteil**: Bessere Lesbarkeit bei vielen Parametern, Reihenfolge egal
+
+- **`cursor.rowcount`** (Attribut)
+  - Gibt Anzahl betroffener Zeilen der letzten Operation zurück
+  - Typ: `int`
+  - Bei SELECT: -1 (nicht verfügbar), bei INSERT/UPDATE/DELETE: Anzahl geänderter Zeilen
+  - Beispiel:
+    ```python
+    cursor.execute('UPDATE Maschinen SET Status = ? WHERE Baujahr < ?', ('Außer Betrieb', 2010))
+    print(f"{cursor.rowcount} Maschinen aktualisiert")
+    ```
+
+- **`cursor.description`** (Attribut)
+  - Gibt Spaltenbeschreibung des Result Sets zurück
+  - Typ: `tuple` von 7-Tupeln `(name, type_code, display_size, internal_size, precision, scale, null_ok)`
+  - Meistens nur `name` (Index 0) relevant
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT Name, Typ, Baujahr FROM Maschinen LIMIT 1')
+    spaltennamen = [desc[0] for desc in cursor.description]
+    # ['Name', 'Typ', 'Baujahr']
+    ```
+
+#### SQL-Statements (Erweitert)
+
+- **UPDATE mit SET WHERE** (SQL DML, erweitert)
+  - Mehrere Spalten gleichzeitig aktualisieren
+  - Bedingte Updates mit komplexen WHERE-Klauseln
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        UPDATE Wartungen 
+        SET Kosten = Kosten * 1.10, 
+            Typ = 'Reparatur' 
+        WHERE Maschinen_ID = ? AND Datum < ?
+    ''', (maschine_id, stichtag))
+    ```
+
+- **DELETE mit CASCADE** (SQL DML, erweitert)
+  - Automatisches Löschen abhängiger Zeilen in anderen Tabellen
+  - Erfordert `PRAGMA foreign_keys = ON;` in SQLite
+  - Schema-Definition mit `ON DELETE CASCADE`:
+    ```python
+    cursor.execute('''
+        CREATE TABLE Wartungen (
+            Wartungs_ID INTEGER PRIMARY KEY,
+            Maschinen_ID INTEGER,
+            FOREIGN KEY (Maschinen_ID) 
+                REFERENCES Maschinen(Maschinen_ID) 
+                ON DELETE CASCADE
+        )
+    ''')
+    ```
+  - Beispiel:
+    ```python
+    # Aktiviert Foreign Key Constraints
+    cursor.execute('PRAGMA foreign_keys = ON')
+    
+    # Löscht Maschine + automatisch alle zugehörigen Wartungen
+    cursor.execute('DELETE FROM Maschinen WHERE Maschinen_ID = ?', (5,))
+    ```
+
+- **Transaktionen mit SAVEPOINT/ROLLBACK TO** (SQL Transaktionskontrolle)
+  - Zwischenpunkte innerhalb einer Transaktion setzen
+  - Ermöglicht partielles Rollback (nicht alles zurückrollen)
+  - Beispiel:
+    ```python
+    cursor.execute('BEGIN')
+    cursor.execute('UPDATE Konto SET Betrag = Betrag - 100 WHERE ID = 1')
+    
+    cursor.execute('SAVEPOINT nach_abbuchung')
+    
+    try:
+        cursor.execute('UPDATE Konto SET Betrag = Betrag + 100 WHERE ID = 2')
+        # Fehler tritt auf...
+        raise ValueError("Empfängerkonto gesperrt")
+    except ValueError:
+        cursor.execute('ROLLBACK TO nach_abbuchung')  # Nur zweites UPDATE zurück
+    
+    conn.commit()  # Erste Abbuchung bleibt
+    ```
+
+#### Aggregationen mit GROUP BY und HAVING
+
+- **GROUP BY mit mehreren Spalten**
+  - Gruppierung nach kombinierten Werten
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT Typ, Baujahr, COUNT(*) AS Anzahl
+        FROM Maschinen
+        GROUP BY Typ, Baujahr
+        ORDER BY Typ, Baujahr
+    ''')
+    ```
+
+- **HAVING-Klausel für Gruppen-Filter**
+  - Filtert Gruppen nach Aggregationsergebnis (WHERE filtert vor Gruppierung)
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT Maschinen_ID, AVG(Temperatur) AS Avg_Temp
+        FROM Messdaten
+        GROUP BY Maschinen_ID
+        HAVING AVG(Temperatur) > 80
+    ''')
+    ```
+
+- **Aggregat-Funktionen**:
+  - **`COUNT(*)`**: Zählt alle Zeilen (inkl. NULL)
+  - **`COUNT(Spalte)`**: Zählt Zeilen mit NOT NULL Werten
+  - **`SUM(Spalte)`**: Summe aller Werte
+  - **`AVG(Spalte)`**: Durchschnitt (Mittelwert)
+  - **`MIN(Spalte)`**: Kleinster Wert
+  - **`MAX(Spalte)`**: Größter Wert
+
+#### JOINs (Erweitert)
+
+- **INNER JOIN** (Nur Übereinstimmungen)
+  - Gibt nur Zeilen zurück, die in beiden Tabellen Matches haben
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT m.Name AS Maschine, w.Datum, w.Typ, w.Kosten
+        FROM Maschinen m
+        INNER JOIN Wartungen w ON m.Maschinen_ID = w.Maschinen_ID
+        WHERE m.Typ = 'CNC-Fräse'
+    ''')
+    ```
+
+- **LEFT JOIN (LEFT OUTER JOIN)** (Alle links + Matches)
+  - Gibt alle Zeilen der linken Tabelle zurück + Matches aus rechter
+  - Bei keinem Match: Spalten der rechten Tabelle sind `NULL`
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT m.Name, COUNT(w.Wartungs_ID) AS Anzahl_Wartungen
+        FROM Maschinen m
+        LEFT JOIN Wartungen w ON m.Maschinen_ID = w.Maschinen_ID
+        GROUP BY m.Maschinen_ID
+    ''')
+    # Zeigt auch Maschinen OHNE Wartungen (Anzahl = 0)
+    ```
+
+- **Mehrfache JOINs** (3+ Tabellen verbinden)
+  - Verkettung mehrerer JOIN-Operationen
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT 
+            m.Name AS Maschine,
+            w.Datum,
+            w.Typ AS Wartungstyp,
+            t.Name AS Techniker,
+            t.Spezialisierung
+        FROM Wartungen w
+        INNER JOIN Maschinen m ON w.Maschinen_ID = m.Maschinen_ID
+        INNER JOIN Techniker t ON w.Techniker_ID = t.Techniker_ID
+        WHERE w.Kosten > 1000
+        ORDER BY w.Datum DESC
+    ''')
+    ```
+
+#### Subqueries (Unterabfragen)
+
+- **Subquery in WHERE-Klausel**
+  - Nutzt Ergebnis einer inneren Query für Filter
+  - Beispiel mit `WHERE IN`:
+    ```python
+    cursor.execute('''
+        SELECT Name, Baujahr 
+        FROM Maschinen
+        WHERE Maschinen_ID IN (
+            SELECT Maschinen_ID 
+            FROM Wartungen 
+            WHERE Kosten > 5000
+        )
+    ''')
+    ```
+
+- **Nested SELECT (Subquery im SELECT)**
+  - Berechnet Wert für jede Zeile mit Subquery
+  - Beispiel:
+    ```python
+    cursor.execute('''
+        SELECT 
+            Name,
+            Baujahr,
+            (SELECT COUNT(*) 
+             FROM Wartungen w 
+             WHERE w.Maschinen_ID = m.Maschinen_ID) AS Wartungen_Gesamt
+        FROM Maschinen m
+    ''')
+    ```
+
+#### Best Practices (Erweitert)
+
+- **Indizes auf Foreign Keys**
+  - Verbessert JOIN-Performance erheblich
+  - Syntax: `CREATE INDEX idx_tabelle_spalte ON Tabelle(Spalte)`
+  - Beispiel:
+    ```python
+    cursor.execute('CREATE INDEX idx_wartungen_maschine ON Wartungen(Maschinen_ID)')
+    cursor.execute('CREATE INDEX idx_messdaten_maschine ON Messdaten(Maschinen_ID)')
+    ```
+
+- **Error Handling mit try-except-finally**
+  - Robuste Transaktions-Verwaltung
+  - Beispiel:
+    ```python
+    try:
+        cursor.execute('BEGIN')
+        cursor.execute('UPDATE ...')
+        cursor.execute('INSERT ...')
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Fehler: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+    ```
+
+- **`executemany()` für Batch-Operations**
+  - Deutlich schneller als Schleife mit `.execute()`
+  - Beispiel:
+    ```python
+    daten = [(name, typ, jahr) for ...]
+    cursor.executemany('''
+        INSERT INTO Maschinen (Name, Typ, Baujahr) 
+        VALUES (?, ?, ?)
+    ''', daten)
+    ```
+
+- **PRAGMA foreign_keys ON**
+  - Muss bei jedem Connection-Start aktiviert werden
+  - SQLite deaktiviert Foreign Key Constraints standardmäßig
+  - Beispiel:
+    ```python
+    conn = sqlite3.connect('db.db')
+    conn.execute('PRAGMA foreign_keys = ON')
+    ```
+
+- **LIMIT für große Result Sets**
+  - Verhindert Memory-Probleme bei großen Abfragen
+  - Beispiel:
+    ```python
+    cursor.execute('SELECT * FROM Messdaten ORDER BY Zeitstempel DESC LIMIT 100')
+    ```
+
+#### Pandas-Integration
+
+- **`pd.pivot_table()`** (pandas-Funktion)
+  - Erstellt Pivot-Tabelle (Kreuztabelle) aus DataFrame
+  - Parameter:
+    - `data`: Source DataFrame
+    - `values`: Zu aggregierende Spalte
+    - `index`: Zeilen-Gruppierung
+    - `columns`: Spalten-Gruppierung
+    - `aggfunc`: Aggregationsfunktion (`'mean'`, `'sum'`, `'count'`, etc.)
+  - Signatur: `pd.pivot_table(data, values, index, columns, aggfunc)` → `DataFrame`
+  - Beispiel:
+    ```python
+    pivot = pd.pivot_table(
+        df, 
+        values='Kosten', 
+        index='Maschinentyp', 
+        columns='Jahr', 
+        aggfunc='mean'
+    )
+    ```
+
+- **`pd.to_excel()`** (DataFrame-Methode)
+  - Exportiert DataFrame als Excel-Datei
+  - Erfordert `openpyxl` Bibliothek
+  - Signatur: `df.to_excel(filename, sheet_name, index)` → `None`
+  - Beispiel:
+    ```python
+    df.to_excel('wartungskosten_analyse.xlsx', sheet_name='Kosten', index=True)
+    ```
+
+#### Context Manager (Benutzerdefiniert)
+
+- **`__enter__()`-Methode** (Magic Method)
+  - Wird beim Eintritt in `with`-Block aufgerufen
+  - Gibt Ressource zurück (oft `self`)
+  - Signatur: `__enter__(self)` → `object`
+  - Beispiel:
+    ```python
+    class DatenbankVerbindung:
+        def __init__(self, db_name):
+            self.db_name = db_name
+            self.conn = None
+        
+        def __enter__(self):
+            self.conn = sqlite3.connect(self.db_name)
+            self.conn.execute('PRAGMA foreign_keys = ON')
+            return self.conn
+        
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            if exc_type:
+                self.conn.rollback()
+            else:
+                self.conn.commit()
+            self.conn.close()
+    
+    # Verwendung:
+    with DatenbankVerbindung('produktionsdb.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Maschinen')
+    # Automatisches commit/rollback und close
+    ```
+
+- **`__exit__(exc_type, exc_val, exc_tb)`-Methode** (Magic Method)
+  - Wird beim Verlassen des `with`-Blocks aufgerufen (auch bei Exceptions)
+  - Parameter:
+    - `exc_type`: Exception-Typ (oder `None`)
+    - `exc_val`: Exception-Wert (oder `None`)
+    - `exc_tb`: Traceback (oder `None`)
+  - Signatur: `__exit__(self, exc_type, exc_val, exc_tb)` → `bool` (optional)
+  - Return `True` unterdrückt Exception (selten gewünscht)
+
+#### datetime-Erweiterung
+
+- **`strftime()` für Quartal-Extraktion**
+  - Formatierung von datetime-Objekten als String
+  - Quartal berechnen: `Q{(monat-1)//3 + 1}`
+  - Beispiel:
+    ```python
+    from datetime import datetime
+    
+    datum = datetime(2024, 7, 15)
+    quartal = f"Q{(datum.month - 1) // 3 + 1}"  # "Q3"
+    jahr_quartal = f"{datum.year}-{quartal}"    # "2024-Q3"
+    
+    # Verwendung in SQL-Query:
+    cursor.execute('''
+        SELECT 
+            strftime('%Y', Datum) AS Jahr,
+            'Q' || ((CAST(strftime('%m', Datum) AS INTEGER) - 1) / 3 + 1) AS Quartal,
+            SUM(Kosten) AS Gesamtkosten
+        FROM Wartungen
+        GROUP BY Jahr, Quartal
+    ''')
+    ```
+
+### Konzepte und Best Practices
+
+- **Named Placeholders für Lesbarkeit**: Bei vielen Parametern übersichtlicher als `?`
+- **`cursor.rowcount` nach Änderungen prüfen**: Validierung, dass Operation erfolgreich war
+- **CASCADE für referentielle Integrität**: Verhindert Waisen-Zeilen (Orphaned Records)
+- **SAVEPOINT für komplexe Transaktionen**: Ermöglicht partielles Rollback
+- **HAVING vs WHERE**: WHERE filtert vor Gruppierung, HAVING filtert nach Aggregation
+- **LEFT JOIN für "auch ohne Match"**: Zeigt alle Zeilen der linken Tabelle
+- **Indizes auf JOIN-Spalten**: Kritisch für Performance bei großen Tabellen
+- **`executemany()` für Batch-Operations**: 10-100x schneller als Schleife
+- **Context Manager für Ressourcen**: Garantiert cleanup auch bei Exceptions
+
+### Notizen
+
+- Named Placeholders (`:name`) existieren seit Python 2.5 (sqlite3-Einführung)
+- `cursor.rowcount` gibt bei SELECT in SQLite immer -1 zurück (DB-API 2.0 Limitation)
+- CASCADE DELETE erfordert `PRAGMA foreign_keys = ON` pro Connection (nicht persistent)
+- SAVEPOINT ist Teil des SQL-92 Standards (nicht SQLite-spezifisch)
+- GROUP BY + HAVING ist SQL-Standard (existiert in allen RDBMS)
+- LEFT JOIN kann zu Cartesian Product führen bei fehlerhaften ON-Bedingungen
+- Subqueries können Performance-Probleme verursachen (oft mit JOINs optimierbar)
+- `pd.pivot_table()` ist mächtiges Werkzeug für OLAP-artige Analysen
+- Context Manager mit `__enter__`/`__exit__` ist Python 2.5+ Feature (PEP 343)
+- SQLite `strftime()` unterstützt nicht alle datetime-Formate (limitierter als Python)
 
 ---

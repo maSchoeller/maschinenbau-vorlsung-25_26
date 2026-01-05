@@ -26,8 +26,8 @@
 | V15 | Netzwerktechnik Grundlagen & Protokolle – Teil 1 | Große Datenmengen verarbeiten – Teil 1 | ✅ [Verfügbar](lessons/V15-Netzwerktechnik-Grundlagen-Protokolle-Teil1/) |
 | V16 | Netzwerktechnik Grundlagen & Protokolle – Teil 2 | Große Datenmengen verarbeiten – Teil 2 | 🔄 In Planung |
 | V17 | Kryptografie – Teil 1 | Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 1 | ✅ [Verfügbar](lessons/V17-Kryptografie-Teil1/) |
-| V18 | Kryptografie – Teil 2 | Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 2 | 🔄 In Planung |
-| V19 | Datenbanken – Teil 1 | Datenbankverbindung & SQL – Teil 1 | 🔄 In Planung |
+| V18 | Kryptografie – Teil 2 | Netzwerk-Programmierung (HTTP) – Teil 2 | ✅ [Verfügbar](lessons/V18-Kryptografie-Teil2/) |
+| V19 | Datenbanken – Teil 1 | Datenbankverbindung & SQL – Teil 1 | ✅ [Verfügbar](lessons/V19-Datenbanken-Teil1/) |
 | V20 | Datenbanken – Teil 2 | Datenbankverbindung & SQL – Teil 2 | 🔄 In Planung |
 | V21 | **Wiederholung & Prüfungsvorbereitung** | **Wiederholung & Prüfungsvorbereitung** | 🔄 In Planung |
 | V22 | **Wiederholung & Prüfungsvorbereitung** | **Wiederholung & Prüfungsvorbereitung** | 🔄 In Planung |
@@ -176,12 +176,15 @@
     - Schlüsselaustausch-Problematik und Lösungsansätze
     - Anwendungsbeispiele: HTTPS, E-Mail-Verschlüsselung, VPN
     
-    **Kryptografie – Teil 2** (V18)
-    - Hash-Funktionen und deren Eigenschaften (SHA-256, MD5)
-    - Public-Key-Infrastruktur (PKI) und Zertifikate
-    - Digitale Signaturen zur Authentifizierung
-    - Anwendungsbeispiele: TLS/SSL, HTTPS
-    - Passwort-Hashing und Salting
+    **Kryptografie – Teil 2** (V18) ✅
+    - Hash-Funktionen: Eigenschaften (Eindeutigkeit, Deterministisch, Einweg, Lawineneffekt, Kollisionsresistenz)
+    - Hash-Algorithmen: SHA-256, SHA-3, MD5 (unsicher), SHA-1 (deprecated)
+    - Anwendungsfälle: Integrität, Passwort-Hashing, Digital Signatures, Blockchain
+    - Public-Key-Infrastruktur (PKI): Vertrauensketten, Certificate Authorities (Root, Intermediate, Leaf)
+    - X.509-Zertifikate: Aufbau (Subject, Issuer, Public Key, Gültigkeitszeitraum, Extensions)
+    - Digitale Signaturen: Workflow (Hash → Verschlüsselung mit Private Key → Verifikation mit Public Key)
+    - TLS/SSL: Verschlüsselung im Web, TLS Handshake-Ablauf mit Mermaid-Diagramm
+    - Passwort-Hashing: bcrypt, scrypt, Argon2, Salt & Pepper, Rainbow Tables
 
 13. **Datenbanken – Teil 1** (V19)
     - Relationale Datenbanken und das Tabellenmodell
@@ -361,13 +364,18 @@
     - HMAC-ähnliche Authentifizierung: hashlib.sha256(), .hexdigest(), Message Authentication Codes
     - Praktische Übungen: Echo-Server, CNC-Temperatur-Monitor (JSON), Multi-Client Sensor-Server, Roboter-Steuerung, Sichere Maschinen-Kommunikation
     
-    **Netzwerk-Programmierung (Basics: Socket, HTTP) – Teil 2** (V18)
-    - HTTP-Protokoll verstehen
-    - HTTP-Requests mit `requests`-Bibliothek
-    - GET und POST Requests
-    - JSON-Daten über APIs abrufen und parsen
-    - Status Codes und Error Handling
-    - Praktische Übung: Wetter-API oder ähnliches nutzen
+    **Netzwerk-Programmierung (HTTP) – Teil 2** (V18) ✅
+    - HTTP-Protokoll: Request-Response-Struktur, Methoden (GET, POST, PUT, DELETE, HEAD), URL-Anatomie
+    - requests-Bibliothek: Installation, Basis-Funktionen
+    - GET-Requests: requests.get(), Query-Parameter, Response-Objekte (.text, .json(), .status_code, .headers)
+    - POST-Requests: requests.post(), JSON-Payload, data= vs. json=-Parameter
+    - Headers: User-Agent, Authorization (Bearer Token, API Key), Content-Type
+    - Status Codes: 200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error
+    - Error Handling: .raise_for_status(), Timeout, ConnectionError, HTTPError, JSONDecodeError
+    - Pagination: Loop über Seiten (page-Parameter), total_pages aus Response extrahieren
+    - Passwort-Hashing: bcrypt-Modul (hashpw, gensalt, checkpw), Salt-Generierung, Byte-Encoding
+    - hashlib: SHA-256 (.update(), .hexdigest()), blockweises Lesen großer Dateien
+    - Praktische Übungen: Material-Datenbank-API, Produktionsdaten-API mit Pagination, CNC-Zugriffskontrolle, Firmware-Update-Verifikation
 
 14. **Datenbankverbindung & SQL – Teil 1** (V19)
     - SQLite: Eingebettete Datenbank ohne Server

@@ -23,6 +23,8 @@ Alle Vorlesungen V01-V16 überarbeiten, sodass Python-Aufgaben einen konkreten M
 | V14 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
 | V15 | ✅ | ✅ | ✅ (4 Dateien) | ✅ Abgeschlossen |
 | V16 | ✅ | ✅ | ✅ (5 Dateien) | ✅ Abgeschlossen |
+| V19 | ✅ | ✅ | ➖ | ✅ Abgeschlossen |
+| V20 | ✅ | ✅ | ✅ (2 Dateien) | ✅ Abgeschlossen |
 
 ## Prinzipien
 
