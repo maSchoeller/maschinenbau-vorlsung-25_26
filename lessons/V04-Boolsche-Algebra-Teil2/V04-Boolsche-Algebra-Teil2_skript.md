@@ -64,7 +64,7 @@ Diese Eigenschaften machen XOR besonders nützlich für Verschlüsselung und Feh
 Der **NAND-Operator** (von "NOT AND") ist die Negation des AND-Operators. NAND liefert nur dann `0`, wenn beide Eingänge `1` sind – in allen anderen Fällen liefert NAND den Wert `1`. NAND hat eine besondere Bedeutung in der digitalen Elektronik, da es **funktional vollständig** ist: Jede beliebige logische Funktion lässt sich ausschließlich durch NAND-Gatter realisieren.
 
 > [!NOTE]
-> **NAND (Nicht-UND)**: Ein logischer Operator, der die Negation von AND darstellt. Symbolisch: $A \uparrow B$ oder $\overline{A \land B}$. NAND ist funktional vollständig, das heißt, alle anderen logischen Operatoren (AND, OR, NOT, XOR) können ausschließlich durch NAND-Verknüpfungen konstruiert werden.
+> **NAND (Nicht-UND)**: Ein logischer Operator, der die Negation von AND darstellt. Symbolisch: $\overline{A \land B}$. NAND ist funktional vollständig, das heißt, alle anderen logischen Operatoren (AND, OR, NOT, XOR) können ausschließlich durch NAND-Verknüpfungen konstruiert werden.
 
 Die **Wahrheitstabelle** für NAND (`A ↑ B` oder `¬(A ∧ B)`):
 
@@ -80,9 +80,9 @@ Die **Wahrheitstabelle** für NAND (`A ↑ B` oder `¬(A ∧ B)`):
 
 **Funktionale Vollständigkeit von NAND** – Konstruktion aller Grundoperatoren:
 
-1. **NOT aus NAND**: $\neg A = A \uparrow A$ (beide Eingänge gleich)
-2. **AND aus NAND**: $A \land B = \neg(A \uparrow B) = (A \uparrow B) \uparrow (A \uparrow B)$
-3. **OR aus NAND**: $A \lor B = (\neg A) \uparrow (\neg B) = (A \uparrow A) \uparrow (B \uparrow B)$
+1. **NOT aus NAND**: $\neg A = \overline{A \land A}$ (beide Eingänge gleich)
+2. **AND aus NAND**: $A \land B = \overline{\overline{A \land B}}$ (doppelte Negation)
+3. **OR aus NAND**: $A \lor B = \overline{(\neg A) \land (\neg B)} = \overline{\overline{A \land A} \land \overline{B \land B}}$
 
 Diese Eigenschaft macht NAND zum universellen Baustein digitaler Schaltungen.
 
@@ -91,7 +91,7 @@ Diese Eigenschaft macht NAND zum universellen Baustein digitaler Schaltungen.
 Der **NOR-Operator** (von "NOT OR") ist die Negation des OR-Operators. NOR liefert nur dann `1`, wenn beide Eingänge `0` sind – ansonsten liefert NOR den Wert `0`. NOR ist ebenso wie NAND **funktional vollständig**, das heißt, alle logischen Operationen lassen sich ausschließlich durch NOR-Gatter konstruieren.
 
 > [!NOTE]
-> **NOR (Nicht-ODER)**: Ein logischer Operator, der die Negation von OR darstellt. Symbolisch: $A \downarrow B$ oder $\overline{A \lor B}$. NOR ist funktional vollständig und wird oft in speziellen Schaltungsfamilien eingesetzt.
+> **NOR (Nicht-ODER)**: Ein logischer Operator, der die Negation von OR darstellt. Symbolisch: $\overline{A \lor B}$. NOR ist funktional vollständig und wird oft in speziellen Schaltungsfamilien eingesetzt.
 
 Die **Wahrheitstabelle** für NOR (`A ↓ B` oder `¬(A ∨ B)`):
 
@@ -104,9 +104,9 @@ Die **Wahrheitstabelle** für NOR (`A ↓ B` oder `¬(A ∨ B)`):
 
 **Funktionale Vollständigkeit von NOR** – Konstruktion aller Grundoperatoren:
 
-1. **NOT aus NOR**: $\neg A = A \downarrow A$
-2. **OR aus NOR**: $A \lor B = \neg(A \downarrow B) = (A \downarrow B) \downarrow (A \downarrow B)$
-3. **AND aus NOR**: $A \land B = (\neg A) \downarrow (\neg B) = (A \downarrow A) \downarrow (B \downarrow B)$
+1. **NOT aus NOR**: $\neg A = \overline{A \lor A}$
+2. **OR aus NOR**: $A \lor B = \overline{\overline{A \lor B}}$ (doppelte Negation)
+3. **AND aus NOR**: $A \land B = \overline{(\neg A) \lor (\neg B)} = \overline{\overline{A \lor A} \lor \overline{B \lor B}}$
 
 > [!WARNING]
 > **Verwechslungsgefahr**: Anfänger verwechseln oft NAND und NOR, weil beide "negierte" Operatoren sind. Merkhilfe: NAND ist das Gegenteil von AND (beide Eingänge müssen wahr sein für Falsch bei NAND), während NOR das Gegenteil von OR ist (mindestens ein Eingang muss wahr sein für Falsch bei NOR).

@@ -278,6 +278,7 @@ Erkläre für jeden Fall, warum die Ausgabe so ist, wie sie ist.
 **Teil 2: Sichere Druck-Berechnung**
 
 In einer hydraulischen Anlage wird der Druck aus Kraft und Fläche berechnet:
+
 $$
 p = \frac{F}{A}
 $$
