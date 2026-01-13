@@ -60,6 +60,7 @@ Die Wahrheitstabelle zeigt, dass die Formel $(A \land \neg B) \lor (\neg A \land
 **a) Vereinfache** $\neg(A \land B \land C)$
 
 Schritt 1: Wende De Morgan auf die gesamte UND-Verknüpfung an:
+
 $$
 \neg(A \land B \land C) = \neg A \lor \neg B \lor \neg C
 $$
@@ -71,11 +72,13 @@ $$
 **b) Vereinfache** $\neg((A \lor B) \land C)$
 
 Schritt 1: Wende De Morgan auf die äußere Verknüpfung an (UND wird zu ODER):
+
 $$
 \neg((A \lor B) \land C) = \neg(A \lor B) \lor \neg C
 $$
 
 Schritt 2: Wende De Morgan auf $\neg(A \lor B)$ an (ODER wird zu UND):
+
 $$
 \neg(A \lor B) \lor \neg C = (\neg A \land \neg B) \lor \neg C
 $$
@@ -87,16 +90,19 @@ $$
 **c) Vereinfache** $\neg(A \land \neg B) \lor \neg(C \lor D)$
 
 Schritt 1: Wende De Morgan auf $\neg(A \land \neg B)$ an:
+
 $$
 \neg(A \land \neg B) = \neg A \lor \neg(\neg B) = \neg A \lor B
 $$
 
 Schritt 2: Wende De Morgan auf $\neg(C \lor D)$ an:
+
 $$
 \neg(C \lor D) = \neg C \land \neg D
 $$
 
 Schritt 3: Setze zusammen:
+
 $$
 (\neg A \lor B) \lor (\neg C \land \neg D)
 $$
@@ -108,21 +114,25 @@ $$
 **d) Vereinfache** $\neg(\neg A \lor (B \land C))$
 
 Schritt 1: Wende De Morgan auf die äußere Verknüpfung an:
+
 $$
 \neg(\neg A \lor (B \land C)) = \neg(\neg A) \land \neg(B \land C)
 $$
 
 Schritt 2: Vereinfache die doppelte Negation:
+
 $$
 \neg(\neg A) = A
 $$
 
 Schritt 3: Wende De Morgan auf $\neg(B \land C)$ an:
+
 $$
 \neg(B \land C) = \neg B \lor \neg C
 $$
 
 Schritt 4: Setze zusammen:
+
 $$
 A \land (\neg B \lor \neg C)
 $$
@@ -249,6 +259,7 @@ Ergebnis: **11000** (binär) = **24** (dezimal)
 **d) Vereinfachung der Cout-Gleichung**
 
 Zu zeigen: 
+
 $$
 Cout = (A \land B) \lor (A \land Cin) \lor (B \land Cin) = (A \land B) \lor ((A \oplus B) \land Cin)
 $$
@@ -271,29 +282,35 @@ Die beiden fettgedruckten Spalten sind identisch, was die Äquivalenz beweist.
 **Algebraischer Beweis** (alternativ):
 
 Ausgangspunkt:
+
 $$
 Cout = (A \land B) \lor (A \land Cin) \lor (B \land Cin)
 $$
 
 Schritt 1: Faktorisiere $(A \land Cin) \lor (B \land Cin)$ aus:
+
 $$
 (A \land Cin) \lor (B \land Cin) = (A \lor B) \land Cin
 $$
+
 (Distributivgesetz rückwärts angewendet)
 
 Aber das ist nicht ganz richtig. Versuchen wir einen anderen Ansatz.
 
 Schritt 1: Erweitere $(A \land B)$ geschickt:
+
 $$
 Cout = (A \land B) \lor (A \land Cin) \lor (B \land Cin)
 $$
 
 Schritt 2: Füge $(A \land B \land Cin)$ zweimal hinzu (ändert nichts: $X \lor X = X$):
+
 $$
 Cout = (A \land B) \lor (A \land Cin) \lor (B \land Cin) \lor (A \land B \land Cin) \lor (A \land B \land Cin)
 $$
 
 Schritt 3: Gruppiere:
+
 $$
 Cout = (A \land B) \lor (A \land B \land Cin) \lor (A \land Cin \land \neg (A \land B)) \lor (B \land Cin \land \neg(A \land B))
 $$
