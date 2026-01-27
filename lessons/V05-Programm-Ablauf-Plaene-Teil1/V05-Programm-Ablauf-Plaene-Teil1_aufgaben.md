@@ -204,33 +204,33 @@ Ausgabe: ✅ Druck OK (200.0 bar / 2900.76 PSI). System betriebsbereit.
 **Zeitaufwand**: ca. 20-30 Minuten  
 **Vorkenntnisse**: `input()`, `float()`, `if-elif-else`, Vergleichsoperatoren
 
-Erstelle einen **Spannungs-Klassifikator** für Materialtests. Die **mechanische Spannung** $ \sigma $ (Sigma) wird berechnet als:
+Erstelle einen **Spannungs-Klassifikator** für Materialtests. Die **mechanische Spannung** $\sigma$ (Sigma) wird berechnet als:
 
 $$\sigma = \frac{F}{A}$$
 
 wobei:
-- $ F $ = aufgebrachte Kraft in Newton [N]
-- $ A $ = Querschnittsfläche in Quadratmillimetern [mm²]
-- $ \sigma $ = mechanische Spannung in Megapascal [MPa] (da 1 MPa = 1 N/mm²)
+- $F$ = aufgebrachte Kraft in Newton [N]
+- $A$ = Querschnittsfläche in Quadratmillimetern [mm²]
+- $\sigma$ = mechanische Spannung in Megapascal [MPa] (da 1 MPa = 1 N/mm²)
 
 Das Programm soll:
 1. Nach **Kraft F in Newton** fragen
 2. Nach **Querschnittsfläche A in mm²** fragen
-3. Die Spannung $ \sigma $ berechnen
+3. Die Spannung $\sigma$ berechnen
 4. Eine Materialklasse ausgeben basierend auf dieser Tabelle (für Baustahl S235):
 
-| Spannung $ \sigma $ [MPa] | Klassifikation | Beschreibung |
+| Spannung $\sigma$ [MPa] | Klassifikation | Beschreibung |
 |-------------------------|----------------|--------------|
-| $ \sigma < 100 $ | Niedrigspannung | Sicher, weit unter Streckgrenze |
-| $ 100 \leq \sigma < 235 $ | Betriebsspannung | Normal, im zulässigen Bereich |
-| $ 235 \leq \sigma < 360 $ | Grenzspannung | Achtung! Nahe/über Streckgrenze |
-| $ \sigma \geq 360 $ | Bruchspannung | GEFAHR! Material versagt! |
+| $\sigma < 100$ | Niedrigspannung | Sicher, weit unter Streckgrenze |
+| $100 \leq \sigma < 235$ | Betriebsspannung | Normal, im zulässigen Bereich |
+| $235 \leq \sigma < 360$ | Grenzspannung | Achtung! Nahe/über Streckgrenze |
+| $\sigma \geq 360$ | Bruchspannung | GEFAHR! Material versagt! |
 
 > [!NOTE]
 > **Mechanische Spannung**: Die innere Kraft pro Flächeneinheit in einem belasteten Bauteil. Wichtige Kennwerte für Baustahl S235:
-> - **Streckgrenze** $ R_e $ = 235 MPa (Material beginnt plastisch zu verformen)
-> - **Zugfestigkeit** $ R_m $ = 360-510 MPa (Material bricht)
-> - **E-Modul** $ E $ = 210.000 MPa (Steifigkeit)
+> - **Streckgrenze** $R_e$ = 235 MPa (Material beginnt plastisch zu verformen)
+> - **Zugfestigkeit** $R_m$ = 360-510 MPa (Material bricht)
+> - **E-Modul** $E$ = 210.000 MPa (Steifigkeit)
 
 **Beispiel Ein-/Ausgabe**:
 ```
@@ -360,7 +360,7 @@ ENDKOSTEN: 8910.00 EUR
 Gegeben ist folgender **Programm-Ablauf-Plan** in textueller Beschreibung für einen **Werkstoffprüfungs-Validator**, der Zugversuchs-Protokolle auf Vollständigkeit und Normkonformität prüft:
 
 > [!NOTE]
-> **Zugversuch**: Standardisierter Materialtest nach DIN EN ISO 6892-1. Eine Probe wird bis zum Bruch gedehnt, dabei werden Kennwerte wie Zugfestigkeit $ R_m $, Streckgrenze $ R_e $ und Bruchdehnung $ A $ ermittelt. Normkonforme Protokolle müssen alle Pflichtangaben enthalten.
+> **Zugversuch**: Standardisierter Materialtest nach DIN EN ISO 6892-1. Eine Probe wird bis zum Bruch gedehnt, dabei werden Kennwerte wie Zugfestigkeit $R_m$, Streckgrenze $R_e$ und Bruchdehnung $A$ ermittelt. Normkonforme Protokolle müssen alle Pflichtangaben enthalten.
 
 ```
 1. Start
