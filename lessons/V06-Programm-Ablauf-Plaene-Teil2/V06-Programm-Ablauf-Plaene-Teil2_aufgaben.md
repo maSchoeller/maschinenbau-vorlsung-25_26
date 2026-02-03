@@ -194,12 +194,12 @@ Ausgangsdrehzahl: 111.11 U/min
 ```
 
 **Berechnung**:
-- Gesamt-Übersetzung: $ i_{gesamt} = 2.5 \times 1.8 \times 3.0 = 13.5 $
-- Ausgangsdrehzahl: $ n_{aus} = \frac{n_{ein}}{i_{gesamt}} = \frac{1500}{13.5} = 111.11 $ U/min
+- Gesamt-Übersetzung: $i_{gesamt} = 2.5 \times 1.8 \times 3.0 = 13.5$
+- Ausgangsdrehzahl: $n_{aus} = \frac{n_{ein}}{i_{gesamt}} = \frac{1500}{13.5} = 111.11$ U/min
 
 **Zusatzaufgabe** (optional):
 Berechne auch das **Drehmoment** an der Ausgangswelle, wenn das Eingangsdrehmoment 50 Nm beträgt. 
-Formel: $ M_{aus} = M_{ein} \times i_{gesamt} \times \eta $ (mit Wirkungsgrad $ \eta = 0.95 $ für jede Stufe).
+Formel: $M_{aus} = M_{ein} \times i_{gesamt} \times \eta $ (mit Wirkungsgrad $ \eta = 0.95$ für jede Stufe).
 
 **Hinweise**:
 - Initialisiere eine Variable `i_gesamt = 1.0` (nicht 0!)
