@@ -408,16 +408,16 @@ Erstelle eine formatierte Tabelle mit Anziehdrehmomenten für verschiedene Schra
 $$M_A = 0.2 \times d \times F_{Vorspann}$$
 
 Wobei:
-- $ M_A $ = Anziehdrehmoment [Nm]
-- $ d $ = Nenndurchmesser [mm]
-- $ F_{Vorspann} $ = Vorspannkraft [N] ≈ 0.7 × $ A_S $ × $ R_m $
-- $ A_S $ = Spannungsquerschnitt [mm²] ≈ 0.8 × $ \frac{\pi d^2}{4} $
-- $ R_m $ = Zugfestigkeit [MPa] - abhängig von Festigkeitsklasse
+- $M_A$ = Anziehdrehmoment [Nm]
+- $d$ = Nenndurchmesser [mm]
+- $F_{Vorspann}$ = Vorspannkraft [N] ≈ 0.7 × $A_S$ × $R_m$
+- $A_S$ = Spannungsquerschnitt [mm²] ≈ 0.8 × $\frac{\pi d^2}{4}$
+- $R_m$ = Zugfestigkeit [MPa] - abhängig von Festigkeitsklasse
 
 **Festigkeitsklassen** (vereinfacht):
-- 4.6: $ R_m $ = 400 MPa
-- 8.8: $ R_m $ = 800 MPa
-- 10.9: $ R_m $ = 1000 MPa
+- 4.6: $R_m$ = 400 MPa
+- 8.8: $R_m$ = 800 MPa
+- 10.9: $R_m$ = 1000 MPa
 
 **Anforderungen**:
 - Eingabe: Liste der Gewindegrößen (z.B. M3, M4, M5, M6, M8, M10)
